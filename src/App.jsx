@@ -7,20 +7,24 @@ import './App.css'
 import './assets/all.scss'
 import HaoGooGauge from '../public/Gauge.jsx'
 
-const {VITE_API_URL} = import.meta.env
+const {VITE_API_URL,VITE_STOCK_TEST_API_01} = import.meta.env
 
 function App() {
   const [count, setCount] = useState(0)
-  const modalRef = useRef(null)
-  const customModal = useRef(null)
+  // const modalRef = useRef(null)
+  // const customModal = useRef(null)
   useEffect(()=>{
     (async () => {
       const res = await axios.get(VITE_API_URL)
       console.log(res);
-      openModal()
-      setTimeout(() => {
-        closeModal()
-      }, 2000);
+      const res1 = await axios.get(VITE_STOCK_TEST_API_01)
+      .then(res1 => console.log(res1))
+      .catch(err => console.error("ERR:", err))
+
+      // openModal()
+      // setTimeout(() => {
+      //   closeModal()
+      // }, 2000);
     })()
   })
   return (
