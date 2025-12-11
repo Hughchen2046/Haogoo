@@ -1,6 +1,6 @@
 # React + Vite
 
-目前已建立的專案先以Vite+React (JS+React-complier) + SCSS + Bootstrap + ECharts + Axios + gh-pages為優先,後續若有需要新增Router再修改.
+目前已建立的專案先以Vite+React (JS+React-complier) + SCSS + Bootstrap + ECharts + Axios + gh-pages+JSON Server為優先,後續若有需要新增Router再修改.
 CSS請在assets/all.scss中進行設定
 JSX我先放在public中
 
@@ -10,6 +10,15 @@ npm run dev - 開發模式
 npm run build - 建置模式
 npm run preview - 預覽模式
 npm run deploy - 部署GH-PAGES模式
+
+## JSON Server
+目前先將測試練習用的json檔放在public中,可以使用npx json-server ./public/symbols_stock.json來啟動
+啟動後開啟連結http://localhost:3000/symbols內有資料,可以供大家進行練習
+
+## 作業練習規範
+請大家先以 dev版本進行複製,自行命名分支名稱,可以用dev_你的名字(版本版次)或是dev_你的主題...等等方式.
+請先使用npm run dev進行測試,若有需要再deploy上去gh-pages測試~~~
+
 
 ## React Compiler
 
