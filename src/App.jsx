@@ -43,8 +43,19 @@ function App() {
   useEffect(()=>{
     (async () => {
       try {
-        const res = await axios.get(VITE_API_URL)  //連結VITE_API_URL,連結randomuser.me/api
-        const res1 = await axios.get(VITE_JSON_SERVER) //用來測試josn server用的,連結 http://localhost:3000/symbols
+        let res, res1;
+        try {
+            res = await axios.get(VITE_API_URL)  //連結VITE_API_URL,連結randomuser.me/api
+        } catch (err) {
+            console.error("Error fetching VITE_API_URL:", err);
+        }
+        
+        try {
+            res1 = await axios.get(VITE_JSON_SERVER) //用來測試josn server用的,連結 http://localhost:3000/symbols
+        } catch (err) {
+            console.error("Error fetching VITE_JSON_SERVER:", err);
+        }
+
         console.log(res);
         console.log(res1);
         
@@ -60,7 +71,7 @@ function App() {
             }, 2000);
         }
       } catch (error) {
-        console.error("Error fetching data:", error)
+        console.error("General Error:", error)
       }
     })()
   }, [modalInstance]) 
