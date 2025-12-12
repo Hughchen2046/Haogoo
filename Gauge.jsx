@@ -1,7 +1,7 @@
 import ReactECharts from "echarts-for-react";
 
 export default function HaoGooGauge({
-  value = 0.25,
+  value = 0.33,
   name = "Haogoo"
 }) {
   const option = {
