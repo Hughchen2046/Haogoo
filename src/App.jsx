@@ -86,7 +86,8 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1 className="mt-3">專案進度</h1>
+      <h1 className="mt-3 text-white">專案進度</h1>
+      <p className="text-white">ECharts練習</p>
       <HaoGooGauge />
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
@@ -115,7 +116,7 @@ function App() {
             </div>
         </div>
 
-      <p className="read-the-docs">
+      <p className="text-white">
         {stockData && stockData[0] ? '測試連結成功!'+stockData[0].symbol+' '+stockData[0].name : 'Loading data...'}
       </p>
     </>
