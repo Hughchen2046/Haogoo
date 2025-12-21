@@ -18,6 +18,46 @@ function App() {
   const modalRef = useRef(null)
   const [modalInstance, setModalInstance] = useState(null)
 
+  const [stockLabel, setStockLabel]= useState('選取需要的股票資訊')
+
+  const SelectStockData = ({ stockData }) => {
+    if (!stockData || !Array.isArray(stockData)) {
+      return (
+        <div className="dropdown">
+          <button className="btn btn-info text-white dropdown-toggle" type="button" disabled>
+            載入中...
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="dropdown">
+        <button className="btn btn-info text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          {stockLabel}
+        </button>
+        <ul className="dropdown-menu overflow-auto" style={{ maxHeight: '300px' }}>
+          {stockData.map((item) => (
+            <li key={item.symbol}>
+              <a 
+                className="dropdown-item text-white" 
+                href="#" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  setStockLabel(`${item.symbol} - ${item.name}`);
+                  console.log(item.symbol,item.name,item.SECURITY_TW,item.industryTW)
+                }}
+              >
+                {item.symbol} - {item.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  
   useEffect(() => {
     // Initialize modal on mount
     if (modalRef.current) {
@@ -124,6 +164,7 @@ function App() {
       <p className="text-white">
         {stockData && stockData[0] ? '測試連結成功!'+stockData[0].symbol+' '+stockData[0].name : 'Loading data...'}
       </p>
+      <SelectStockData stockData={stockData}/>
     </>
   )
 }
