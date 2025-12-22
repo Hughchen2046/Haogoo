@@ -10,9 +10,10 @@ npm run dev - 開發模式
 npm run build - 建置模式
 npm run preview - 預覽模式
 npm run deploy - 部署GH-PAGES模式
+npm run server - JSON Server模式
 
 ## JSON Server
-目前先將測試練習用的json檔放在public中,可以使用json-server --watch ./public/symbols_stock.json來啟動
+目前先將測試練習用的json檔放在db.json中,可以使用 npm run server 啟動
 啟動後開啟連結http://localhost:3000/symbols內有資料,可以供大家進行練習
 相關指令請到這裡閱讀https://github.com/typicode/json-server/tree/v0?tab=readme-ov-file
 
