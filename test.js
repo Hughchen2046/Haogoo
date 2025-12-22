@@ -34,8 +34,19 @@ async function runLinkedTest() {
         console.log(`[2/4] 新增自選股資料 (userId: ${myUserId})...`);
         const addRes = await authClient.post('/watchlists', {
             userId: myUserId,
-            name: "台積電",
-            symbol: "2330"
+            name: "預設清單",
+            isDefault: true,
+            items: [
+                {
+                    "symbol": "2330",
+                    "name": "台積電"
+                },
+                {
+                    "symbol": "0050",
+                    "name": "元大台灣50"
+                }
+            ]
+
         });
         console.log('✅ 新增成功！資料已寫入 db.json');
 
