@@ -17,6 +17,9 @@ npm run server - JSON Server模式
 啟動後開啟連結http://localhost:3000/symbols內有資料,可以供大家進行練習
 相關指令請到這裡閱讀https://github.com/typicode/json-server/tree/v0?tab=readme-ov-file
 
+依據股票代碼,建立相關聯price http://localhost:3000/symbols/?id=2330&_embed=prices
+依據股票代碼,依日期降冪 http://localhost:3000/prices?symbolId=2330&_expand=symbol&_sort=date&_order=desc
+
 ## 作業練習規範
 請大家先以 dev版本進行複製,自行命名分支名稱,可以用dev_你的名字(版本版次)或是dev_你的主題...等等方式.
 請先使用npm run dev進行測試,若有需要再deploy上去gh-pages測試~~~
