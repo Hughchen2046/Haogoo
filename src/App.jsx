@@ -33,6 +33,9 @@ function App() {
         <div className="col-12 mt-3 text-center">
           <button className="btn btn-primary btn-motion"><span>Button</span></button>
         </div>
+        <div className="col-12 mt-3 text-center bg-dark py-2">
+          <button className="btn btn-white btn-motion-white"><span>Button</span></button>
+        </div>        
         <div className="col-12 mt-3">
           <table className="table table-hover table-striped mt-4">
             <thead>
