@@ -29,11 +29,9 @@ async function averageIndustry() {
         }).filter(item => item !== null);
 
         if (stockData.length > 0) {
-            const avgPrice = stockData.reduce((acc, cur) => acc + cur.avg, 0) / stockData.length;
             const avgReturn = stockData.reduce((acc, cur) => acc + cur.returnRate, 0) / stockData.length;
 
             console.log(`\n--------------------------------------`);
-            console.log(`${industryTW} 該產業平均60天收盤價: ${avgPrice.toFixed(2)}`);
             console.log(`${industryTW} 該產業平均60日報酬率: ${avgReturn.toFixed(2)}%`);
             console.log(`總共計算 ${stockData.length} 檔股票`);
             console.log(`--------------------------------------`);
