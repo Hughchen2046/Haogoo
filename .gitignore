@@ -9,7 +9,6 @@ lerna-debug.log*
 
 node_modules
 stock_data
-test_data
 dist
 dist-ssr
 *.local
