@@ -30,7 +30,10 @@ function App() {
   return (
     <> <div className="container">
       <div className="row mt-3">
-        <div className="col-12">
+        <div className="col-12 mt-3 text-center">
+          <button className="btn btn-primary btn-motion"><span>Button</span></button>
+        </div>
+        <div className="col-12 mt-3">
           <table className="table table-hover table-striped mt-4">
             <thead>
               <tr>
@@ -55,6 +58,7 @@ function App() {
                     <td className='text-end'>{data.id}</td>
                     <td className='text-end'>{data.name}</td>
                     <td className='text-end'>{data.SECURITY_TW}</td>
+
                     <td className='text-end'>{data.industryTW}</td>
                     <td className='text-end'>{data.prices[0].open.toFixed(2)}</td>
                     <td className='text-end' style={{color: data.prices[0].close - data.prices[0].open > 0 ? 'red' : 'green'}}>{data.prices[0].close.toFixed(2)}</td>
