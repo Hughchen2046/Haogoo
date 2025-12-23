@@ -1,7 +1,6 @@
 # React + Vite
 
 目前已建立的專案先以Vite+React (JS+React-complier) + SCSS + Bootstrap + ECharts + Axios + gh-pages+JSON Server為優先,後續若有需要新增Router再修改.
-CSS請在assets/all.scss中進行設定
 JSX我先放在public中
 
 ## 指令
@@ -25,6 +24,13 @@ server.cjs => 所有使用者權限以及佈署json-server的程式碼
 db.json => 統合版用來測試的整體檔案存放
 dbjson_schema.md => 檔案裡面是db.json內針對資料的說明
 
+## SCSS
+Bootstrap客製化項目請到src/scss/_variables.scss進行修改
+其餘相關css可放在src/scss/內,並利用all.scss進行匯入
+
+## Design Guideline
+設計稿共用元件網頁內容為src/components/Guideline.jsx,客製化請到src/scss/_custom_utils.scss進行修改
+
 ## 測試用程式
 test.js => 測試機- 自動註冊帳號,新增收藏清單,驗證讀取,存取別人資料
 test_fin01.js => 測試機- 讀取產業,計算每一檔的60日平均收盤價,再計算平均
@@ -33,13 +39,3 @@ test_fin01.js => 測試機- 讀取產業,計算每一檔的60日平均收盤價,
 請大家先以 dev版本進行複製,自行命名分支名稱,可以用dev_你的名字(版本版次)或是dev_你的主題...等等方式.
 請先使用npm run dev進行測試,若有需要再deploy上去gh-pages測試~~~
 
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
