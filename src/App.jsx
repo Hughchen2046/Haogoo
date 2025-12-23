@@ -4,8 +4,6 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 
 import axios from 'axios'
-import './App.css'
-import './assets/all.scss'
 import HaoGooGauge from '../public/Gauge.jsx'
 
 
@@ -131,8 +129,8 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1 className="mt-3 text-white">專案進度</h1>
-      <p className="text-white">ECharts練習</p>
+      <h1 className="mt-3 text-center text-info">專案進度</h1>
+      <p className=" text-center text-info">ECharts練習</p>
       <HaoGooGauge />
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
