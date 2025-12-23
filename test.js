@@ -1,3 +1,4 @@
+//測試機 ==> 自動註冊帳號,新增收藏清單,驗證讀取,存取別人資料
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3000';
