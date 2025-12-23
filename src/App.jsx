@@ -1,168 +1,77 @@
-import { useEffect, useState, useRef } from 'react'
-import { Modal } from 'bootstrap'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-
+import { useEffect, useState } from 'react'
 import axios from 'axios'
-import HaoGooGauge from '../public/Gauge.jsx'
 
 
-const {VITE_API_URL,VITE_JSON_SERVER} = import.meta.env
+const {VITE_stocksUrl} = import.meta.env
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [stockData, setStockData] = useState(null)
+  const [stockData, setStockData] = useState([])
   
-  const modalRef = useRef(null)
-  const [modalInstance, setModalInstance] = useState(null)
 
-  const [stockLabel, setStockLabel]= useState('選取需要的股票資訊')
-
-  const SelectStockData = ({ stockData }) => {
-    if (!stockData || !Array.isArray(stockData)) {
-      return (
-        <div className="dropdown">
-          <button className="btn btn-info text-white dropdown-toggle" type="button" disabled>
-            載入中...
-          </button>
-        </div>
-      );
-    }
-
-    return (
-      <div className="dropdown">
-        <button className="btn btn-info text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          {stockLabel}
-        </button>
-        <ul className="dropdown-menu overflow-auto" style={{ maxHeight: '300px' }}>
-          {stockData.map((item) => (
-            <li key={item.symbol}>
-              <a 
-                className="dropdown-item text-white" 
-                href="#" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setStockLabel(`${item.symbol} - ${item.name}`);
-                  console.log(item.symbol,item.name,item.SECURITY_TW,item.industryTW)
-                }}
-              >
-                {item.symbol} - {item.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
-  
+//取出所有有價格的股票資訊
   useEffect(() => {
-    // Initialize modal on mount
-    if (modalRef.current) {
-        const modal = new Modal(modalRef.current)
-        setModalInstance(modal)
-    }
-    // Cleanup on unmount
-    return () => {
-        if (modalInstance) {
-            modalInstance.dispose()
-        }
-    }
+    axios.get(VITE_stocksUrl)
+    .then(response => {
+      const filterData = response.data.filter((item)=> item.prices.length > 0)
+      const lastPrice = filterData.map((e)=>{
+        e.prices = e.prices.slice(-1)
+        return e
+      })
+      setStockData(lastPrice)
+      // console.log(lastPrice)
+    })
+    .catch(error => {
+      console.log(error)
+    })
   }, [])
-
-  const openModal = () => {
-    modalInstance?.show()
-  }
-
-  const closeModal = () => {
-    modalInstance?.hide()
-  }
-
-  useEffect(()=>{
-    (async () => {
-      try {
-        let res, res1, res2;
-        try {
-            res = await axios.get(VITE_API_URL)  //連結VITE_API_URL,連結randomuser.me/api
-        } catch (err) {
-            console.error("Error fetching VITE_API_URL:", err);
-        }
-        
-        try {
-            res1 = await axios.get(VITE_JSON_SERVER) //用來測試josn server用的,連結 http://localhost:3000/symbols
-        } catch (err) {
-            console.error("Error fetching VITE_JSON_SERVER:", err);
-        }
-        try {
-            res2 = await axios.get('/testdata.json') //用來測試josn server用的,連結 http://localhost:3000/symbols
-        } catch (err) {
-            console.error("Error fetching testdata.json:", err);
-        }
-        console.log(res);
-        console.log(res1);
-        console.log(res2);
-        
-        if (res1 && res1.data) {
-            setStockData(res1.data)
-        }
-
-        // Wait for modalInstance to be available
-        if (modalInstance) {
-            openModal()
-            setTimeout(() => {
-                closeModal()
-            }, 2000);
-        }
-      } catch (error) {
-        console.error("General Error:", error)
-      }
-    })()
-  }, [modalInstance]) 
   
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1 className="mt-3 text-center text-info">專案進度</h1>
-      <p className=" text-center text-info">ECharts練習</p>
-      <HaoGooGauge />
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
+    <> <div className="container">
+      <div className="row mt-3">
+        <div className="col-12">
+          <table className="table table-hover table-striped mt-4">
+            <thead>
+              <tr>
+                <th>股票代碼</th>
+                <th>股票名稱</th>
+                <th>股票種類</th>
+                <th>產業類別</th>
+                <th>開盤價</th>
+                <th>收盤價</th>
+                <th>最高價</th>
+                <th>最低價</th>
+                <th>成交量</th>
+                <th>資料日期</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stockData.map((data)=>{
+                return(
+                  <tr key={data.id}>
+                    <td>{data.id}</td>
+                    <td>{data.name}</td>
+                    <td>{data.SECURITY_TW}</td>
+                    <td>{data.industryTW}</td>
+                    <td>{data.prices[0].open.toFixed(2)}</td>
+                    <td>{data.prices[0].close.toFixed(2)}</td>
+                    <td>{data.prices[0].high.toFixed(2)}</td>
+                    <td>{data.prices[0].low.toFixed(2)}</td>
+                    <td>{data.prices[0].volume}</td>
+                    <td>{new Date(data.prices[0].date).toLocaleString().split(',')[0]}</td>
+                  </tr>
+                )
+              })}
 
-       {/* Modal */}
-       <div className="modal fade" ref={modalRef} tabIndex="-1" aria-hidden="true">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                <div className="modal-header">
-                    <h5 className="modal-title">System Status</h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div className="modal-body">
-                    <p>Data loaded successfully!</p>
-                </div>
-                <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-                </div>
-            </div>
+            </tbody>
+
+
+          </table>
         </div>
+      </div>
 
-      <p className="text-white">
-        {stockData && stockData[0] ? '測試連結成功!'+stockData[0].symbol+' '+stockData[0].name : 'Loading data...'}
-      </p>
-      <SelectStockData stockData={stockData}/>
+
+    </div>
+    
     </>
   )
 }
