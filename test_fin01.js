@@ -1,10 +1,10 @@
 //測試機, 讀取產業,計算每一檔的60日平均收盤價,再計算平均
 import axios from 'axios';
-const industryTW = '生技醫療';
+const industryTW = '金融保險';
 const API_URL = `http://localhost:3000/symbols?q=${industryTW}&_embed=prices`;
 
 async function averageIndustry() {
-    console.log('開始計算...');
+    console.log(`開始計算...\n`);
     try {
         const getData = await axios.get(API_URL);
         // console.log(getData.data)

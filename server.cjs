@@ -9,12 +9,15 @@ const middlewares = jsonServer.defaults();
 
 app.db = router.db;
 
-// 定義權限規則
+// 定義權限規則 [自己][會員][非會員] , 6讀寫 4讀 0無權限
 const rules = auth.rewriter({
-    "users": 600,
-    "watchlists": 600,
-    "symbols": 444,
-    "posts": 664
+    "users": 600,       // 只有自己可讀寫
+    "watchlists": 600,  // 只有自己可讀寫
+    "symbols": 444,     // 所有人可讀
+    "prices": 444,      // 所有人可讀
+    "posts": 664,       // 登入可寫，所有人可讀
+    "comments": 664,    // 登入可寫，所有人可讀
+    "likes": 600        // 只有自己可讀寫
 });
 
 app.use(middlewares);
