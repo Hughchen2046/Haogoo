@@ -1,4 +1,5 @@
 {
-    "build_command": "npm install",
-    "start_command": "node server.cjs"
+    "ignore_dockerfile": true,
+    "start_command": "node server.cjs",
+    "build_command": "npm install"
 }
