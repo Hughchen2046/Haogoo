@@ -1,209 +1,220 @@
 // Import handwriting font
-@import url('https://fastly.jsdelivr.net/npm/chenyuluoyan-font@1.0.0/dist/Chenyuluoyan.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+TC:wght@100..900&display=swap');
 
 // Design System Variables & Utilities
-
 // 1. Spacing (Extending Bootstrap spacers)
 // We defined 1-6 in Bootstrap usually, but here we want 1-13 with specific pixels.
 $custom-spacers: (
-    1: 4px,
-    2: 8px,
-    3: 12px,
-    4: 16px,
-    5: 24px,
-    6: 32px,
-    7: 40px,
-    8: 48px,
-    9: 56px,
-    10: 64px,
-    11: 80px,
-    12: 100px,
-    13: 120px
+  1: 4px,
+  2: 8px,
+  3: 12px,
+  4: 16px,
+  5: 24px,
+  6: 32px,
+  7: 40px,
+  8: 48px,
+  9: 56px,
+  10: 64px,
+  11: 80px,
+  12: 100px,
+  13: 120px,
 );
 
 // We'll generate utility classes for these
 @each $i, $v in $custom-spacers {
-    .m-#{$i} {
-        margin: $v !important;
-    }
+  .m-#{$i} {
+    margin: $v !important;
+  }
 
-    .mt-#{$i} {
-        margin-top: $v !important;
-    }
+  .mt-#{$i} {
+    margin-top: $v !important;
+  }
 
-    .mb-#{$i} {
-        margin-bottom: $v !important;
-    }
+  .mb-#{$i} {
+    margin-bottom: $v !important;
+  }
 
-    .ms-#{$i} {
-        margin-left: $v !important;
-    }
+  .ms-#{$i} {
+    margin-left: $v !important;
+  }
 
-    .me-#{$i} {
-        margin-right: $v !important;
-    }
+  .me-#{$i} {
+    margin-right: $v !important;
+  }
 
-    .my-#{$i} {
-        margin-top: $v !important;
-        margin-bottom: $v !important;
-    }
+  .my-#{$i} {
+    margin-top: $v !important;
+    margin-bottom: $v !important;
+  }
 
-    .mx-#{$i} {
-        margin-left: $v !important;
-        margin-right: $v !important;
-    }
+  .mx-#{$i} {
+    margin-left: $v !important;
+    margin-right: $v !important;
+  }
 
-    .p-#{$i} {
-        padding: $v !important;
-    }
+  .p-#{$i} {
+    padding: $v !important;
+  }
 
-    .pt-#{$i} {
-        padding-top: $v !important;
-    }
+  .pt-#{$i} {
+    padding-top: $v !important;
+  }
 
-    .pb-#{$i} {
-        padding-bottom: $v !important;
-    }
+  .pb-#{$i} {
+    padding-bottom: $v !important;
+  }
 
-    .ps-#{$i} {
-        padding-left: $v !important;
-    }
+  .ps-#{$i} {
+    padding-left: $v !important;
+  }
 
-    .pe-#{$i} {
-        padding-right: $v !important;
-    }
+  .pe-#{$i} {
+    padding-right: $v !important;
+  }
 
-    .py-#{$i} {
-        padding-top: $v !important;
-        padding-bottom: $v !important;
-    }
+  .py-#{$i} {
+    padding-top: $v !important;
+    padding-bottom: $v !important;
+  }
 
-    .px-#{$i} {
-        padding-left: $v !important;
-        padding-right: $v !important;
-    }
+  .px-#{$i} {
+    padding-left: $v !important;
+    padding-right: $v !important;
+  }
 }
 
-// 2. Colors
+// 2. 自訂 Colors
+$black: #121212;
+$white: #ffffff;
+$primary: #17312c;
+$green: #56b77e;
+$red: #f2735b;
+$bgc: #fafafa;
+
 $design-colors: (
-    "primary-50": #efcfe8,
-    "primary-100": #fff9c2,
-    "primary-200": #fff089,
-    "primary-300": #ffe45f,
-    "primary-400": #fdcc12,
-    "primary-500": #ecb206,
-    "primary-600": #cc8902,
-    "primary-700": #a36105,
-    "primary-800": #864c0d,
-    "primary-900": #723e11,
-    "primary-950": #431f05,
-    "gray-50": #f2f2f2,
-    "gray-100": #dbdbdb,
-    "gray-200": #c4c4c4,
-    "gray-300": #adadad,
-    "gray-400": #969696,
-    "gray-500": #808080,
-    "gray-600": #666666,
-    "gray-700": #4d4d4d,
-    "gray-800": #333333,
-    "gray-900": #1a1a1a
+  'primary-50': #eefffc,
+  'primary-100': #88bdb2,
+  'primary-200': #64a195,
+  'primary-300': #4a877b,
+  'primary-400': #3f776c,
+  'primary-500': #32665c,
+  'primary-600': #224c44,
+  'primary-700': #17312c,
+  'gray-50': rgba(#ffffff, 0.3),
+  'gray-100': rgba(#ffffff, 0.5),
+  'gray-200': rgba(#ffffff, 0.7),
+  'gray-300': #ffffff,
+  'gray-400': rgba(#121212, 0.03),
+  'gray-500': rgba(#121212, 0.08),
+  'gray-600': rgba(#121212, 0.15),
+  'gray-700': rgba(#121212, 0.3),
+  'gray-800': rgba(#121212, 0.6),
+  'gray-900': #121212,
 );
 
 @each $name, $col in $design-colors {
-    .text-#{$name} {
-        color: $col !important;
-    }
+  .text-#{$name} {
+    color: $col !important;
+  }
 
-    .bg-#{$name} {
-        background-color: $col !important;
-    }
+  .bg-#{$name} {
+    background-color: $col !important;
+  }
 
-    .border-#{$name} {
-        border-color: $col !important;
-    }
+  .border-#{$name} {
+    border-color: $col !important;
+  }
 }
 
 // 3. Typography
-.font-handwriting {
-    font-family: 'Chenyuluoyan', cursive !important;
+.font-zh-tw {
+  font-family: 'Noto Sans CJK TC', 'Noto Sans TC', 'PingFang TC',
+    'Microsoft JhengHei', system-ui, -apple-system, sans-serif !important;
+}
+.font-en {
+  font-family: 'Noto Sans CJK TC', 'Microsoft JhengHei', system-ui,
+    -apple-system, sans-serif !important;
 }
 
 .hd-title {
-    font-weight: 700;
-    line-height: 1.2;
+  font-weight: 700;
+  line-height: 1.2;
 
-    @media (min-width: 992px) {
-        font-size: 3.5rem;
-    }
+  @media (min-width: 992px) {
+    font-size: 3.5rem;
+  }
 
-    @media (max-width: 991px) {
-        font-size: 2.5rem;
-    }
+  @media (max-width: 991px) {
+    font-size: 2.5rem;
+  }
 }
 
 // Custom Font Sizes
+.display-1 {
+  font-size: 80px;
+}
+.display-2 {
+  font-size: 48px;
+}
 h1 {
-    font-size: 60px !important;
+  font-size: 40px !important;
 }
 
 h2 {
-    font-size: 40px !important;
+  font-size: 32px !important;
 }
 
 h3 {
-    font-size: 36px !important;
+  font-size: 28px !important;
 }
 
 h4 {
-    font-size: 32px !important;
+  font-size: 24px !important;
 }
 
 h5 {
-    font-size: 28px !important;
+  font-size: 20px !important;
 }
 
 h6 {
-    font-size: 24px !important;
+  font-size: 16px !important;
 }
-
-.text-xl {
-    font-size: 20px !important;
+// en txt
+.en-1 {
+  font-size: 40px;
 }
-
-.text-md {
-    font-size: 16px !important;
+.en-2 {
+  font-size: 32px;
 }
-
-.text-sm {
-    font-size: 14px !important;
+.en-3 {
+  font-size: 28px;
 }
-
-.text-xs {
-    font-size: 12px !important;
+.en-4 {
+  font-size: 24px;
 }
-
+.en-5 {
+  font-size: 20px;
+}
+.en-6 {
+  font-size: 16px;
+}
+.caption {
+  font-size: 14px;
+}
 // 4. Radius
-.round-s {
-    border-radius: 4px !important;
+.round-sm {
+  border-radius: 8px !important;
 }
 
-.round-m {
-    border-radius: 8px !important;
-}
-
-.round-l {
-    border-radius: 12px !important;
+.round-lg {
+  border-radius: 24px !important;
 }
 
 .round-xl {
-    border-radius: 16px !important;
-}
-
-.round-full {
-    border-radius: 800px !important;
+  border-radius: 96px !important;
 }
 
 // Additional Border helpers
 .border-solid {
-    border-style: solid !important;
+  border-style: solid !important;
 }
