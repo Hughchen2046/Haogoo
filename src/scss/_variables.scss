@@ -412,28 +412,21 @@ $spacer: 1rem !default; // 1rem = 16px
 $spacers: (
   0: 0,
   1: $spacer * 0.25,
-  //4px
   2: $spacer * 0.5,
-  //8px
   3: $spacer * 1,
-  //16px
   4: $spacer * 1.5,
-  //24px
   5: $spacer * 3,
-  //48px
-  //自訂間距
-  map-merge(
-      $spacers,
-      (
-        'px10': 0.625rem,
-        // 10px
-        'px20': 1.25rem,
-        // 20px
-        'px72': 4.5rem,
-        // 72px
-        'px96': 6rem // 96px,
-      )
-    ),
+);
+
+// 2. 在括號外部進行合併
+$spacers: map-merge(
+  $spacers,
+  (
+    'px10': 0.625rem,
+    'px20': 1.25rem,
+    'px72': 4.5rem,
+    'px96': 6rem,
+  )
 ) !default;
 // scss-docs-end spacer-variables-maps
 
