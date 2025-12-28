@@ -8,10 +8,10 @@ const Guideline = () => {
       {/* Colors */}
       <section className="mb-12">
         <h2 className="mb-4">顏色 (Color)</h2>
-        <div className="mb-3 fw-bold text-gray-700">
+        <div className="mb-3 fw-bold text-gray-800">
           使用 primary, success, danger, info, warning...
         </div>
-        <div className="d-flex flex-wrap gap-3 mb-5">
+        <div className="d-flex flex-wrap gap-3 mb-5 p-12">
           {[
             {name: 'Primary', bg: 'bg-primary'},
             {name: 'Secondary', bg: 'bg-secondary'},
@@ -39,7 +39,7 @@ const Guideline = () => {
           ))}
         </div>
 
-        <div className="mb-3 fw-bold text-gray-700">
+        <div className="mb-3 fw-bold text-gray-800">
           新增使用 primary-數值, gray 數值
         </div>
         <div className="row g-4">
@@ -99,7 +99,7 @@ const Guideline = () => {
 
       {/* Typography */}
       <section className="mb-12">
-        <h2 className="mb-4">字體 (Typography)</h2>
+        <h2 className="mt-20 ">字體 (Typography)</h2>
         <div className="card shadow-sm p-4 mb-4">
           <p className="fs-5 mb-3">
             這是 <span className="font-zh-tw">中文字形</span>
@@ -111,7 +111,7 @@ const Guideline = () => {
 
         <div className="row">
           <div className="col-md-6">
-            <h5 className="text-gray-500 mb-3 text-dark">中文字體</h5>
+            <h5 className="mb-3 text-dark">中文字體</h5>
             <div className="display-1 fw-bold">Display 1</div>
             <small className="text-muted">(80px)</small>
             <div className="display-2 fw-bold">Display 2</div>
@@ -136,7 +136,7 @@ const Guideline = () => {
             </h6>
           </div>
           <div className="col-md-6">
-            <h5 className="text-gray-500 mb-3 text-dark">英文字體</h5>
+            <h5 className=" mb-3 text-dark">英文字體</h5>
             <p className="en-1 fw-light">
               fs-1 text <small className="text-muted">(40px)</small>
             </p>
@@ -166,9 +166,11 @@ const Guideline = () => {
 
       {/* Spacing */}
       <section className="mb-20">
-        <h2 className="mb-4">bs5 預設間距 (Spacing)</h2>
+        <h2 className="mb-4">自訂間距 (Spacing)</h2>
         <div className="row g-2 mb-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map((s) => (
+          {[
+            4, 8, 10, 12, 16, 20, 24, 32, 40, 48, 56, 64, 72, 80, 96, 100, 120,
+          ].map((s) => (
             <div key={`s-${s}`} className="col-auto">
               <div
                 className="bg-light border p-2 text-center rounded"
@@ -176,31 +178,9 @@ const Guideline = () => {
               >
                 <div className="fw-bold fs-5">"{s}"</div>
                 <div className="text-muted text-xs">
-                  {[4, 8, 12, 16, 24, 32, 40, 48, 56, 64, 80, 100, 120][s - 1]}
+                  {[s]}
                   px
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        {/* 自訂間距 */}
-        <h2 className="mb-4">自訂間距 </h2>
-        <div className="row g-2 mb-4">
-          {[10, 20, 72, 96].map((s) => (
-            <div key={`s-${s}`} className="col-auto">
-              {/* 務實建議：使用 p-px{s} 這種命名的 Class */}
-              <div
-                className={`bg-light border text-center rounded p-px${s}`}
-                style={{minWidth: '100px'}}
-              >
-                <div className="fw-bold fs-5">.p-px{s}</div>
-                <div className="text-muted text-xs">{s}px</div>
-
-                {/* 視覺化演示：顯示該間距的佔位區塊 */}
-                <div
-                  className="bg-primary opacity-25 mt-2 mx-auto"
-                  style={{height: '10px', width: `${s}px`}}
-                ></div>
               </div>
             </div>
           ))}
@@ -213,12 +193,21 @@ const Guideline = () => {
             可以開啟網頁檢查功能，利用元素樣式調整測試間距。
           </span>
         </div>
+
+        <div className="bg-primary-100 d-flex align-items-center">
+          <div className="bg-light round-pill p-96 m-20 custom-box">
+            <p className="en-1 fw-black">測試 Box 2</p>
+          </div>
+          <span className="text-light ms-4 display-1 fw-black">
+            可以開啟網頁檢查功能，利用元素樣式調整測試間距。
+          </span>
+        </div>
       </section>
 
       <hr className="my-10" />
 
       {/* Radius */}
-      <section className="mb-5">
+      <section className="mb-5 mt-10">
         <h2 className="mb-4">圓角 (Radius)</h2>
         <div className="d-flex flex-wrap gap-4">
           {[
@@ -226,7 +215,7 @@ const Guideline = () => {
             {name: 'round-lg', val: '24px', bg: 'bg-success'},
             {name: 'round-xl', val: '96px', bg: 'bg-danger'},
             {
-              name: 'rounded-pill',
+              name: 'round-pill',
               val: '999px',
               bg: 'bg-info',
               text: 'text-dark',

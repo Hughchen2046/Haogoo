@@ -417,21 +417,8 @@ $spacers: (
   4: $spacer * 1.5,
   5: $spacer * 3,
 );
-
-// 2. 在括號外部進行合併
-$spacers: map-merge(
-  $spacers,
-  (
-    'px10': 0.625rem,
-    'px20': 1.25rem,
-    'px72': 4.5rem,
-    'px96': 6rem,
-  )
-) !default;
 // scss-docs-end spacer-variables-maps
 
-// Position
-//
 // Define the edge positioning anchors of the position utilities.
 
 // scss-docs-start position-map
@@ -635,7 +622,7 @@ $font-weight-light: 400 !default;
 $font-weight-normal: 700 !default;
 $font-weight-medium: 500 !default;
 $font-weight-semibold: 600 !default;
-$font-weight-bold: 900 !default;
+$font-weight-bold: 700 !default;
 $font-weight-bolder: bolder !default;
 
 $font-weight-base: 700;

@@ -1,10 +1,11 @@
 @import 'bootstrap/scss/functions';
-
 @import 'variables';
 @import 'variables-dark';
-@import 'custom_utils';
 @import 'bootstrap/scss/bootstrap';
-
+@import 'custom_utils';
+.fw-black{
+  font-weight: 900;
+}
 .btn-motion {
   position: relative;
   display: inline-flex;
