@@ -37,7 +37,7 @@ Bootstrap客製化項目請到src/scss/_variables.scss && _custom_utils.scss進�
 可示化-可用npm run dev看guideline的文件內容
 
 ## Icon請使用Lucide
-https://lucide.dev/guide/
+https://lucide.dev/guide/packages/lucide-react
 
 ## 測試用程式
 test.js => 測試機- 自動註冊帳號,新增收藏清單,驗證讀取,存取別人資料

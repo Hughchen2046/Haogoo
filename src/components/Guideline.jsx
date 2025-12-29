@@ -238,8 +238,6 @@ const Guideline = () => {
               </div>
               <span className="fw-bold">round-4 => round-sm-8 => round-md-24 => round-lg-96</span>
               
-
-        
       </section>
     </div>
   );
