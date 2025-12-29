@@ -36,6 +36,9 @@ Bootstrap客製化項目請到src/scss/_variables.scss && _custom_utils.scss進�
 設計稿共用元件網頁內容為src/components/Guideline.jsx
 可示化-可用npm run dev看guideline的文件內容
 
+## Icon請使用Lucide
+https://lucide.dev/guide/
+
 ## 測試用程式
 test.js => 測試機- 自動註冊帳號,新增收藏清單,驗證讀取,存取別人資料
 test_fin01.js => 測試機- 讀取產業,計算每一檔的60日平均收盤價,再計算平均

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Guideline from './components/Guideline'
+import { Camera } from 'lucide-react';
 
 const {VITE_stocksUrl} = import.meta.env
 
