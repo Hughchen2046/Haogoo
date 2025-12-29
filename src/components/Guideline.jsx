@@ -212,13 +212,14 @@ const Guideline = () => {
         <div className="d-flex flex-wrap gap-4">
           {[
             {name: 'round-sm', val: '8px', bg: 'bg-primary'},
+            {name: 'round-md', val: '16px', bg: 'bg-secondary'},
             {name: 'round-lg', val: '24px', bg: 'bg-success'},
-            {name: 'round-xl', val: '96px', bg: 'bg-danger'},
+            {name: 'round-xl', val: '48px', bg: 'bg-warning'},
+            {name: 'round-xxl', val: '96px', bg: 'bg-info', text: 'text-dark'},
             {
               name: 'round-pill',
               val: '999px',
-              bg: 'bg-info',
-              text: 'text-dark',
+              bg: 'bg-danger',
             },
           ].map((r) => (
             <div key={r.name} className="d-flex flex-column align-items-center">
