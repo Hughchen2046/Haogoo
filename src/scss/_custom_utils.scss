@@ -30,68 +30,6 @@ $custom-spacers: (
   120: 120px,
 );
 
-// We'll generate utility classes for these
-@each $i, $v in $custom-spacers {
-  .m-#{$i} {
-    margin: $v !important;
-  }
-
-  .mt-#{$i} {
-    margin-top: $v !important;
-  }
-
-  .mb-#{$i} {
-    margin-bottom: $v !important;
-  }
-
-  .ms-#{$i} {
-    margin-left: $v !important;
-  }
-
-  .me-#{$i} {
-    margin-right: $v !important;
-  }
-
-  .my-#{$i} {
-    margin-top: $v !important;
-    margin-bottom: $v !important;
-  }
-
-  .mx-#{$i} {
-    margin-left: $v !important;
-    margin-right: $v !important;
-  }
-
-  .p-#{$i} {
-    padding: $v !important;
-  }
-
-  .pt-#{$i} {
-    padding-top: $v !important;
-  }
-
-  .pb-#{$i} {
-    padding-bottom: $v !important;
-  }
-
-  .ps-#{$i} {
-    padding-left: $v !important;
-  }
-
-  .pe-#{$i} {
-    padding-right: $v !important;
-  }
-
-  .py-#{$i} {
-    padding-top: $v !important;
-    padding-bottom: $v !important;
-  }
-
-  .px-#{$i} {
-    padding-left: $v !important;
-    padding-right: $v !important;
-  }
-}
 
 // 2. 自訂 Colors
 $black: #121212;
@@ -242,3 +180,70 @@ $utilities: map-merge($utilities,
           "pill": 999px))));
 
 @import "bootstrap/scss/utilities/api";
+
+// We'll generate utility classes for these
+@each $i, $v in $custom-spacers {
+  .m-#{$i} {
+    margin: $v !important;
+  }
+
+  .mt-#{$i} {
+    margin-top: $v !important;
+  }
+
+  .mb-#{$i} {
+    margin-bottom: $v !important;
+  }
+
+  .ms-#{$i} {
+    margin-left: $v !important;
+  }
+
+  .me-#{$i} {
+    margin-right: $v !important;
+  }
+
+  .my-#{$i} {
+    margin-top: $v !important;
+    margin-bottom: $v !important;
+  }
+
+  .mx-#{$i} {
+    margin-left: $v !important;
+    margin-right: $v !important;
+  }
+
+  .p-#{$i} {
+    padding: $v !important;
+  }
+
+  .pt-#{$i} {
+    padding-top: $v !important;
+  }
+
+  .pb-#{$i} {
+    padding-bottom: $v !important;
+  }
+
+  .ps-#{$i} {
+    padding-left: $v !important;
+  }
+
+  .pe-#{$i} {
+    padding-right: $v !important;
+  }
+
+  .py-#{$i} {
+    padding-top: $v !important;
+    padding-bottom: $v !important;
+  }
+
+  .px-#{$i} {
+    padding-left: $v !important;
+    padding-right: $v !important;
+  }
+
+  .gap-#{$i} {
+    gap: $v !important;
+  }
+}

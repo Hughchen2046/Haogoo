@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Guideline from './components/Guideline'
+import Login from './components/Login'
 import { Camera } from 'lucide-react';
 
 const {VITE_stocksUrl} = import.meta.env
@@ -23,6 +24,7 @@ function App() {
         <Guideline />
       ) : (
         <div className="row">
+          <Login/>
 
         </div>
       )}
