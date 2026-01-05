@@ -1,0 +1,135 @@
+$primary-color: #17312C;
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+}
+.etfsEngtitle {
+  font-size: clamp(32px, 8vw, 80px);
+  font-weight: 900;
+  font-family: 'Noto Sans', sans-serif;
+  color: #fff;
+  line-height: 1.1;
+}
+
+
+.etfsbox {
+  background-color: $primary-color;
+  display: flex; 
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  
+  width: 100%;
+  max-width: 1296px;
+  min-height: 320px;
+
+  padding: 2rem;
+  margin: 0 auto;
+
+  /* 多個陰影疊加寫法 ✅ */
+  box-shadow: 
+    10px 15px rgba(31, 101, 52, 0.587),
+    30px 35px 0px rgba(20, 94, 31, 0.292);
+}
+
+
+@media (min-width: 992px) {
+  .etfsbox {
+    height: 480px;
+    
+  }
+}
+
+.etfstitle {
+  color: white;
+  font-size: clamp(18px, 3vw, 24px);
+}
+
+.etfsbtn{
+  font-family: 'Noto Sans', sans-serif;
+  color: $primary-color;
+  width: 144px;
+  height: 44px;
+  font-weight: 700;
+  
+} 
+.etfs-content {
+  position: relative;       // 讓子元素絕對定位生效
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+// 共用陰影設定
+.etf-shadow {
+  position: absolute;
+  border-radius: 50%;       // 長圓用 border-radius 50%
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+// 深色長圓
+.etf-shadow-dark {
+  width: 200px;             // 長
+  height: 60px;             // 高度較小 → 長橢圓
+  background-color: rgba(0, 0, 0, 0.2);
+  bottom: 0;
+  left: 50%;                // 水平置中
+}
+
+// 淺色長圓，微微偏下
+.etf-shadow-light {
+  width: 250px;
+  height: 70px;
+  background-color: rgba(0, 0, 0, 0.1);
+  bottom: -10px;
+  left: 50%;
+}
+
+// 手機版自適應
+@media (max-width: 576px) {
+  .etf-shadow-dark {
+    width: 120px;
+    height: 40px;
+    bottom: 0;
+    left: 50%;
+  }
+  .etf-shadow-light {
+    width: 150px;
+    height: 50px;
+    bottom: -5px;
+    left: 50%;
+  }
+}
+
+.etfsTag{
+  background-color: #fff;
+  color: $primary-color;
+   opacity: 1;                      // 初始半透明
+  transform: translateY(0px) rotate(0deg); // 從上方開始
+  --drop-y:10px;                  // 預設掉落高度
+  --tilt-angle: 0deg;              // 預設傾斜角度
+  --offset-y: 0px;                 // 預設疊落偏移
+}
+
+.etfsTag.fall-tilt-stack {
+  animation: fallTiltStack 0.8s ease-out forwards;
+}
+
+@keyframes fallTiltStack {
+  0% {
+    opacity: 0.5;
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(calc(var(--drop-y) * 0.8)) rotate(calc(var(--tilt-angle) * 1.2));
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(calc(var(--drop-y) * 1.05)) rotate(calc(var(--tilt-angle) * 0.9));
+  }
+  100% {
+    transform: translateY(calc(var(--drop-y) + var(--offset-y))) rotate(var(--tilt-angle));
+    opacity: 1;
+  }
+}

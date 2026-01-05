@@ -1,0 +1,97 @@
+$primary-color: #17312C;
+
+
+.industryEngTitle{
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 120%;
+    color: $primary-color;
+}
+
+.card {
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column; // 內容垂直排列
+  height: 255px;
+}
+
+.closePrice{
+    display: flex;
+    justify-content: end;
+}
+
+.industryRate{
+    display: flex;
+    justify-content: end;
+   
+}
+
+.companyName{
+    position:absolute;
+}
+
+.industryTag{
+    position:absolute;
+}
+
+.industryName{
+    padding-right: 10px;
+    
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+}
+
+.industryIcon {
+  margin-left: auto; /* ⭐ icon 推到最右 */
+}
+
+.industrySummary {
+  margin-top: 24px;          /* 原本 mt-5 */
+  padding: 16px;
+  background-color: #f5f5f5;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;                  /* 取代 pt-2 / pt-4 */
+}
+.industrySummary .industryTag {
+  font-size: 24px;           /* 原本 fs-6 */
+  color: #666666;
+}
+
+.industryContent {
+  padding: 0 16px;   /* ⭐ 左右往內縮 */
+}
+
+.cardRow {
+  display: flex;
+  gap: 16px;          // 卡片間距
+  flex-wrap: nowrap;  // ❗不換行 → 一直往右
+  align-items: stretch;
+  overflow-x: auto;
+}
+
+.cardFooter{
+  width:416px;
+}
+
+.industryIconleft{
+   display: flex;
+   border-radius: 1px Black;
+
+}
+.industryIconright{
+   display: flex;
+   border-radius: 1px Black;
+
+}
+.cardDown{
+  display: flex;              /* 父容器 flex，一行排列 */
+  align-items: center;        /* 垂直置中 */
+  justify-content: space-between; /* 左右拉開 */
+}
