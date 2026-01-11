@@ -1,6 +1,5 @@
-import Logo_DK from '../assets/Logo DK.png';
-import Haogoo_DK from '../assets/Haogoo_DK.png';
 import Google_Icon from '../assets/Google_Icon.png';
+import Logo from '../components/Logo';
 import ButtonOutline from './ButtonOutline';
 import ButtonPrimary from './ButtonPrimary';
 
@@ -29,10 +28,9 @@ export default function Login() {
                 aria-label="Close"
               ></button>
             </div>
-            <div className="modal-body text-center">
-              <img src={Logo_DK} className="me-4  mt-72 icon-40" alt="Logo_dark" />
-              <img src={Haogoo_DK} className="mt-72" alt="Haogoo_dark" />
-              <h3 className="font-zh-tw mt-32 mb-32">立即登入，解鎖完整功能</h3>
+            <div className="modal-body text-center font-zh-tw">
+              <Logo className="header-logo mx-auto"></Logo>
+              <h3 className=" my-32 my-md-48">立即登入，解鎖完整功能</h3>
               <div className="d-flex flex-column gap-24 align-items-center">
                 <ButtonOutline
                   type="button"
@@ -71,7 +69,7 @@ export default function Login() {
                 </ButtonPrimary>
                 <div className="d-flex">
                   <p>沒有帳號？</p>
-                  <a href="#" style={{ color: '#0d6efd' }}>
+                  <a href="#" className="link-primary">
                     立即註冊
                   </a>
                 </div>

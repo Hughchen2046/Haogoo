@@ -2,6 +2,9 @@ import React, { useRef, useState } from 'react';
 import FBIcon from '../assets/FB Icon.png';
 import IGIcon from '../assets/IG Icon.png';
 import LineIcon from '../assets/LINE Icon.png';
+import Rect6 from '../assets/Rectangle 6.png';
+import Rect7 from '../assets/Rectangle 7.png';
+import Rect8 from '../assets/Rectangle 8.png';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -10,7 +13,7 @@ import { Pagination } from 'swiper/modules';
 const topics = [
   {
     category: '所有主題',
-    backgroundImgUrl: '/src/assets/Rectangle 6.png',
+    backgroundImgUrl: Rect6,
     title: 'All Topics',
     trend1: '台股盤勢',
     trend1Link: '#',
@@ -23,7 +26,7 @@ const topics = [
   },
   {
     category: '即時熱門話題',
-    backgroundImgUrl: '/src/assets/Rectangle 7.png',
+    backgroundImgUrl: Rect7,
     title: 'Trending Now',
     trend1: '黃金走勢',
     trend1Link: '#',
@@ -36,7 +39,7 @@ const topics = [
   },
   {
     category: '觀點專區',
-    backgroundImgUrl: '/src/assets/Rectangle 8.png',
+    backgroundImgUrl: Rect8,
     title: 'Insights',
     trend1: '名家觀點',
     trend1Link: '#',

@@ -350,3 +350,15 @@ $utilities: map-merge(
     transform: scale(1.1);
   }
 }
+
+.header-logo {
+  width: 153px;
+  height: 40px;
+  color: #000000;
+  display: block;
+  @media (min-width: 768px) {
+    width: 247px;
+    height: 64px;
+    color: #17312c;
+  }
+}
