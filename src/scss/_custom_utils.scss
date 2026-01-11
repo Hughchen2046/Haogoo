@@ -1,8 +1,8 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/maps";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/utilities";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
 
 // Import handwriting font
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+TC:wght@100..900&display=swap');
@@ -11,6 +11,7 @@
 // 1. Spacing (Extending Bootstrap spacers)
 // We defined 1-6 in Bootstrap usually, but here we want 1-13 with specific pixels.
 $custom-spacers: (
+  0: 0px,
   4: 4px,
   8: 8px,
   10: 10px,
@@ -30,11 +31,10 @@ $custom-spacers: (
   120: 120px,
 );
 
-
 // 2. 自訂 Colors
 $black: #121212;
 $white: #ffffff;
-$primary: #17312c;
+$primary: #2fa58d;
 $green: #56b77e;
 $red: #f2735b;
 $bgc: #fafafa;
@@ -58,6 +58,7 @@ $design-colors: (
   'gray-700': rgba(#121212, 0.3),
   'gray-800': rgba(#121212, 0.6),
   'gray-900': #121212,
+  'bgc': $bgc,
 );
 
 @each $name, $col in $design-colors {
@@ -76,13 +77,12 @@ $design-colors: (
 
 // 3. Typography
 .font-zh-tw {
-  font-family: 'Noto Sans CJK TC', 'Noto Sans TC', 'PingFang TC',
-    'Microsoft JhengHei', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, -apple-system,
+    sans-serif !important;
 }
 
 .font-en {
-  font-family: 'Noto Sans CJK TC', 'Microsoft JhengHei', system-ui,
-    -apple-system, sans-serif !important;
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', system-ui, -apple-system, sans-serif !important;
 }
 
 .hd-title {
@@ -98,68 +98,63 @@ $design-colors: (
   }
 }
 
-// Custom Font Sizes
-.display-1 {
-  font-size: 80px;
-}
+// Custom Font Sizes Map
+$header-sizes: (
+  'display-1': 80px,
+  'display-2': 48px,
+  'h1': 40px,
+  'h2': 32px,
+  'h3': 28px,
+  'h4': 24px,
+  'h5': 20px,
+  'h6': 16px,
+  'en-1': 40px,
+  'en-2': 32px,
+  'en-3': 28px,
+  'en-4': 24px,
+  'en-5': 20px,
+  'en-6': 16px,
+  'caption': 14px,
+);
 
+.display-1,
 .display-2 {
-  font-size: 48px;
+  font-weight: 900;
+  line-height: 1.2;
 }
 
+// base tag styles
 h1 {
-  font-size: 40px !important;
+  font-size: map-get($header-sizes, 'h1') !important;
 }
-
 h2 {
-  font-size: 32px !important;
+  font-size: map-get($header-sizes, 'h2') !important;
 }
-
 h3 {
-  font-size: 28px !important;
+  font-size: map-get($header-sizes, 'h3') !important;
 }
-
 h4 {
-  font-size: 24px !important;
+  font-size: map-get($header-sizes, 'h4') !important;
 }
-
 h5 {
-  font-size: 20px !important;
+  font-size: map-get($header-sizes, 'h5') !important;
 }
-
 h6 {
-  font-size: 16px !important;
+  font-size: map-get($header-sizes, 'h6') !important;
 }
 
-// en txt
-.en-1 {
-  font-size: 40px;
-}
+// Generate responsive typography classes
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 
-.en-2 {
-  font-size: 32px;
+    @each $name, $size in $header-sizes {
+      .#{$name}#{$infix} {
+        font-size: $size !important;
+      }
+    }
+  }
 }
-
-.en-3 {
-  font-size: 28px;
-}
-
-.en-4 {
-  font-size: 24px;
-}
-
-.en-5 {
-  font-size: 20px;
-}
-
-.en-6 {
-  font-size: 16px;
-}
-
-.caption {
-  font-size: 14px;
-}
-
 
 // Additional Border helpers
 .border-solid {
@@ -167,83 +162,191 @@ h6 {
 }
 
 // 4. 自定義圓角尺寸
-$utilities: map-merge($utilities,
-    ("custom-radius": (property: border-radius,
-        responsive: true, // 設為 true 才會產生 -sm, -md, -lg, -xl 等後綴
-        class: round, // 產出的 class 前綴，例如 .round-8
-        values: ("4": 4px,
-          "8": 8px,
-          "24": 24px,
-          "36": 36px,
-          "48": 48px,
-          "96": 96px,
-          "pill": 999px))));
+$utilities: map-merge(
+  $utilities,
+  (
+    'custom-radius': (
+      property: border-radius,
+      responsive: true,
+      // 設為 true 才會產生 -sm, -md, -lg, -xl 等後綴
+      class: round,
+      // 產出的 class 前綴，例如 .round-8
+      values:
+        (
+          '0': 0px,
+          '4': 4px,
+          '8': 8px,
+          '24': 24px,
+          '36': 36px,
+          '48': 48px,
+          '96': 96px,
+          'pill': 999px,
+        ),
+    ),
+  )
+);
 
-@import "bootstrap/scss/utilities/api";
+@import 'bootstrap/scss/utilities/api';
 
-// We'll generate utility classes for these
-@each $i, $v in $custom-spacers {
-  .m-#{$i} {
-    margin: $v !important;
+// We'll generate utility classes for these, including responsive variants
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $i, $v in $custom-spacers {
+      .m#{$infix}-#{$i} {
+        margin: $v !important;
+      }
+
+      .mt#{$infix}-#{$i} {
+        margin-top: $v !important;
+      }
+
+      .mb#{$infix}-#{$i} {
+        margin-bottom: $v !important;
+      }
+
+      .ms#{$infix}-#{$i} {
+        margin-left: $v !important;
+      }
+
+      .me#{$infix}-#{$i} {
+        margin-right: $v !important;
+      }
+
+      .my#{$infix}-#{$i} {
+        margin-top: $v !important;
+        margin-bottom: $v !important;
+      }
+
+      .mx#{$infix}-#{$i} {
+        margin-left: $v !important;
+        margin-right: $v !important;
+      }
+
+      .p#{$infix}-#{$i} {
+        padding: $v !important;
+      }
+
+      .pt#{$infix}-#{$i} {
+        padding-top: $v !important;
+      }
+
+      .pb#{$infix}-#{$i} {
+        padding-bottom: $v !important;
+      }
+
+      .ps#{$infix}-#{$i} {
+        padding-left: $v !important;
+      }
+
+      .pe#{$infix}-#{$i} {
+        padding-right: $v !important;
+      }
+
+      .py#{$infix}-#{$i} {
+        padding-top: $v !important;
+        padding-bottom: $v !important;
+      }
+
+      .px#{$infix}-#{$i} {
+        padding-left: $v !important;
+        padding-right: $v !important;
+      }
+
+      .gap#{$infix}-#{$i} {
+        gap: $v !important;
+      }
+
+      .round-top#{$infix}-#{$i} {
+        border-top-left-radius: $v !important;
+        border-top-right-radius: $v !important;
+      }
+    }
+  }
+}
+
+// 5. Components
+// Button Outline with Arrow Hover
+.btn-arrow-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: 1px solid $black;
+  color: $black;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+
+  .arrow-icon {
+    max-width: 0;
+    opacity: 0;
+    margin-left: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 1em; // Scales with font size
+    object-fit: contain;
   }
 
-  .mt-#{$i} {
-    margin-top: $v !important;
+  &:hover {
+    .arrow-icon {
+      max-width: 32px;
+      opacity: 1;
+      margin-left: 8px;
+    }
   }
 
-  .mb-#{$i} {
-    margin-bottom: $v !important;
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.btn-arrow-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $primary;
+  color: $white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+
+  .arrow-icon {
+    max-width: 0;
+    opacity: 0;
+    margin-left: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 1em; // Scales with font size
+    object-fit: contain;
   }
 
-  .ms-#{$i} {
-    margin-left: $v !important;
+  &:hover {
+    .arrow-icon {
+      max-width: 32px;
+      opacity: 1;
+      margin-left: 8px;
+    }
   }
 
-  .me-#{$i} {
-    margin-right: $v !important;
+  &:active {
+    transform: scale(0.98);
   }
+}
 
-  .my-#{$i} {
-    margin-top: $v !important;
-    margin-bottom: $v !important;
-  }
+.icon-24 {
+  width: 24px;
+  height: 24px;
+}
+.icon-40 {
+  width: 40px;
+  height: 40px;
+}
 
-  .mx-#{$i} {
-    margin-left: $v !important;
-    margin-right: $v !important;
-  }
-
-  .p-#{$i} {
-    padding: $v !important;
-  }
-
-  .pt-#{$i} {
-    padding-top: $v !important;
-  }
-
-  .pb-#{$i} {
-    padding-bottom: $v !important;
-  }
-
-  .ps-#{$i} {
-    padding-left: $v !important;
-  }
-
-  .pe-#{$i} {
-    padding-right: $v !important;
-  }
-
-  .py-#{$i} {
-    padding-top: $v !important;
-    padding-bottom: $v !important;
-  }
-
-  .px-#{$i} {
-    padding-left: $v !important;
-    padding-right: $v !important;
-  }
-
-  .gap-#{$i} {
-    gap: $v !important;
+.icon-hover {
+  &:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
   }
 }

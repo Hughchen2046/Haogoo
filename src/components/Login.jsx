@@ -1,29 +1,26 @@
 import Logo_DK from '../assets/Logo DK.png';
 import Haogoo_DK from '../assets/Haogoo_DK.png';
 import Google_Icon from '../assets/Google_Icon.png';
+import ButtonOutline from './ButtonOutline';
+import ButtonPrimary from './ButtonPrimary';
 
 export default function Login() {
   return (
     <div className="col">
-      <button
-        type="button"
-        className="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#loginModal"
-      >
-        Launch demo modal
-      </button>
+      <ButtonOutline className="py-10 px-32" data-bs-toggle="modal" data-bs-target="#loginModal">
+        登入
+      </ButtonOutline>
 
       <div
-        className="modal fade"
+        className="modal fade "
         id="loginModal"
         tabIndex="-1"
         aria-labelledby="loginLabel"
         aria-hidden="true"
       >
         <div className="modal-dialog modal-fullscreen-sm-down">
-          <div className="modal-content">
-            <div className="modal-header border-0">
+          <div className="modal-content bg-bgc">
+            <div className="modal-header border-0 ">
               <h1 className="modal-title fs-5" id="loginLabel"></h1>
               <button
                 type="button"
@@ -32,27 +29,18 @@ export default function Login() {
                 aria-label="Close"
               ></button>
             </div>
-            <div className="modal-body mt-72 text-center">
-              <img
-                src={Logo_DK}
-                style={{ width: '40px', height: '40px' }}
-                className="me-4"
-                alt="Logo_dark"
-              />
-              <img src={Haogoo_DK} alt="Haogoo_dark" />
+            <div className="modal-body text-center">
+              <img src={Logo_DK} className="me-4  mt-72 icon-40" alt="Logo_dark" />
+              <img src={Haogoo_DK} className="mt-72" alt="Haogoo_dark" />
               <h3 className="font-zh-tw mt-32 mb-32">立即登入，解鎖完整功能</h3>
               <div className="d-flex flex-column gap-24 align-items-center">
-                <button
+                <ButtonOutline
                   type="button"
-                  className="btn btn-light w-100 d-flex justify-content-center align-items-center gap-8"
+                  className="d-flex justify-content-center align-items-center py-8 px-16"
                 >
-                  <img
-                    src={Google_Icon}
-                    style={{ width: '24px', height: '24px' }}
-                    alt="Google-icon"
-                  />
+                  <img src={Google_Icon} className="me-8 icon-24" alt="Google-icon" />
                   <h6 className="m-0">使用 Google 帳號快速登入</h6>
-                </button>
+                </ButtonOutline>
                 <p className="caption">或</p>
                 <div className="w-100">
                   <h6 className="text-start mb-8">帳號</h6>
@@ -78,11 +66,11 @@ export default function Login() {
                     <label htmlFor="passwordInput">請輸入密碼</label>
                   </div>
                 </div>
-                <button type="button" className="w-100 btn btn-primary py-12 px-40 round-8">
+                <ButtonPrimary type="button" className="py-12 px-40 round-8">
                   登入
-                </button>
+                </ButtonPrimary>
                 <div className="d-flex">
-                  <p>沒有帳號?</p>
+                  <p>沒有帳號？</p>
                   <a href="#" style={{ color: '#0d6efd' }}>
                     立即註冊
                   </a>
