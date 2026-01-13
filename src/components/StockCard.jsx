@@ -1,5 +1,3 @@
-import '../scss/stockCard.scss';
-import '../scss/all.scss';
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ArrowDown, ArrowUp, ChevronRight } from 'lucide-react';
 import axios from 'axios';

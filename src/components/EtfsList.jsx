@@ -1,59 +1,56 @@
 import React, { useEffect, useRef } from 'react';
-import '../scss/all.scss';
-import '../scss/EtfsList.scss';
 
 export default function EtfsList() {
   const etfsBoxRef = useRef(null);
   const tagContainerRef = useRef(null);
 
   useEffect(() => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const tags = tagContainerRef.current.querySelectorAll('.etfsTag');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const tags = tagContainerRef.current.querySelectorAll('.etfsTag');
 
-          tags.forEach((tag, index) => {
-            const delay = index * 0.1;
+            tags.forEach((tag, index) => {
+              const delay = index * 0.1;
 
-            // 隨機下墜高度 10~30px (小幅墜落)
-            const dropY = 50+ Math.random() * 50;
-            tag.style.setProperty('--drop-y', `${dropY}px`);
+              // 隨機下墜高度 10~30px (小幅墜落)
+              const dropY = 50 + Math.random() * 50;
+              tag.style.setProperty('--drop-y', `${dropY}px`);
 
-            // 隨機傾斜角度 -15~15deg
-            const angle = (Math.random() - 0.5) * 30;
-            tag.style.setProperty('--tilt-angle', `${angle}deg`);
+              // 隨機傾斜角度 -15~15deg
+              const angle = (Math.random() - 0.5) * 30;
+              tag.style.setProperty('--tilt-angle', `${angle}deg`);
 
-            // 微疊落
-            const offsetY = Math.random() * 5;
-            tag.style.setProperty('--offset-y', `${offsetY}px`);
+              // 微疊落
+              const offsetY = Math.random() * 5;
+              tag.style.setProperty('--offset-y', `${offsetY}px`);
 
-            setTimeout(() => {
-              tag.classList.add('fall-tilt-stack');
-            }, delay * 1000);
-          });
+              setTimeout(() => {
+                tag.classList.add('fall-tilt-stack');
+              }, delay * 1000);
+            });
 
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.3 }
-  );
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
 
-  if (etfsBoxRef.current) observer.observe(etfsBoxRef.current);
+    if (etfsBoxRef.current) observer.observe(etfsBoxRef.current);
 
-  return () => observer.disconnect();
-}, []);
-
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className='etfsbox round-96 position-relative p-5' ref={etfsBoxRef}>
+    <div className="etfsbox round-96 position-relative p-5" ref={etfsBoxRef}>
       {/* 左側內容 */}
       <div className="etfs-content">
         <section className="etfstitle fs-2 pt-6 px-4">熱門ETF</section>
-        <span className='etfsEngtitle p-3'>Popular ETFs</span> 
-        <button className='etfsbtn bt-btn primarly-light round-8 fs-6 mt-3'>查看更多</button>
-      </div> 
+        <span className="etfsEngtitle p-3">Popular ETFs</span>
+        <button className="etfsbtn bt-btn primarly-light round-8 fs-6 mt-3">查看更多</button>
+      </div>
 
       {/* 右側標籤區塊 */}
       <div

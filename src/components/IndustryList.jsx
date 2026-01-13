@@ -1,5 +1,3 @@
-import '../scss/industryList.scss';
-import '../scss/all.scss';
 import React from 'react';
 import { TrendingUp, ChevronLeft, ArrowDown, ArrowUp, ChevronRight } from 'lucide-react';
 import axios from 'axios';
