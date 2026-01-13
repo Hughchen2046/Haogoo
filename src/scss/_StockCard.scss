@@ -1,85 +1,158 @@
 $primary-color: #17312C;
 
-
 .stockBox {
   max-width: 1920px;
-  min-height: 825px;
+  min-height: auto;
   margin: 0 auto;
+  display: flex;
   flex-direction: column;
-  display: inline;
+  align-items: center;
 }
 
+.stockTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: $primary-color;
+  margin-bottom: 0.5rem;
+}
 
-
-.stockEngtitle{
+.stockEngtitle {
   font-size: 80px !important;
   font-weight: 900 !important;
   font-family: 'Noto Sans', sans-serif;
   color: $primary-color;
-
-
+  margin: 0;
 }
 
-.stockCard{
+.stockCard {
+  background-color: #fff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  padding: 16px;
   display: flex;
-  justify-content: space-between; /* 左右拉開 */
-  align-items: center;            /* 左右垂直置中 */
-  max-width: 636px !important;
+  flex-direction: column;  // 手機版上下堆
+  gap: 12px;
   width: 100%;
-  height: 173px !important;
-  padding:16px;
+  max-width: 636px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;           // 桌機左右排列
+    justify-content: space-between;
+    align-items: center;
+    height: 173px;
+  }
 }
 
-.stockRight {
-  display: flex;              /* 開啟 Flex */
-  flex-direction: column;     /* 內部上下排列 */
-  align-items: flex-end;      /* 靠右對齊 */
-  justify-content: center;    /* 垂直置中，如果父容器高 > 內容 */
-  gap: 4px;                   /* 上下間距 */
-  color : red;
-}
-
+/* 左側：icon + 股票名稱 + 上市 */
 .stockLeft {
-  flex-direction: row;  /* 上下排列 */
-  gap: 10px;               /* 上下間距 */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-grow: 1;
+  min-width: 0;
+
+  .stockIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &.up { background: #ffe5e5; color: #ff0000; }
+    &.down { background: #e5f4ea; color: #00aa00; }
+    &.flat { background: #eeeeee; color: #666666; }
+  }
+
+  .stockName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    font-size: 28px;
+  }
+
+  .stockSymbol {
+    background-color: #f5f5f5;
+    color: #888;
+    border-radius: 4px;
+    padding: 2px 6px;
+
+    /* 手機版靠右 */
+    margin-left: auto;
+    text-align: right;
+
+    @media (min-width: 768px) {
+      /* 桌機版名稱後方 */
+      margin-left: 8px;
+      text-align: left;
+    }
+  }
 }
 
-.stockSymbol {
-  color: #888;
-  background: #f5f5f5;
+/* 右側：價格 + 漲跌 */
+.stockRight {
+  display: flex;
+  width: 100%;
+  margin-top: 8px;
 
+  /* 手機版：水平排列，價格左、漲跌右 */
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 
+  .stockPrice {
+    font-size: 2.2rem;
+    text-align: left;
+  }
+
+  .stockChange {
+    font-size: 1rem;
+    text-align: right;
+    margin-left: 0;
+  }
+
+  @media (min-width: 768px) {
+    /* 桌機版：垂直排列靠右 */
+    width: 120px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 0;
+
+    .stockPrice {
+      text-align: right;
+    }
+
+    .stockChange {
+      text-align: right;
+    }
+  }
 }
 
-.stockName {
-  margin-right: 1px; /* 往左偏移 */
+/* 分頁按鈕 */
+.stockPage1,
+.stockPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
 }
 
-.stockIcon{
-  background-color: rgba(255, 0, 0, 0.1);
-  width: 48px;
-  height: 48px;
-  display: flex;             /* 開啟 Flex */
-  justify-content: center;   /* 水平置中 */
-  align-items: center;       /* 垂直置中 */
-
-  border-radius: 8px;        /* 可選：圓角 */
-}
-
-.stockPage1{
+.stockPage1 {
   background-color: black;
-  color: #FFFFFF;
-  display: flex;
-  width: 40px;
-  height: 40px; 
+  color: #fff;
 }
 
-.stockPage{
-  background-color: rgb(255, 255, 255);
-  color: #000000;
-  display: flex;
-  width: 40px;
-  height: 40px; 
-  border: solid 1px #12121227;
+.stockPage {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #12121227;
+}
+
+.stockSwiper {
+  width: 100%;
+  padding: 16px 0;
 }

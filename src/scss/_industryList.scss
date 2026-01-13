@@ -1,97 +1,147 @@
-$primary-color: #17312C;
+  $primary-color: #17312C;
 
-
-.industryEngTitle{
+  /* 大標題 */
+  .industryEngTitle {
     font-size: 80px;
     font-weight: 900;
     line-height: 120%;
     color: $primary-color;
-}
+  }
 
-.card {
-  overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column; // 內容垂直排列
-  height: 255px;
-}
-
-.closePrice{
+  /* 卡片 */
+  .card {
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     display: flex;
-    justify-content: end;
-}
+    flex-direction: column; // 內容垂直排列
+    height: 255px;
+    position: relative;
+  }
 
-.industryRate{
+
+  
+
+  /* 卡片 header */
+  .cardHeader {
     display: flex;
-    justify-content: end;
-   
-}
+    align-items: center;
+    justify-content: space-between;
+  }
 
-.companyName{
-    position:absolute;
-}
+  .industryIcon {
+    margin-left: auto;
+  }
 
-.industryTag{
-    position:absolute;
-}
-
-.industryName{
-    padding-right: 10px;
-    
-}
-
-.cardHeader {
-  display: flex;
-  align-items: center;
-}
-
-.industryIcon {
-  margin-left: auto; /* ⭐ icon 推到最右 */
-}
-
+  /* 卡片內容 */
 .industrySummary {
-  margin-top: 24px;          /* 原本 mt-5 */
-  padding: 16px;
-  background-color: #f5f5f5;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;                  /* 取代 pt-2 / pt-4 */
+  display: flex;                // 水平排列
+  justify-content: space-between; // 左右對齊
+  align-items: center;          // 垂直置中
+  padding: 0 16px;              // 左右內邊距
+  margin-top: auto;             // 推到卡片底部
 }
+
+
+  .industryContent {
+    padding: 0 16px;
+  }
+
+  /* 垂直排列卡片的 Row */
+  .cardRow {
+    display: flex;
+    gap: 16px;          // 卡片間距
+    flex-wrap: nowrap;   // 不換行
+    align-items: stretch;
+    overflow-x: auto;
+    padding-bottom: 16px; // 避免手機板被遮住
+  }
+
+
+  /* 股票價格與漲跌百分比 */
+  .closePrice {
+    font-weight: bold;
+    text-align: right;
+    padding-right: 15px;
+    padding-bottom: 10px;
+  }
+
+  .industryRate {
+    font-weight: bold;
+    text-align: right;
+
+    &.up {
+      color: green;
+    }
+    &.down {
+      color: red;
+    }
+  }
+
+  /* 卡片下方排列 stock price + change */
+  .cardDown {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Swiper */
+  .industrySwiper {
+    padding-bottom: 40px; // 給 pagination 空間
+  }
+
+  .swiper-pagination {
+    bottom: 0 !important;
+  }
+
+  /* 手機板 */
+  @media (max-width: 768px) {
+    .cardRow {
+      flex-direction: column;  // 一行一張卡片
+      gap: 16px;
+    }
+
+    .card {
+      width: 90%; // 卡片占手機屏幕大部分寬度
+    }
+
+    .closePrice, .industryRate {
+      text-align: right;
+    }
+
+    .cardFooter {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+  }
+
+ /* 卡片下半部，灰色底完全放大 */
+.industrySummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;       // 灰色底
+  padding: 8px 16px;               // 內容內邊距，上下8px，左右16px
+  margin-top: auto;                // 推到底部
+  width: 100%;                     // 撐滿卡片寬度
+  box-sizing: border-box;          // 內邊距不影響寬度
+  border-bottom-left-radius: 24px; // 圓角保持卡片一致
+  border-bottom-right-radius: 24px;
+}
+
 .industrySummary .industryTag {
-  font-size: 24px;           /* 原本 fs-6 */
-  color: #666666;
+  font-size: 0.875rem;
+  color: #666;
+  text-align: left;
 }
 
-.industryContent {
-  padding: 0 16px;   /* ⭐ 左右往內縮 */
+.industrySummary .industryRate {
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: right;
 }
 
-.cardRow {
-  display: flex;
-  gap: 16px;          // 卡片間距
-  flex-wrap: nowrap;  // ❗不換行 → 一直往右
-  align-items: stretch;
-  overflow-x: auto;
-}
-
-.cardFooter{
-  width:416px;
-}
-
-.industryIconleft{
-   display: flex;
-   border-radius: 1px Black;
-
-}
-.industryIconright{
-   display: flex;
-   border-radius: 1px Black;
-
-}
-.cardDown{
-  display: flex;              /* 父容器 flex，一行排列 */
-  align-items: center;        /* 垂直置中 */
-  justify-content: space-between; /* 左右拉開 */
+.companyRow{
+  padding-bottom: 10px;
 }
