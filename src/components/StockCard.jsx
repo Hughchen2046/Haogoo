@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ArrowDown, ArrowUp, ChevronRight } from 'lucide-react';
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import axios from 'axios';
 
-export default function StockCard({ articleName }) {
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Grid, Pagination } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/grid';
+import 'swiper/css/pagination';
+
+export default function StockCard() {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 設定網頁標題
-  useEffect(() => {
-    document.title = articleName || 'Haogoo 好股';
-  }, [articleName]);
-
-  // 從 db.json 讀取資料
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('/db.json'); // db.json 放在 public 資料夾
-        setStocks(res.data); // db.json 是一個陣列
-        console.log(res.data.prices[0].symbolId);
+        const res = await axios.get(
+          'http://localhost:3000/prices?_expand=symbol&_sort=date&_order=desc&_limit=12'
+        );
+        setStocks(res.data);
       } catch (error) {
         console.error('讀取資料失敗', error);
       } finally {
@@ -27,48 +29,87 @@ export default function StockCard({ articleName }) {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <div>資料載入中...</div>;
-  }
+  if (loading) return <div>資料載入中...</div>;
 
   return (
     <>
-      <section className="stockBox  ">
-        <span className="stockTitle fs-2 ">熱門個股</span>
-        <p className="stockEngtitle">Popular Stocks</p>
-      </section>
+      <span className="stockTitle fs-2">熱門個股</span>
+      <p className="stockEngtitle">Popular Stocks</p>
 
-      <div className="row g-4">
-        {/* 第一張卡片 */}
-        <div className="col-6">
-          <div className="stockCard round-24">
-            <div className="stockLeft d-flex align-items-center">
-              <div className="stockIcon">
-                <ArrowUp color="#ff0000" />
-              </div>
-              <div className="stockName fs-3">福茂科</div>
-              <div className="stockSymbol round-4 fs-6 p-1">8131 上市</div>
-            </div>
-            <div className="stockRight pe-5">
-              <div className="stockPrice fs-1">45.25</div>
-              <div className="stockChange">+0.75 (+1.69%)</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* 外層容器保留 pagination 空間 */}
+      <div className="swiperContainer" style={{ position: 'relative' }}>
+        <Swiper
+          modules={[Grid, Pagination]}
+          spaceBetween={16}
+          pagination={{ clickable: true }}
+          slidesPerView={1}
+          grid={{ rows: 4, fill: 'row' }}
+          breakpoints={{
+            768: {
+              slidesPerView: 2,
+              grid: { rows: 2, fill: 'row' },
+              allowTouchMove: true,
+            },
+          }}
+          className="stockSwiper"
+        >
+          {stocks.map((stock) => {
+            const changePct = stock.dailyChangePct ?? 0;
+            const totalPct = stock.totalChangePct ?? 0;
 
-      <div className="d-flex justify-content-start align-items-start gap-2 mt-4">
-        <div className="align-items-center mt-2">
-          <ChevronLeft color="#d1d1d1 " />
-        </div>
-        <div className="stockPage1 round-8 d-flex justify-content-center align-items-center">1</div>
-        <div className="stockPage round-8 d-flex justify-content-center align-items-center">2</div>
-        <div className="stockPage round-8 d-flex justify-content-center align-items-center">3</div>
-        <div className="stockPage round-8 d-flex justify-content-center align-items-center">4</div>
-        <div className="stockPage round-8 d-flex justify-content-center align-items-center">5</div>
-        <div className="align-items-center mt-2">
-          <ChevronRight color="#4d4a4aff " />
-        </div>
+            let trend = 'flat';
+            if (changePct > 0) trend = 'up';
+            else if (changePct < 0) trend = 'down';
+
+            const trendColor =
+              trend === 'up'
+                ? 'text-danger'
+                : trend === 'down'
+                ? 'text-success'
+                : 'text-secondary';
+
+            return (
+              <SwiperSlide key={stock.id}>
+                <div className="stockCard">
+                  <div className="stockLeft">
+                    <div className={`stockIcon ${trend}`}>
+                      {trend === 'up' && <ArrowUp size={18} />}
+                      {trend === 'down' && <ArrowDown size={18} />}
+                      {trend === 'flat' && <Minus size={18} />}
+                    </div>
+
+                    <div className="d-flex flex-grow-1 align-items-center">
+                      <div className="stockName text-truncate">{stock.symbol?.name ?? '—'}</div>
+                      <div className="stockSymbol ms-auto text-end">{stock.symbolId} 上市</div>
+                    </div>
+                  </div>
+
+                  <div className="stockRight">
+                    <div className={`stockPrice ${trendColor}`}>{Math.floor(stock.close ?? 0)}</div>
+                    <div className={`stockChange ${trendColor}`}>
+                      {trend === 'up' && '+'}
+                      {changePct} ({totalPct}%)
+                    </div>
+                  </div>
+                </div>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+
+        {/* pagination 外層容器 */}
+        <div
+          className="custom-pagination"
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            textAlign: 'center',
+            padding: '12px 0',
+            zIndex: 10,
+          }}
+        ></div>
       </div>
     </>
   );
