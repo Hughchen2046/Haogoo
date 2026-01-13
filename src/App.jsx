@@ -7,6 +7,8 @@ import EtfsList from './components/EtfsList';
 import IndustryList from './components/IndustryList';
 import SocialFeed from './components/SocialFeed';
 import Footer from './components/Footer';
+import Header from './components/Header';
+import { Index } from './components/Header';
 
 const { VITE_stocksUrl } = import.meta.env;
 
@@ -25,6 +27,8 @@ function App() {
         <div className="overflow-hidden">
           <h4 className="my-16">登入頁面</h4>
           <Login />
+          <h4 className="my-16">Section 1: Index</h4>
+          <Index />
           <h4 className="my-16">Section 2: Stock card</h4>
           <StockCard />
           <h4 className="my-16">Section 3: ETFs List</h4>

@@ -372,3 +372,11 @@ $utilities: map-merge(
     height: 120px;
   }
 }
+
+.indexBackImg {
+  background-image: url('../assets/Cell Phone Chart Photo 1.png');
+  background-size: cover;
+  background-position: left 25% center;
+  background-repeat: no-repeat;
+  height: 100vh;
+}
