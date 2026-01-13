@@ -6,6 +6,7 @@ import StockCard from './components/StockCard';
 import EtfsList from './components/EtfsList';
 import IndustryList from './components/IndustryList';
 import SocialFeed from './components/SocialFeed';
+import Footer from './components/Footer';
 
 const { VITE_stocksUrl } = import.meta.env;
 
@@ -32,6 +33,8 @@ function App() {
           <IndustryList />
           <h4 className="my-16">Section 5: Social Feed</h4>
           <SocialFeed />
+          <h4 className="my-16">Footer</h4>
+          <Footer />
         </div>
       )}
     </>

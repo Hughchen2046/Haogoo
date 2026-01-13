@@ -362,3 +362,13 @@ $utilities: map-merge(
     color: #17312c;
   }
 }
+
+.footer-logo {
+  width: 302px;
+  height: 80px;
+  display: block;
+  @media (min-width: 768px) {
+    width: 455px;
+    height: 120px;
+  }
+}
