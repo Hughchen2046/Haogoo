@@ -14,26 +14,40 @@ export default function StockCard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const baseURL = import.meta.env.PROD
-        ? 'https://haogoo-data.zeabur.app'
-        : 'http://localhost:3000';
+    const fetchData = async () => {
+      try {
+        const baseURL = import.meta.env.PROD
+          ? 'https://haogoo-data.zeabur.app'
+          : 'http://localhost:3000';
 
-      const res = await axios.get(
-        `${baseURL}/prices?_expand=symbol&_sort=date&_order=desc&_limit=12`
-      );
+        const res = await axios.get(
+          `${baseURL}/symbols?_embed=prices&_limit=50`
+        );
 
-      setStocks(res.data);
-    } catch (error) {
-      console.error('讀取資料失敗', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        // 過濾掉沒有 prices 的 symbol
+        const symbolsWithPrices = res.data
+          .filter((symbol) => symbol.prices && symbol.prices.length > 0)
+          .map((symbol) => {
+            // 依日期排序，取最新一筆
+            const sortedPrices = symbol.prices.sort(
+              (a, b) => new Date(b.date) - new Date(a.date)
+            );
+            return {
+              ...symbol,
+              latestPrice: sortedPrices[0],
+            };
+          });
 
-  fetchData();
-}, []);
+        setStocks(symbolsWithPrices);
+      } catch (error) {
+        console.error('讀取資料失敗', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   if (loading) return <div>資料載入中...</div>;
 
@@ -42,7 +56,6 @@ export default function StockCard() {
       <span className="stockTitle fs-2">熱門個股</span>
       <p className="stockEngtitle">Popular Stocks</p>
 
-      {/* 外層容器保留 pagination 空間 */}
       <div className="swiperContainer" style={{ position: 'relative' }}>
         <Swiper
           modules={[Grid, Pagination]}
@@ -60,8 +73,9 @@ export default function StockCard() {
           className="stockSwiper"
         >
           {stocks.map((stock) => {
-            const changePct = stock.dailyChangePct ?? 0;
-            const totalPct = stock.totalChangePct ?? 0;
+            const price = stock.latestPrice;
+            const changePct = price?.dailyChangePct ?? 0;
+            const totalPct = price?.totalChangePct ?? 0;
 
             let trend = 'flat';
             if (changePct > 0) trend = 'up';
@@ -85,13 +99,15 @@ export default function StockCard() {
                     </div>
 
                     <div className="d-flex flex-grow-1 align-items-center">
-                      <div className="stockName text-truncate">{stock.symbol?.name ?? '—'}</div>
-                      <div className="stockSymbol ms-auto text-end">{stock.symbolId} 上市</div>
+                      <div className="stockName text-truncate">{stock.name}</div>
+                      <div className="stockSymbol ms-auto text-end">{stock.id} 上市</div>
                     </div>
                   </div>
 
                   <div className="stockRight">
-                    <div className={`stockPrice ${trendColor}`}>{Math.floor(stock.close ?? 0)}</div>
+                    <div className={`stockPrice ${trendColor}`}>
+                      {Math.floor(price?.close ?? 0)}
+                    </div>
                     <div className={`stockChange ${trendColor}`}>
                       {trend === 'up' && '+'}
                       {changePct} ({totalPct}%)
@@ -103,7 +119,6 @@ export default function StockCard() {
           })}
         </Swiper>
 
-        {/* pagination 外層容器 */}
         <div
           className="custom-pagination"
           style={{
