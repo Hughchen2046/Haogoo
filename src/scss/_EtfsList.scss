@@ -1,0 +1,200 @@
+$primary-color: #17312C;
+
+// 標題英文
+.etfsEngtitle {
+  font-size: clamp(32px, 8vw, 80px);
+  font-weight: 900;
+  font-family: 'Noto Sans', sans-serif;
+  color: #fff;
+  line-height: 1.1;
+}
+
+// ETF 容器
+.etfsbox {
+  background-color: $primary-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  
+  width: 100%;
+  max-width: 1296px;
+  min-height: 320px;
+
+  padding: 2rem;
+  margin: 0 auto;
+
+  /* 多個陰影疊加 */
+  box-shadow: 
+    10px 15px rgba(31, 101, 52, 0.587),
+    30px 35px 0px rgba(20, 94, 31, 0.292);
+}
+
+// 桌機高度
+@media (min-width: 992px) {
+  .etfsbox {
+    height: 480px;
+  }
+}
+
+// 中文標題
+.etfstitle {
+  color: white;
+  font-size: clamp(18px, 3vw, 24px);
+}
+
+// 按鈕
+.etfsbtn {
+  font-family: 'Noto Sans', sans-serif;
+  color: $primary-color;
+  width: 144px;
+  height: 44px;
+  font-weight: 700;
+
+  // 桌機靠左
+  align-self: flex-start;
+} 
+
+// 標題區塊
+.etfs-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  text-align: left; // 桌機靠左
+}
+
+// 共用陰影設定
+.etf-shadow {
+  position: absolute;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+// 深色長圓
+.etf-shadow-dark {
+  width: 200px;
+  height: 60px;
+  background-color: rgba(0, 0, 0, 0.2);
+  bottom: 0;
+  left: 50%;
+}
+
+// 淺色長圓
+.etf-shadow-light {
+  width: 250px;
+  height: 70px;
+  background-color: rgba(0, 0, 0, 0.1);
+  bottom: -10px;
+  left: 50%;
+}
+
+// 手機版陰影縮小
+@media (max-width: 576px) {
+  .etf-shadow-dark {
+    width: 120px;
+    height: 40px;
+    bottom: 0;
+    left: 50%;
+  }
+  .etf-shadow-light {
+    width: 150px;
+    height: 50px;
+    bottom: -5px;
+    left: 50%;
+  }
+}
+
+// 標籤卡片
+.etfsTag {
+  background-color: #fff;
+  color: $primary-color;
+  opacity: 1;
+  transform: translateY(0px) rotate(0deg);
+  --drop-y:10px;
+  --tilt-angle: 0deg;
+  --offset-y: 0px;
+}
+
+// 標籤動畫
+.etfsTag.fall-tilt-stack {
+  animation: fallTiltStack 0.8s ease-out forwards;
+}
+
+@keyframes fallTiltStack {
+  0% {
+    opacity: 0.5;
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(calc(var(--drop-y) * 0.8)) rotate(calc(var(--tilt-angle) * 1.2));
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(calc(var(--drop-y) * 1.05)) rotate(calc(var(--tilt-angle) * 0.9));
+  }
+  100% {
+    transform: translateY(calc(var(--drop-y) + var(--offset-y))) rotate(var(--tilt-angle));
+    opacity: 1;
+  }
+}
+
+// 標籤容器
+.etfsTagContainer {
+  position: absolute;
+  top: 65px;
+  right: 100px;
+
+  display: flex;
+  flex-direction: column;
+
+  .d-flex {
+    justify-content: flex-start;
+  }
+}
+
+// 手機版 RWD
+@media (max-width: 767px) {
+  .etfsbox {
+    padding: 2rem 1rem;
+  }
+
+  .etfs-content {
+    text-align: center; // 標題置中
+  }
+
+  .etfsbtn {
+    align-self: center; // 手機按鈕置中
+  }
+
+  .etfsTagContainer {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: 1.5rem;
+
+    .d-flex {
+      justify-content: center; // 標籤置中
+      flex-wrap: wrap;         // 換行
+      gap: 0.75rem;
+    }
+
+    .etfsTag {
+      flex: 1 1 calc(50% - 0.75rem); // 每行兩個
+      text-align: center;
+    }
+  }
+}
+
+// 大螢幕桌機保持右側
+@media (min-width: 768px) {
+  .etfsTagContainer .etfsTag {
+    flex: 0 0 auto;
+  }
+}
+
+.etfsTag {
+  text-decoration: none;
+}

@@ -1,209 +1,382 @@
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+
 // Import handwriting font
-@import url('https://fastly.jsdelivr.net/npm/chenyuluoyan-font@1.0.0/dist/Chenyuluoyan.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+TC:wght@100..900&display=swap');
 
 // Design System Variables & Utilities
-
 // 1. Spacing (Extending Bootstrap spacers)
 // We defined 1-6 in Bootstrap usually, but here we want 1-13 with specific pixels.
 $custom-spacers: (
-    1: 4px,
-    2: 8px,
-    3: 12px,
-    4: 16px,
-    5: 24px,
-    6: 32px,
-    7: 40px,
-    8: 48px,
-    9: 56px,
-    10: 64px,
-    11: 80px,
-    12: 100px,
-    13: 120px
+  0: 0px,
+  4: 4px,
+  8: 8px,
+  10: 10px,
+  12: 12px,
+  16: 16px,
+  20: 20px,
+  24: 24px,
+  32: 32px,
+  40: 40px,
+  48: 48px,
+  56: 56px,
+  64: 64px,
+  72: 72px,
+  80: 80px,
+  96: 96px,
+  100: 100px,
+  120: 120px,
 );
 
-// We'll generate utility classes for these
-@each $i, $v in $custom-spacers {
-    .m-#{$i} {
-        margin: $v !important;
-    }
+// 2. 自訂 Colors
+$black: #121212;
+$white: #ffffff;
+$primary: #2fa58d;
+$green: #56b77e;
+$red: #f2735b;
+$bgc: #fafafa;
 
-    .mt-#{$i} {
-        margin-top: $v !important;
-    }
-
-    .mb-#{$i} {
-        margin-bottom: $v !important;
-    }
-
-    .ms-#{$i} {
-        margin-left: $v !important;
-    }
-
-    .me-#{$i} {
-        margin-right: $v !important;
-    }
-
-    .my-#{$i} {
-        margin-top: $v !important;
-        margin-bottom: $v !important;
-    }
-
-    .mx-#{$i} {
-        margin-left: $v !important;
-        margin-right: $v !important;
-    }
-
-    .p-#{$i} {
-        padding: $v !important;
-    }
-
-    .pt-#{$i} {
-        padding-top: $v !important;
-    }
-
-    .pb-#{$i} {
-        padding-bottom: $v !important;
-    }
-
-    .ps-#{$i} {
-        padding-left: $v !important;
-    }
-
-    .pe-#{$i} {
-        padding-right: $v !important;
-    }
-
-    .py-#{$i} {
-        padding-top: $v !important;
-        padding-bottom: $v !important;
-    }
-
-    .px-#{$i} {
-        padding-left: $v !important;
-        padding-right: $v !important;
-    }
-}
-
-// 2. Colors
 $design-colors: (
-    "primary-50": #efcfe8,
-    "primary-100": #fff9c2,
-    "primary-200": #fff089,
-    "primary-300": #ffe45f,
-    "primary-400": #fdcc12,
-    "primary-500": #ecb206,
-    "primary-600": #cc8902,
-    "primary-700": #a36105,
-    "primary-800": #864c0d,
-    "primary-900": #723e11,
-    "primary-950": #431f05,
-    "gray-50": #f2f2f2,
-    "gray-100": #dbdbdb,
-    "gray-200": #c4c4c4,
-    "gray-300": #adadad,
-    "gray-400": #969696,
-    "gray-500": #808080,
-    "gray-600": #666666,
-    "gray-700": #4d4d4d,
-    "gray-800": #333333,
-    "gray-900": #1a1a1a
+  'primary-50': #eefffc,
+  'primary-100': #88bdb2,
+  'primary-200': #64a195,
+  'primary-300': #4a877b,
+  'primary-400': #3f776c,
+  'primary-500': #32665c,
+  'primary-600': #224c44,
+  'primary-700': #17312c,
+  'gray-50': rgba(#ffffff, 0.3),
+  'gray-100': rgba(#ffffff, 0.5),
+  'gray-200': rgba(#ffffff, 0.7),
+  'gray-300': #ffffff,
+  'gray-400': rgba(#121212, 0.03),
+  'gray-500': rgba(#121212, 0.08),
+  'gray-600': rgba(#121212, 0.15),
+  'gray-700': rgba(#121212, 0.3),
+  'gray-800': rgba(#121212, 0.6),
+  'gray-900': #121212,
+  'bgc': $bgc,
 );
 
 @each $name, $col in $design-colors {
-    .text-#{$name} {
-        color: $col !important;
-    }
+  .text-#{$name} {
+    color: $col !important;
+  }
 
-    .bg-#{$name} {
-        background-color: $col !important;
-    }
+  .bg-#{$name} {
+    background-color: $col !important;
+  }
 
-    .border-#{$name} {
-        border-color: $col !important;
-    }
+  .border-#{$name} {
+    border-color: $col !important;
+  }
 }
 
 // 3. Typography
-.font-handwriting {
-    font-family: 'Chenyuluoyan', cursive !important;
+.font-zh-tw {
+  font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, -apple-system,
+    sans-serif !important;
+}
+
+.font-en {
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', system-ui, -apple-system, sans-serif !important;
 }
 
 .hd-title {
-    font-weight: 700;
-    line-height: 1.2;
+  font-weight: 700;
+  line-height: 1.2;
 
-    @media (min-width: 992px) {
-        font-size: 3.5rem;
-    }
+  @media (min-width: 992px) {
+    font-size: 3.5rem;
+  }
 
-    @media (max-width: 991px) {
-        font-size: 2.5rem;
-    }
+  @media (max-width: 991px) {
+    font-size: 2.5rem;
+  }
 }
 
-// Custom Font Sizes
+// Custom Font Sizes Map
+$header-sizes: (
+  'display-1': 80px,
+  'display-2': 48px,
+  'h1': 40px,
+  'h2': 32px,
+  'h3': 28px,
+  'h4': 24px,
+  'h5': 20px,
+  'h6': 16px,
+  'en-1': 40px,
+  'en-2': 32px,
+  'en-3': 28px,
+  'en-4': 24px,
+  'en-5': 20px,
+  'en-6': 16px,
+  'caption': 14px,
+);
+
+.display-1,
+.display-2 {
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+// base tag styles
 h1 {
-    font-size: 60px !important;
+  font-size: map-get($header-sizes, 'h1') !important;
 }
-
 h2 {
-    font-size: 40px !important;
+  font-size: map-get($header-sizes, 'h2') !important;
 }
-
 h3 {
-    font-size: 36px !important;
+  font-size: map-get($header-sizes, 'h3') !important;
 }
-
 h4 {
-    font-size: 32px !important;
+  font-size: map-get($header-sizes, 'h4') !important;
 }
-
 h5 {
-    font-size: 28px !important;
+  font-size: map-get($header-sizes, 'h5') !important;
 }
-
 h6 {
-    font-size: 24px !important;
+  font-size: map-get($header-sizes, 'h6') !important;
 }
 
-.text-xl {
-    font-size: 20px !important;
-}
+// Generate responsive typography classes
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 
-.text-md {
-    font-size: 16px !important;
-}
-
-.text-sm {
-    font-size: 14px !important;
-}
-
-.text-xs {
-    font-size: 12px !important;
-}
-
-// 4. Radius
-.round-s {
-    border-radius: 4px !important;
-}
-
-.round-m {
-    border-radius: 8px !important;
-}
-
-.round-l {
-    border-radius: 12px !important;
-}
-
-.round-xl {
-    border-radius: 16px !important;
-}
-
-.round-full {
-    border-radius: 800px !important;
+    @each $name, $size in $header-sizes {
+      .#{$name}#{$infix} {
+        font-size: $size !important;
+      }
+    }
+  }
 }
 
 // Additional Border helpers
 .border-solid {
-    border-style: solid !important;
+  border-style: solid !important;
+}
+
+// 4. 自定義圓角尺寸
+$utilities: map-merge(
+  $utilities,
+  (
+    'custom-radius': (
+      property: border-radius,
+      responsive: true,
+      // 設為 true 才會產生 -sm, -md, -lg, -xl 等後綴
+      class: round,
+      // 產出的 class 前綴，例如 .round-8
+      values:
+        (
+          '0': 0px,
+          '4': 4px,
+          '8': 8px,
+          '24': 24px,
+          '36': 36px,
+          '48': 48px,
+          '96': 96px,
+          'pill': 999px,
+        ),
+    ),
+  )
+);
+
+@import 'bootstrap/scss/utilities/api';
+
+// We'll generate utility classes for these, including responsive variants
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $i, $v in $custom-spacers {
+      .m#{$infix}-#{$i} {
+        margin: $v !important;
+      }
+
+      .mt#{$infix}-#{$i} {
+        margin-top: $v !important;
+      }
+
+      .mb#{$infix}-#{$i} {
+        margin-bottom: $v !important;
+      }
+
+      .ms#{$infix}-#{$i} {
+        margin-left: $v !important;
+      }
+
+      .me#{$infix}-#{$i} {
+        margin-right: $v !important;
+      }
+
+      .my#{$infix}-#{$i} {
+        margin-top: $v !important;
+        margin-bottom: $v !important;
+      }
+
+      .mx#{$infix}-#{$i} {
+        margin-left: $v !important;
+        margin-right: $v !important;
+      }
+
+      .p#{$infix}-#{$i} {
+        padding: $v !important;
+      }
+
+      .pt#{$infix}-#{$i} {
+        padding-top: $v !important;
+      }
+
+      .pb#{$infix}-#{$i} {
+        padding-bottom: $v !important;
+      }
+
+      .ps#{$infix}-#{$i} {
+        padding-left: $v !important;
+      }
+
+      .pe#{$infix}-#{$i} {
+        padding-right: $v !important;
+      }
+
+      .py#{$infix}-#{$i} {
+        padding-top: $v !important;
+        padding-bottom: $v !important;
+      }
+
+      .px#{$infix}-#{$i} {
+        padding-left: $v !important;
+        padding-right: $v !important;
+      }
+
+      .gap#{$infix}-#{$i} {
+        gap: $v !important;
+      }
+
+      .round-top#{$infix}-#{$i} {
+        border-top-left-radius: $v !important;
+        border-top-right-radius: $v !important;
+      }
+    }
+  }
+}
+
+// 5. Components
+// Button Outline with Arrow Hover
+.btn-arrow-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: 1px solid $black;
+  color: $black;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+
+  .arrow-icon {
+    max-width: 0;
+    opacity: 0;
+    margin-left: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 1em; // Scales with font size
+    object-fit: contain;
+  }
+
+  &:hover {
+    .arrow-icon {
+      max-width: 32px;
+      opacity: 1;
+      margin-left: 8px;
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.btn-arrow-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $primary;
+  color: $white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+
+  .arrow-icon {
+    max-width: 0;
+    opacity: 0;
+    margin-left: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 1em; // Scales with font size
+    object-fit: contain;
+  }
+
+  &:hover {
+    .arrow-icon {
+      max-width: 32px;
+      opacity: 1;
+      margin-left: 8px;
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.icon-24 {
+  width: 24px;
+  height: 24px;
+}
+.icon-40 {
+  width: 40px;
+  height: 40px;
+}
+
+.icon-hover {
+  &:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.header-logo {
+  width: 153px;
+  height: 40px;
+  color: #000000;
+  display: block;
+  @media (min-width: 768px) {
+    width: 247px;
+    height: 64px;
+    color: #17312c;
+  }
+}
+
+.footer-logo {
+  width: 302px;
+  height: 80px;
+  display: block;
+  @media (min-width: 768px) {
+    width: 455px;
+    height: 120px;
+  }
+}
+
+.indexBackImg {
+  background-image: url('../assets/Cell Phone Chart Photo 1.png');
+  background-size: cover;
+  background-position: left 25% center;
+  background-repeat: no-repeat;
+  height: 100vh;
 }
