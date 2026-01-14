@@ -14,20 +14,26 @@ export default function StockCard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(
-          'https://haogoo-data.zeabur.app/prices?_expand=symbol&_sort=date&_order=desc&_limit=12'
-        );
-        setStocks(res.data);
-      } catch (error) {
-        console.error('讀取資料失敗', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  const fetchData = async () => {
+    try {
+      const baseURL = import.meta.env.PROD
+        ? 'https://haogoo-data.zeabur.app'
+        : 'http://localhost:3000';
+
+      const res = await axios.get(
+        `${baseURL}/prices?_expand=symbol&_sort=date&_order=desc&_limit=12`
+      );
+
+      setStocks(res.data);
+    } catch (error) {
+      console.error('讀取資料失敗', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
 
   if (loading) return <div>資料載入中...</div>;
 

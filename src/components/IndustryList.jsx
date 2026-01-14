@@ -12,13 +12,18 @@ export default function IndustryList() {
   const [symbols, setSymbols] = useState([]);
 
   useEffect(() => {
-    fetch(
-      'https://haogoo-data.zeabur.app/symbols?industryTW_ne=綜合&_embed=prices&_limit=18'
-    )
-      .then(res => res.json())
-      .then(data => setSymbols(data))
-      .catch(err => console.error(err));
-  }, []);
+  const baseURL = import.meta.env.PROD
+    ? 'https://haogoo-data.zeabur.app'
+    : 'http://localhost:3000';
+
+  fetch(
+    `${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`
+  )
+    .then(res => res.json())
+    .then(data => setSymbols(data))
+    .catch(err => console.error(err));
+}, []);
+
 
   // 每 2 筆 symbols 分成一組（一張卡）
   const groups = [];
