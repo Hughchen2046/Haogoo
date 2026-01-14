@@ -13,7 +13,7 @@ export default function IndustryList() {
 
   useEffect(() => {
     fetch(
-      'http://localhost:3000/symbols?industryTW_ne=綜合&_embed=prices&_limit=18'
+      'https://haogoo-data.zeabur.app/symbols?industryTW_ne=綜合&_embed=prices&_limit=18'
     )
       .then(res => res.json())
       .then(data => setSymbols(data))

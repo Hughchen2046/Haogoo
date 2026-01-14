@@ -17,7 +17,7 @@ export default function StockCard() {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          'http://localhost:3000/prices?_expand=symbol&_sort=date&_order=desc&_limit=12'
+          'https://haogoo-data.zeabur.app/prices?_expand=symbol&_sort=date&_order=desc&_limit=12'
         );
         setStocks(res.data);
       } catch (error) {
