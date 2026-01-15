@@ -9,6 +9,7 @@ import SocialFeed from './components/SocialFeed';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import { Index } from './components/Header';
+import Navbar from './components/Navbar';
 
 const { VITE_stocksUrl } = import.meta.env;
 
@@ -25,6 +26,8 @@ function App() {
         <Guideline />
       ) : (
         <div className="overflow-hidden">
+          <h4 className="my-16">Navbar</h4>
+          <Navbar />
           <h4 className="my-16">登入頁面</h4>
           <Login />
           <h4 className="my-16">Section 1: Index</h4>
