@@ -102,12 +102,12 @@ $design-colors: (
 $header-sizes: (
   'display-1': 80px,
   'display-2': 48px,
-  'tx-h1': 40px,
-  'tx-h2': 32px,
-  'tx-h3': 28px,
-  'tx-h4': 24px,
-  'tx-h5': 20px,
-  'tx-h6': 16px,
+  'h1': 40px,
+  'h2': 32px,
+  'h3': 28px,
+  'h4': 24px,
+  'h5': 20px,
+  'h6': 16px,
   'en-1': 40px,
   'en-2': 32px,
   'en-3': 28px,
@@ -384,6 +384,3 @@ $utilities: map-merge(
 .nav-item:hover .nav-link {
   color: var(--bs-primary) !important;
 }
-
-
-
