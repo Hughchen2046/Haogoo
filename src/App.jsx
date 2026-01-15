@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import Guideline from './components/Guideline';
 import Login from './components/Login';
 import StockCard from './components/StockCard';

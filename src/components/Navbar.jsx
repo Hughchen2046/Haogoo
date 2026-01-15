@@ -3,7 +3,7 @@ export default function Navbar() {
     <>
       <nav className="navbar navbar-expand-lg bg-gray-600 py-0 ">
         <div className="container ">
-          <a class="navbar-brand" href="#">
+          <a className="navbar-brand" href="#">
             <img
               src="\src\assets\WH-HaoGoo-Logo.png"
               alt="Logo"
