@@ -57,7 +57,7 @@ export default function StockCard() {
         spaceBetween={10} // 手機卡片間距
         slidesPerView={1}  // 每列一張
         slidesPerGroup={3} // 一次滑動一頁（3張）
-        grid={{ rows: 3, fill: 'row' }} // 手機三列
+        grid={{ rows: 4, fill: 'row' }} // 手機三列
         breakpoints={{
           1024: {
             slidesPerView: 2,       // 桌機每列兩張
