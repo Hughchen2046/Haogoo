@@ -21,7 +21,7 @@ export default function StockCard() {
           : 'http://localhost:3000';
 
         const res = await axios.get(
-          `${baseURL}/symbols?_embed=prices&_limit=100`
+          `${baseURL}/symbols?_embed=prices&_limit=1000`
         );
 
         const symbolsWithPrices = res.data
@@ -54,21 +54,15 @@ export default function StockCard() {
       <Swiper
         modules={[Pagination, Grid]}
         pagination={{ clickable: true }}
-        spaceBetween={2}         // 桌機卡片左右間距
-        slidesPerView={1}        // 手機一列一張
-        slidesPerGroup={1}       // 手機一次滑一張
-        grid={{ rows: 1, fill: 'row' }} // 手機一列
+        spaceBetween={10} // 手機卡片間距
+        slidesPerView={1}  // 每列一張
+        slidesPerGroup={3} // 一次滑動一頁（3張）
+        grid={{ rows: 3, fill: 'row' }} // 手機三列
         breakpoints={{
-          768: {
-            slidesPerView: 1,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-            grid: { rows: 1, fill: 'row' },
-          },
           1024: {
-            slidesPerView: 2,       // 一列兩張
-            slidesPerGroup: 4,      // 每次滑動換一頁四張
-            spaceBetween: 3,        // 桌機左右間距
+            slidesPerView: 2,       // 桌機每列兩張
+            slidesPerGroup: 4,      // 每次滑動換一頁（4張）
+            spaceBetween: 20,       // 桌機左右間距
             grid: { rows: 2, fill: 'row' }, // 桌機兩列
           },
         }}
@@ -80,8 +74,7 @@ export default function StockCard() {
           const totalPct = price?.totalChangePct ?? 0;
 
           const trend =
-            changePct > 0 ? 'up' :
-            changePct < 0 ? 'down' : 'flat';
+            changePct > 0 ? 'up' : changePct < 0 ? 'down' : 'flat';
 
           const trendColor =
             trend === 'up'
