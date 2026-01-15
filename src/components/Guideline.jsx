@@ -13,13 +13,13 @@ const Guideline = () => {
         </div>
         <div className="d-flex flex-wrap gap-3 mb-5 p-12">
           {[
-            {name: 'Primary', bg: 'bg-primary'},
-            {name: 'Secondary', bg: 'bg-secondary'},
-            {name: 'Success', bg: 'bg-success'},
-            {name: 'Warning', bg: 'bg-warning'},
-            {name: 'Info', bg: 'bg-info', text: 'text-dark', border: 'border'},
-            {name: 'Danger', bg: 'bg-danger'},
-            {name: 'Dark', bg: 'bg-dark'},
+            { name: 'Primary', bg: 'bg-primary' },
+            { name: 'Secondary', bg: 'bg-secondary' },
+            { name: 'Success', bg: 'bg-success' },
+            { name: 'Warning', bg: 'bg-warning' },
+            { name: 'Info', bg: 'bg-info', text: 'text-dark', border: 'border' },
+            { name: 'Danger', bg: 'bg-danger' },
+            { name: 'Dark', bg: 'bg-dark' },
             {
               name: 'Light',
               bg: 'bg-light',
@@ -32,16 +32,14 @@ const Guideline = () => {
               className={`p-4 ${c.bg} ${c.text || 'text-white'} ${
                 c.border || ''
               } rounded shadow-sm d-flex align-items-center justify-content-center`}
-              style={{minWidth: '120px'}}
+              style={{ minWidth: '120px' }}
             >
               {c.name}
             </div>
           ))}
         </div>
 
-        <div className="mb-3 fw-bold text-gray-800">
-          新增使用 primary-數值, gray 數值
-        </div>
+        <div className="mb-3 fw-bold text-gray-800">新增使用 primary-數值, gray 數值</div>
         <div className="row g-4">
           <div className="col-md-6">
             <h5 className="mb-3">Primary Extended</h5>
@@ -60,9 +58,7 @@ const Guideline = () => {
                 >
                   Background
                 </span>
-                <div
-                  className={`border-3 border-solid border-primary-${v} p-1 rounded text-xs`}
-                >
+                <div className={`border-3 border-solid border-primary-${v} p-1 rounded text-xs`}>
                   Border
                 </div>
               </div>
@@ -84,9 +80,7 @@ const Guideline = () => {
                 >
                   Background
                 </span>
-                <div
-                  className={`border-3 border-solid border-gray-${v} p-1 rounded text-xs`}
-                >
+                <div className={`border-3 border-solid border-gray-${v} p-1 rounded text-xs`}>
                   Border
                 </div>
               </div>
@@ -168,14 +162,9 @@ const Guideline = () => {
       <section className="mb-20">
         <h2 className="mb-4">自訂間距 (Spacing)</h2>
         <div className="row g-2 mb-4">
-          {[
-            4, 8, 10, 12, 16, 20, 24, 32, 40, 48, 56, 64, 72, 80, 96, 100, 120,
-          ].map((s) => (
+          {[4, 8, 10, 12, 16, 20, 24, 32, 40, 48, 56, 64, 72, 80, 96, 100, 120].map((s) => (
             <div key={`s-${s}`} className="col-auto">
-              <div
-                className="bg-light border p-2 text-center rounded"
-                style={{minWidth: '80px'}}
-              >
+              <div className="bg-light border p-2 text-center rounded" style={{ minWidth: '80px' }}>
                 <div className="fw-bold fs-5">"{s}"</div>
                 <div className="text-muted text-xs">
                   {[s]}
@@ -211,38 +200,43 @@ const Guideline = () => {
         <h2 className="mb-4">圓角 (Radius)</h2>
         <div className="d-flex flex-wrap gap-4">
           {[
-            {name: 'round-4', val: '4px', bg: 'bg-primary'},
-            {name: 'round-8', val: '8px', bg: 'bg-success'},
-            {name: 'round-24', val: '24px', bg: 'bg-danger'},
-            {name: 'round-36', val: '36px', bg: 'bg-warning'},
-            {name: 'round-48', val: '48px', bg: 'bg-danger-subtle'},
-            {name: 'round-96', val: '96px', bg: 'bg-warning-subtle'},
-            {name: 'round-pill', val: '999px', bg: 'bg-info', text: 'text-dark'},
+            { name: 'round-4', val: '4px', bg: 'bg-primary' },
+            { name: 'round-8', val: '8px', bg: 'bg-success' },
+            { name: 'round-24', val: '24px', bg: 'bg-danger' },
+            { name: 'round-36', val: '36px', bg: 'bg-warning' },
+            { name: 'round-48', val: '48px', bg: 'bg-danger-subtle' },
+            { name: 'round-96', val: '96px', bg: 'bg-warning-subtle' },
+            { name: 'round-pill', val: '999px', bg: 'bg-info', text: 'text-dark' },
           ].map((r) => (
             <div key={r.name} className="d-flex flex-column align-items-center">
               <div
                 className={`${r.bg} ${r.text || 'text-white'} p-4 ${
                   r.name
                 } shadow-sm mb-2 d-flex align-items-center justify-content-center`}
-                style={{width: '200px', height: '150px'}}
-              > {r.val}
+                style={{ width: '200px', height: '150px' }}
+              >
+                {' '}
+                {r.val}
               </div>
               <span className="fw-bold">{r.name}</span>
             </div>
           ))}
         </div>
-        <hr/>
+        <hr />
         <h2 className="mb-4">圓角 (RWD)</h2>
-        <div  className="bg-primary text-white p-4 shadow-sm round-4 round-sm-8 round-md-24 round-lg-96 mb-2 d-flex align-items-center justify-content-center"
-                style={{width: '200px', height: '150px'}}> 由小到大
-              </div>
-              <span className="fw-bold">round-4 => round-sm-8 => round-md-24 => round-lg-96</span>
-              
+        <div
+          className="bg-primary text-white p-4 shadow-sm round-4 round-sm-8 round-md-24 round-lg-96 mb-2 d-flex align-items-center justify-content-center"
+          style={{ width: '200px', height: '150px' }}
+        >
+          {' '}
+          由小到大
+        </div>
+        <span className="fw-bold">
+          round-4 =&gt; round-sm-8 =&gt; round-md-24 =&gt; round-lg-96
+        </span>
       </section>
     </div>
   );
 };
 
 export default Guideline;
-
-
