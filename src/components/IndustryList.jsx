@@ -1,29 +1,27 @@
-
 import React, { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Grid } from 'swiper/modules';
+
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination } from 'swiper/modules';
+import 'swiper/css/grid';
 
 export default function IndustryList() {
   const [symbols, setSymbols] = useState([]);
 
   useEffect(() => {
-  const baseURL = import.meta.env.PROD
-    ? 'https://haogoo-data.zeabur.app'
-    : 'http://localhost:3000';
+    const baseURL = import.meta.env.PROD
+      ? 'https://haogoo-data.zeabur.app'
+      : 'http://localhost:3000';
 
-  fetch(
-    `${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`
-  )
-    .then(res => res.json())
-    .then(data => setSymbols(data))
-    .catch(err => console.error(err));
-}, []);
-
+    fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`)
+      .then(res => res.json())
+      .then(data => setSymbols(data))
+      .catch(err => console.error(err));
+  }, []);
 
   // 每 2 筆 symbols 分成一組（一張卡）
   const groups = [];
@@ -35,17 +33,27 @@ export default function IndustryList() {
     <>
       {/* 標題 */}
       <section className="industryTitle fs-2 mb-1">精選產業</section>
-      <span className="industryEngTitle mb-4 d-block">
+      <span className="industryEngTitle text-align-center Display-1 extraBold mb-4">
         Featured Industries
       </span>
 
       <Swiper
-        modules={[Pagination]}
+        modules={[Pagination, Grid]}
         pagination={{ clickable: true }}
         spaceBetween={16}
+
+        /* ===== 手機預設 ===== */
+        slidesPerView={1}     
+        slidesPerGroup={3}    
+        grid={{ rows: 3, fill: 'row' }} 
+
         breakpoints={{
-          0: { slidesPerView: 1 },
-          768: { slidesPerView: 3 },
+          1024: {
+            slidesPerView: 3,     
+            slidesPerGroup: 3,    
+            grid: { rows: 1, fill: 'row' }, 
+            spaceBetween: 12,
+          },
         }}
         className="industrySwiper"
       >
@@ -58,20 +66,29 @@ export default function IndustryList() {
 
             if (values.length === 0) return '--';
 
-            const avg = values.reduce((sum, v) => sum + v, 0) / values.length;
+            const avg =
+              values.reduce((sum, v) => sum + v, 0) / values.length;
             return avg.toFixed(2);
           })();
 
           return (
             <SwiperSlide key={index}>
-              <div className="card round-24 h-100">
+              <div className="card round-24 h-100 d-flex flex-column">
                 <div className="cardContent">
                   {/* Header */}
                   <div className="cardHeader p-4 d-flex justify-content-between">
-                    <span className="industryName fs-2">
+                    <span className="industryName p-2 fs-2">
                       {group[0]?.industryTW ?? '產業'}
                     </span>
-                    <TrendingUp color="#ff0000" />
+
+                    {/* Header icon 根據 avgDailyChangePct */}
+                    {avgDailyChangePct !== '--' && (
+                      Number(avgDailyChangePct) >= 0 ? (
+                        <TrendingUp size={24} />
+                      ) : (
+                        <TrendingDown size={24} />
+                      )
+                    )}
                   </div>
 
                   {/* 日期 */}
@@ -81,7 +98,12 @@ export default function IndustryList() {
                   <div className="industryContent">
                     {group.map(symbol => {
                       const latest = symbol.prices?.at(-1);
-                      const isPositive = latest?.dailyChangePct >= 0;
+                      const daily = latest?.dailyChangePct;
+                      const total = latest?.totalChangePct;
+
+                      const isDown =
+                        (typeof daily === 'number' && daily < 0) ||
+                        (typeof total === 'number' && total < 0);
 
                       return (
                         <div
@@ -91,22 +113,18 @@ export default function IndustryList() {
                           <div className="companyName fs-6">{symbol.name}</div>
 
                           <div
-                            className={`industryRate ${
-                              isPositive ? 'text-danger' : 'text-success'
-                            } d-flex align-items-center gap-1`}
+                            className={`industryRate d-flex align-items-center gap-1 ${
+                              isDown ? 'text-success' : 'text-danger'
+                            }`}
                           >
-                            {latest?.close != null
-                              ? latest.close.toFixed(2)
-                              : '--'}
+                            {latest?.close != null ? latest.close.toFixed(2) : '--'}
                             (
-                            {latest?.dailyChangePct != null
-                              ? latest.dailyChangePct.toFixed(2)
-                              : '--'}
-                            )%
-                            {isPositive ? (
-                              <TrendingUp size={18} />
-                            ) : (
+                            {daily != null ? daily.toFixed(2) : '--'}%
+                            )
+                            {isDown ? (
                               <TrendingDown size={18} />
+                            ) : (
+                              <TrendingUp size={18} />
                             )}
                           </div>
                         </div>
@@ -115,14 +133,22 @@ export default function IndustryList() {
                   </div>
 
                   {/* 底部平均報酬率 */}
-                  <div className="industrySummary">
+                  <div className="industrySummary d-flex align-items-center justify-content-between">
                     <div className="industryTag fs-6">近60日報酬率</div>
                     <div
-                      className={`industryRate fs-2 ${
-                        avgDailyChangePct >= 0 ? 'text-danger' : 'text-success'
+                      className={`industryRate fs-2 d-flex align-items-center gap-2 ${
+                        avgDailyChangePct !== '--' && Number(avgDailyChangePct) >= 0
+                          ? 'text-danger'
+                          : 'text-success'
                       }`}
                     >
                       {avgDailyChangePct}%
+                      {avgDailyChangePct !== '--' &&
+                        (Number(avgDailyChangePct) >= 0 ? (
+                          <TrendingUp size={20} />
+                        ) : (
+                          <TrendingDown size={20} />
+                        ))}
                     </div>
                   </div>
                 </div>
