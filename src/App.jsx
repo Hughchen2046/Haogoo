@@ -17,32 +17,13 @@ function App() {
 
   return (
     <>
-      <button className="btn btn-outline-primary" onClick={() => setShowGuideline(!showGuideline)}>
-        {showGuideline ? '顯示首頁' : '顯示設計Guideline'}
-      </button>
-
-      {showGuideline ? (
-        <Guideline />
-      ) : (
-        <div className="overflow-hidden">
-          <h4 className="my-16">Navbar</h4>
-          <Navbar />
-          <h4 className="my-16">登入頁面</h4>
-          <Login />
-          <h4 className="my-16">Section 1: Index</h4>
-          <Index />
-          <h4 className="my-16">Section 2: Stock card</h4>
-          <StockCard />
-          <h4 className="my-16">Section 3: ETFs List</h4>
-          <EtfsList />
-          <h4 className="my-16">Section 4: Industry List</h4>
-          <IndustryList />
-          <h4 className="my-16">Section 5: Social Feed</h4>
-          <SocialFeed />
-          <h4 className="my-16">Footer</h4>
-          <Footer />
-        </div>
-      )}
+      <Navbar />
+      <Index />
+      <StockCard />
+      <EtfsList />
+      <IndustryList />
+      <SocialFeed />
+      <Footer />
     </>
   );
 }
