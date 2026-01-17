@@ -1,127 +1,119 @@
-  $primary-color: #17312C;
+/* ===============================
+   基本變數
+================================ */
+$primary-color: #17312C;
 
-  /* 大標題 */
-  .industryEngTitle {
-    font-size: 80px;
-    font-weight: 900;
-    line-height: 120%;
-    color: $primary-color;
-  }
-
-  /* 卡片 */
-  .card {
-    overflow: hidden;
-    background-color: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    flex-direction: column; // 內容垂直排列
-    height: 100%;
-    width: 100%;
-    max-width: 416px; //桌機版卡片最大寬度
-    min-height: auto;
-    }
-
-
-  
-
-  /* 卡片 header */
-  .cardHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .industryIcon {
-    margin-left: auto;
-  }
-
-  /* 卡片內容 */
-.industrySummary {
-  display: flex;                // 水平排列
-  align-items: center;          // 垂直置中
-  padding: 16px 16px;              // 左右內邊距
-  margin-top: auto;             // 推到卡片底部
-  
+/* ===============================
+   大標題
+================================ */
+.industryEngTitle {
+  font-size: 80px;
+  font-weight: 900;
+  line-height: 120%;
+  color: $primary-color;
 }
 
+/* ===============================
+   外層容器
+================================ */
+.industryBox {
+  max-width: 1296px;
+  margin: 0 auto;
+  padding-top: 60px;
+}
 
-  .industryContent {
-    padding: 0 16px;
-  }
+/* ===============================
+   Swiper
+================================ */
+.industrySwiper {
+  padding-bottom: 40px; // pagination 空間
+}
 
-  /* 垂直排列卡片的 Row */
-  .cardRow {
+.industrySwiper .swiper-pagination {
+  bottom: 0 !important;
+}
 
-    gap: 16px;          // 卡片間距
-    flex-wrap: nowrap;   // 不換行
-    overflow-x: auto;
-    padding-bottom: 16px; // 避免手機板被遮住
-  }
+/* Grid 模式上下間距（手機、桌機共用） */
+.industrySwiper .swiper-wrapper {
+  row-gap: 16px;
+}
 
+/* 每個 slide 本身不加間距，只負責置中 */
+.industrySwiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  padding: 0 !important;
+  height: auto;
+}
 
-  /* 股票價格與漲跌百分比 */
-  .closePrice {
-    font-weight: bold;
-    text-align: right;
-    padding-right: 15px;
-    padding-bottom: 10px;
-  }
+/* ===============================
+   卡片外層（避免 Swiper 算寬錯誤）
+================================ */
+.industryCardWrap {
+  height: 100%;
+}
 
-  .industryRate {
-    font-weight: bold;
-    text-align: right;
+/* ===============================
+   卡片本體
+================================ */
+.card,
+.industryCard {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  margin: 0;
 
-    &.up {
-      color: green;
-    }
-    &.down {
-      color: red;
-    }
-  }
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-  /* 卡片下方排列 stock price + change */
-  .cardDown {
-    display: flex;
-    align-items: center;
-  }
+  /* 讓 footer 可以被推到底部 */
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Swiper */
-  .industrySwiper {
-    padding-bottom: 40px; // 給 pagination 空間
-  }
+/* ===============================
+   卡片 Header
+================================ */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+}
 
-  .swiper-pagination {
-    bottom: 0 !important;
-  }
+.industryIcon {
+  margin-left: auto;
+}
 
-  /* 手機板 */
-  @media (max-width: 768px) {
-    .cardRow {
-      flex-direction: column;  // 一行一張卡片
-      gap: 16px;
-    }
+/* ===============================
+   卡片內容
+================================ */
+.industryContent {
+  padding: 0 16px 16px;
+}
 
-    .closePrice, .industryRate {
-      text-align: right;
-    }
+.companyRow {
+  padding-bottom: 10px;
+}
 
-    .cardFooter {
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-    }
-  }
-
- /* 卡片下半部，灰色底完全放大 */
+/* ===============================
+   卡片 Footer（灰色底）
+================================ */
 .industrySummary {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f5f5f5;       // 灰色底
-  padding: 8px 16px;               // 內容內邊距，上下8px，左右16px
-  margin-top: auto;                // 推到底部
-  width: 100%;                     // 撐滿卡片寬度
-  box-sizing: border-box;          // 內邊距不影響寬度
-  border-bottom-left-radius: 24px; // 圓角保持卡片一致
+
+  background-color: #f5f5f5;
+  padding: 8px 16px;
+
+  margin-top: auto; // ⭐ 推到底部
+  width: 100%;
+  box-sizing: border-box;
+
+  border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
 }
 
@@ -135,8 +127,53 @@
   font-size: 1.25rem;
   font-weight: bold;
   text-align: right;
+
+  &.up {
+    color: #d32f2f;
+  }
+
+  &.down {
+    color: #2e7d32;
+  }
 }
 
-.companyRow{
+/* ===============================
+   價格區
+================================ */
+.cardDown {
+  display: flex;
+  align-items: center;
+}
+
+.closePrice {
+  font-weight: bold;
+  text-align: right;
+  padding-right: 15px;
   padding-bottom: 10px;
+}
+
+/* ===============================
+   手機版
+================================ */
+@media (max-width: 768px) {
+  .industryEngTitle {
+    font-size: 48px;
+  }
+
+  .card,
+  .industryCard {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .industrySwiper .swiper-slide {
+    justify-content: stretch; // ⭐ 不置中
+  }
+}
+
+.industryBox {
+  max-width: 1296px;   // 或你想要的設計寬
+  margin: 0 auto;      // ⭐ 水平置中
+  padding: 60px 16px 0;
 }
