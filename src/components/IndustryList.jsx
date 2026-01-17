@@ -33,7 +33,7 @@ export default function IndustryList() {
     <div className="industryBox">
       {/* 標題 */}
       <section className="industryTitle fs-2 mb-1">精選產業</section>
-      <p className="industryEngTitle display-1 text-align-center">
+      <p className="industryEngTitle display-1 ">
         Featured Industries
       </p>
 
