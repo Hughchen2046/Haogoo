@@ -71,22 +71,23 @@ export default function IndustryList() {
                 <div className="cardContent">
                   {/* Header */}
                   <div className="cardHeader p-4 d-flex justify-content-between">
-                    <span className="industryName fs-2">
+                    <span className="industryName">
                       {group[0]?.industryTW ?? '產業'}
                     </span>
                     {avgDailyChangePct !== '--' &&
-                      (Number(avgDailyChangePct) >= 0 ? (
-                        <TrendingUp size={22} />
-                      ) : (
-                        <TrendingDown size={22} />
-                      ))}
+                    (Number(avgDailyChangePct) > 0 ? (
+                      <TrendingUp size={36} className="text-danger me-3" />
+                    ) : (
+                      <TrendingDown size={36} className="text-success me-3" />
+                    ))}
+
                   </div>
 
                   {/* 日期 */}
-                  <div className="closePrice px-4">12/05 收盤價</div>
+                  <div className="closePrice mx-3">12/05 收盤價</div>
 
                   {/* 公司列表 */}
-                  <div className="industryContent px-4">
+                  <div className="industryContent px-6">
                     {group.map(symbol => {
                       const latest = symbol.prices?.at(-1);
                       const daily = latest?.dailyChangePct;
@@ -99,17 +100,13 @@ export default function IndustryList() {
                         >
                           <div className="companyName fs-6">{symbol.name}</div>
                           <div
-                            className={`industryRate d-flex align-items-center gap-1 ${
+                            className={`industryRate px-4 d-flex align-items-center gap-1 ${
                               isDown ? 'text-success' : 'text-danger'
                             }`}
                           >
                             {latest?.close?.toFixed(2) ?? '--'}
                             ({daily?.toFixed(2) ?? '--'}%)
-                            {isDown ? (
-                              <TrendingDown size={16} />
-                            ) : (
-                              <TrendingUp size={16} />
-                            )}
+                            
                           </div>
                         </div>
                       );
@@ -117,22 +114,17 @@ export default function IndustryList() {
                   </div>
 
                   {/* 底部 */}
-                  <div className="industrySummary px-4 py-3 d-flex justify-content-between align-items-center">
-                    <div className="industryTag fs-6">近60日報酬率</div>
+                  <div className="industrySummary px-3 py-3 d-flex justify-content-between align-items-center">
+                    <div className="industryTag px-2">近60日報酬率</div>
                     <div
-                      className={`industryRate fs-2 d-flex align-items-center gap-1 ${
+                      className={`industryRate px-2 fs-2 d-flex align-items-center gap-1 ${
                         avgDailyChangePct !== '--' && Number(avgDailyChangePct) >= 0
                           ? 'text-danger'
                           : 'text-success'
                       }`}
                     >
                       {avgDailyChangePct}%
-                      {avgDailyChangePct !== '--' &&
-                        (Number(avgDailyChangePct) >= 0 ? (
-                          <TrendingUp size={18} />
-                        ) : (
-                          <TrendingDown size={18} />
-                        ))}
+                     
                     </div>
                   </div>
                 </div>
