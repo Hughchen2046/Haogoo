@@ -47,7 +47,7 @@ export default function StockCard() {
   if (loading) return <div>資料載入中...</div>;
 
   return (
-    <div className="stockBox">
+    <div className="stockBox pt-5 pb-5">
       <span className="stockTitle fs-2">熱門個股</span>
       <p className="stockEngtitle display-1 align-start">Popular Stocks</p>
 
