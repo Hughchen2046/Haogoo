@@ -30,16 +30,18 @@ export default function Navbar() {
             <Logo className="nav-logo" />
           </a>
           <ButtonPrimary className="w-auto py-10 px-24 d-md-none">免費註冊</ButtonPrimary>
-          <div className=" d-none d-md-block w-100">
+          <div className=" d-none position-relative d-md-flex w-100">
             <input
               type="text"
               className="form-control bg-gray-50 text-gray-200 font-weight-light placeholder-gray-200 border-0 round-8 py-12 ps-24 pe-16 shadow-none"
               placeholder="輸入台/美股代號，查看公司價值"
             />
-            <Search
-              className="position-absolute end-0 top-50 translate-middle-y me-12 text-gray-800"
-              size={24}
-            />
+            <button
+              type="submit"
+              className="position-absolute end-0 top-50 translate-middle-y me-12 text-white bg-transparent border-0"
+            >
+              <Search size={24} />
+            </button>
           </div>
           <ul className="navbar-nav w-100 d-none d-md-flex gap-md-8">
             <li className="nav-item">
