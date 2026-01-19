@@ -1,0 +1,23 @@
+// ETF 容器
+.etfsbox {
+  box-shadow:
+    0px 24px rgba(31, 101, 52, 0.587),
+    0px 48px rgba(20, 94, 31, 0.292);
+}
+
+// 桌機高度
+@media (min-width: 992px) {
+  .etfsbox {
+    box-shadow:
+      24px 24px rgba(31, 101, 52, 0.587),
+      48px 48px rgba(20, 94, 31, 0.292);
+  }
+}
+
+.etfsTagWrapper {
+  min-height: 600px;
+
+  @media (min-width: 768px) {
+    min-height: 480px;
+  }
+}

@@ -1,33 +1,31 @@
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-import Guideline from './components/Guideline'
-import { Camera } from 'lucide-react';
+import { useState } from 'react';
+import Guideline from './components/Guideline';
+import Login from './components/Login';
+import StockCard from './components/StockCard';
+import EtfsList from './components/EtfsList';
+import IndustryList from './components/IndustryList';
+import SocialFeed from './components/SocialFeed';
+import Footer from './components/Footer';
+import Header from './components/Header';
+import { Index } from './components/Header';
+import Navbar from './components/Navbar';
 
-const {VITE_stocksUrl} = import.meta.env
+const { VITE_stocksUrl } = import.meta.env;
 
 function App() {
-  const [showGuideline, setShowGuideline] = useState(false)
-  
+  const [showGuideline, setShowGuideline] = useState(false);
+
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-end align-items-center mb-4 border-bottom pb-4">
-        <button 
-          className="btn btn-outline-primary"
-          onClick={() => setShowGuideline(!showGuideline)}
-        >
-          {showGuideline ? '顯示首頁' : '顯示設計Guideline'}
-        </button>
-      </div>
-
-      {showGuideline ? (
-        <Guideline />
-      ) : (
-        <div className="row">
-
-        </div>
-      )}
-    </div>
-  )
+    <>
+      <Navbar />
+      <Index />
+      <StockCard />
+      <EtfsList />
+      <IndustryList />
+      <SocialFeed />
+      <Footer />
+    </>
+  );
 }
 
-export default App
+export default App;

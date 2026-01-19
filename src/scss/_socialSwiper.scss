@@ -1,0 +1,27 @@
+.socialSwiper {
+  width: 100%;
+  padding-bottom: 0 !important;
+}
+
+.social-pagination {
+  position: static !important;
+  width: auto !important;
+  display: flex !important;
+  align-items: center;
+  .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background-color: #ffffff !important;
+    opacity: 0.5 !important;
+    margin: 0 4px !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .swiper-pagination-bullet-active {
+    width: 32px;
+    height: 8px;
+    border-radius: 99px;
+    background-color: #ffffff !important;
+    opacity: 1 !important;
+  }
+}

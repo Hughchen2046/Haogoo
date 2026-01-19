@@ -1,0 +1,219 @@
+/* ===============================
+   基本變數
+================================ */
+$primary-color: #17312c;
+
+/* ===============================
+   大標題
+================================ */
+.industryEngTitle {
+  font-size: 80px;
+  font-weight: 900;
+  line-height: 120%;
+  color: $primary-color;
+}
+
+/* ===============================
+   外層容器
+================================ */
+.industryBox {
+  max-width: 1296px;
+  margin: 0 auto;
+  padding-top: 60px;
+}
+
+/* ===============================
+   Swiper
+================================ */
+.industrySwiper {
+  padding-bottom: 40px; // pagination 空間
+}
+
+.industrySwiper .swiper-pagination {
+  bottom: 0 !important;
+}
+
+/* Grid 模式上下間距（手機、桌機共用） */
+.industrySwiper .swiper-wrapper {
+  row-gap: 16px;
+}
+
+/* 每個 slide 本身不加間距，只負責置中 */
+.industrySwiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  padding: 0 !important;
+  height: auto;
+}
+
+/* ===============================
+   卡片外層（避免 Swiper 算寬錯誤）
+================================ */
+.industryCardWrap {
+  height: 100%;
+}
+
+/* ===============================
+   卡片本體
+================================ */
+.card,
+.industryCard {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  margin: 0;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* 讓 footer 可以被推到底部 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===============================
+   卡片 Header
+================================ */
+
+/* ===============================
+   卡片 Footer（灰色底）
+================================ */
+.industrySummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: #f5f5f5;
+  padding: 8px 16px;
+
+  margin-top: auto; // ⭐ 推到底部
+  width: 100%;
+  box-sizing: border-box;
+
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.industrySummary .industryTag {
+  font-size: 0.875rem;
+  color: #666;
+  text-align: left;
+}
+
+.industrySummary .industryRate {
+  text-align: right;
+
+  &.up {
+    color: #d32f2f;
+  }
+
+  &.down {
+    color: #2e7d32;
+  }
+}
+
+/* ===============================
+   價格區
+================================ */
+.cardDown {
+  display: flex;
+  align-items: center;
+}
+/* ===============================
+   手機版
+================================ */
+@media (max-width: 768px) {
+  .industryEngTitle {
+    font-size: 48px;
+  }
+
+  .card,
+  .industryCard {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .industrySwiper .swiper-slide {
+    justify-content: stretch; // ⭐ 不置中
+  }
+}
+
+.industryBox .industryEngTitle {
+  font-family: 'NoTo Sans TC', sans-serif;
+  font-weight: 900 !important;
+  font-size: 80px;
+  line-height: 120%;
+  color: #233926; /* 改成實際色碼 */
+  margin-bottom: 1rem;
+}
+
+.industrySwiper {
+  width: 100%;
+  padding-bottom: 0 !important;
+}
+
+.industry-pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.industry-pagination {
+  width: auto !important;
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  .swiper-pagination-bullet {
+    width: 40px;
+    height: 40px;
+    background-color: #fff !important;
+    border: 1px solid #eee !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    margin: 0 !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 500;
+    color: #888;
+  }
+
+  .swiper-pagination-bullet-active {
+    background-color: #121212 !important;
+    color: #fff !important;
+    border-color: #121212 !important;
+  }
+}
+
+.industry-prev,
+.industry-next {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #000;
+  }
+
+  &.swiper-button-disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+}
