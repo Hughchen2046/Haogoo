@@ -100,7 +100,7 @@ export default function SocialFeed() {
               >
                 {topics.map((topic, index) => {
                   return (
-                    <SwiperSlide key={index}>
+                    <SwiperSlide className="border-0" key={index}>
                       <h3 className="mb-8">{topic.category}</h3>
                       <div className="display-2 display-1-md mb-32 mb-md-80">{topic.title}</div>
                       <div className="d-flex flex-wrap gap-12 mb-32 mb-md-80">

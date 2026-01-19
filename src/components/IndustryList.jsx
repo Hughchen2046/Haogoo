@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Grid } from 'swiper/modules';
+import { Pagination, Grid, Navigation } from 'swiper/modules';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/grid';
+import 'swiper/css/navigation';
 
 export default function IndustryList() {
   const [symbols, setSymbols] = useState([]);
@@ -18,9 +19,9 @@ export default function IndustryList() {
       : 'http://localhost:3000';
 
     fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`)
-      .then(res => res.json())
-      .then(data => setSymbols(data))
-      .catch(err => console.error(err));
+      .then((res) => res.json())
+      .then((data) => setSymbols(data))
+      .catch((err) => console.error(err));
   }, []);
 
   // 每 2 筆 symbols 組成一張卡
@@ -30,109 +31,123 @@ export default function IndustryList() {
   }
 
   return (
-    <div className="industryBox">
-      {/* 標題 */}
-      <section className="industryTitle fs-2 mb-1">精選產業</section>
-      <p className="industryEngTitle display-1 ">
-        Featured Industries
-      </p>
+    <section>
+      <div className="container py-64 py-md-96 font-zh-tw">
+        <h3 className="h2-md mb-8 ">精選產業</h3>
+        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">Featured Industries</h2>
 
-      <Swiper
-        modules={[Pagination, Grid]} // <- 加入 Grid
-        pagination={{ clickable: true }}
-        slidesPerView={1}
-        spaceBetween={12}
-        breakpoints={{
-          0: {
-            slidesPerView: 1,
-            grid: { rows: 3, fill: 'row' }, // 手機：三列
-            spaceBetween: 12,
-          },
-          1024: {
-            slidesPerView: 3,
-            grid: { rows: 1 },
-            spaceBetween: 12,
-          },
-        }}
-        className="industrySwiper"
-      >
-        {groups.map((group, index) => {
-          const avgDailyChangePct = (() => {
-            const values = group
-              .map(s => s.prices?.at(-1)?.dailyChangePct)
-              .filter(v => typeof v === 'number');
-            if (!values.length) return '--';
-            return (values.reduce((sum, v) => sum + v, 0) / values.length).toFixed(2);
-          })();
+        <Swiper
+          modules={[Pagination, Grid, Navigation]} // <- 加入 Grid
+          pagination={{
+            el: '.industry-pagination',
+            clickable: true,
+            renderBullet: (index, className) => {
+              return `<span class="${className}">${index + 1}</span>`;
+            },
+          }}
+          slidesPerView={1}
+          spaceBetween={12}
+          breakpoints={{
+            0: {
+              slidesPerView: 1,
+              grid: { rows: 3, fill: 'row' }, // 手機：三列
+              spaceBetween: 12,
+            },
+            1024: {
+              slidesPerView: 3,
+              grid: { rows: 1 },
+              spaceBetween: 12,
+            },
+          }}
+          navigation={{
+            prevEl: '.industry-prev',
+            nextEl: '.industry-next',
+          }}
+          className="industrySwiper"
+        >
+          {groups.map((group, index) => {
+            const avgDailyChangePct = (() => {
+              const values = group
+                .map((s) => s.prices?.at(-1)?.dailyChangePct)
+                .filter((v) => typeof v === 'number');
+              if (!values.length) return '--';
+              return (values.reduce((sum, v) => sum + v, 0) / values.length).toFixed(2);
+            })();
 
-          return (
-            <SwiperSlide key={index}>
-              <div className="card industryCard h-100">
-                <div className="cardContent">
-                  {/* Header */}
-                  <div className="cardHeader p-4 d-flex justify-content-between">
-                    <span className="industryName">
-                      {group[0]?.industryTW ?? '產業'}
-                    </span>
-                    {avgDailyChangePct !== '--' &&
-                    (Number(avgDailyChangePct) > 0 ? (
-                      <TrendingUp size={36} className="text-danger me-3" />
-                    ) : (
-                      <TrendingDown size={36} className="text-success me-3" />
-                    ))}
+            return (
+              <SwiperSlide key={index}>
+                <div className="card industryCard h-100">
+                  <div className="p-24">
+                    {/* Header */}
+                    <div className="d-flex justify-content-between align-items-center mb-16">
+                      <h3 className="">{group[0]?.industryTW ?? '產業'}</h3>
+                      {avgDailyChangePct !== '--' &&
+                        (Number(avgDailyChangePct) > 0 ? (
+                          <TrendingUp size={36} className="text-danger" />
+                        ) : (
+                          <TrendingDown size={36} className="text-success" />
+                        ))}
+                    </div>
 
-                  </div>
+                    {/* 日期 */}
+                    <div className="text-end text-gray-900 caption font-weight-light">
+                      12/05 收盤價
+                    </div>
 
-                  {/* 日期 */}
-                  <div className="closePrice mx-3">12/05 收盤價</div>
+                    {/* 公司列表 */}
+                    <div className="industryContent">
+                      {group.map((symbol) => {
+                        const latest = symbol.prices?.at(-1);
+                        const daily = latest?.dailyChangePct;
+                        const isDown = typeof daily === 'number' && daily < 0;
 
-                  {/* 公司列表 */}
-                  <div className="industryContent px-6">
-                    {group.map(symbol => {
-                      const latest = symbol.prices?.at(-1);
-                      const daily = latest?.dailyChangePct;
-                      const isDown = typeof daily === 'number' && daily < 0;
-
-                      return (
-                        <div
-                          key={symbol.id}
-                          className="companyRow d-flex justify-content-between align-items-center"
-                        >
-                          <div className="companyName fs-6">{symbol.name}</div>
+                        return (
                           <div
-                            className={`industryRate px-4 d-flex align-items-center gap-1 ${
-                              isDown ? 'text-success' : 'text-danger'
-                            }`}
+                            key={symbol.id}
+                            className="companyRow d-flex justify-content-between align-items-center mt-12"
                           >
-                            {latest?.close?.toFixed(2) ?? '--'}
-                            ({daily?.toFixed(2) ?? '--'}%)
-                            
+                            <h6>{symbol.name}</h6>
+                            <h6
+                              className={`industryRate d-flex align-items-center gap-4 ${
+                                isDown ? 'text-success' : 'text-danger'
+                              }`}
+                            >
+                              {latest?.close?.toFixed(2) ?? '--'} ({daily?.toFixed(2) ?? '--'}%)
+                            </h6>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-
                   {/* 底部 */}
-                  <div className="industrySummary px-3 py-3 d-flex justify-content-between align-items-center">
-                    <div className="industryTag px-2">近60日報酬率</div>
+                  <div className="industrySummary px-24 py-16 d-flex justify-content-between align-items-center">
+                    <div className="industryTag font-weight-light">近60日報酬率</div>
                     <div
-                      className={`industryRate px-2 fs-2 d-flex align-items-center gap-1 ${
+                      className={`industryRate h2 d-flex align-items-center ${
                         avgDailyChangePct !== '--' && Number(avgDailyChangePct) >= 0
                           ? 'text-danger'
                           : 'text-success'
                       }`}
                     >
+                      {avgDailyChangePct > 0 ? '+' : ''}
                       {avgDailyChangePct}%
-                     
                     </div>
                   </div>
                 </div>
-              </div>
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
-    </div>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+        <div className="industry-pagination-container justify-content-md-start">
+          <div className="industry-prev">
+            <ChevronLeft size={24} />
+          </div>
+          <div className="industry-pagination"></div>
+          <div className="industry-next">
+            <ChevronRight size={24} />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

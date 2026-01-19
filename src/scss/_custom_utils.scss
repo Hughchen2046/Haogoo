@@ -1,3 +1,15 @@
+:root {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    padding: 0;
+  }
+}
+
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
 @import 'bootstrap/scss/maps';
@@ -37,6 +49,8 @@ $white: #ffffff;
 $primary: #2fa58d;
 $green: #56b77e;
 $red: #f2735b;
+$pink: rgba(255, 0, 0, 0.1);
+$pinkgreen: rgba(26, 162, 26, 0.1);
 $bgc: #fafafa;
 
 $design-colors: (
@@ -59,6 +73,8 @@ $design-colors: (
   'gray-800': rgba(#121212, 0.6),
   'gray-900': #121212,
   'bgc': $bgc,
+  'pink': $pink,
+  'pinkgreen': $pinkgreen,
 );
 
 @each $name, $col in $design-colors {
@@ -84,12 +100,22 @@ $design-colors: (
 
 // 3. Typography
 .font-zh-tw {
-  font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, -apple-system,
+  font-family:
+    'Noto Sans TC',
+    'PingFang TC',
+    'Microsoft JhengHei',
+    system-ui,
+    -apple-system,
     sans-serif !important;
 }
 
 .font-en {
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', system-ui, -apple-system, sans-serif !important;
+  font-family:
+    'Noto Sans TC',
+    'Microsoft JhengHei',
+    system-ui,
+    -apple-system,
+    sans-serif !important;
 }
 
 .hd-title {
@@ -194,8 +220,7 @@ $utilities: map-merge(
       // 設為 true 才會產生 -sm, -md, -lg, -xl 等後綴
       class: round,
       // 產出的 class 前綴，例如 .round-8
-      values:
-        (
+      values: (
           '0': 0px,
           '4': 4px,
           '8': 8px,
@@ -285,6 +310,9 @@ $utilities: map-merge(
         border-top-left-radius: $v !important;
         border-top-right-radius: $v !important;
       }
+      .border#{$infix}-#{$i} {
+        border: $v !important;
+      }
     }
   }
 }
@@ -359,14 +387,17 @@ $utilities: map-merge(
 }
 
 .icon-24 {
-  width: 24px;
-  height: 24px;
+  width: 24px !important;
+  height: 24px !important;
 }
 .icon-40 {
-  width: 40px;
-  height: 40px;
+  width: 40px !important;
+  height: 40px !important;
 }
-
+.icon-48 {
+  width: 48px !important;
+  height: 48px !important;
+}
 .icon-hover {
   &:hover {
     opacity: 0.8;
@@ -412,4 +443,7 @@ $utilities: map-merge(
 //nav樣式
 .nav-item:hover .nav-link {
   color: var(--bs-primary) !important;
+}
+.w-initial {
+  width: initial !important;
 }
