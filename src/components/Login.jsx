@@ -5,11 +5,7 @@ import ButtonPrimary from './ButtonPrimary';
 
 export default function Login() {
   return (
-    <div className="col">
-      <ButtonOutline className="py-10 px-32" data-bs-toggle="modal" data-bs-target="#loginModal">
-        登入
-      </ButtonOutline>
-
+    <>
       <div
         className="modal fade "
         id="loginModal"
@@ -78,6 +74,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
