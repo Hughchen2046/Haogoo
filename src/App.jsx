@@ -4,7 +4,7 @@ import Test from './components/Routes/Test';
 import Navbar from './components/Routes/Navbar';
 import Footer from './components/Routes/Footer';
 import Login from './components/Routes/Login';
-import { Routes, Route } from 'react-router';
+import { Routes, Route } from 'react-router-dom';
 
 const { VITE_stocksUrl } = import.meta.env;
 

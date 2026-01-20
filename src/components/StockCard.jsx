@@ -13,6 +13,25 @@ import 'swiper/css/navigation';
 export default function StockCard() {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
+
+  // 檢查登入狀態
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuth(!!token);
+    };
+
+    checkAuth();
+
+    // 監聽 storage 事件（跨頁面）和 authChange 事件（同頁面）
+    window.addEventListener('storage', checkAuth);
+    window.addEventListener('authChange', checkAuth);
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('authChange', checkAuth);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +95,7 @@ export default function StockCard() {
           }}
           className="stockSwiper"
         >
-          {stocks.map((stock) => {
+          {stocks.map((stock, index) => {
             const price = stock.latestPrice;
             const changePct = price?.dailyChangePct ?? 0;
             const totalPct = price?.totalChangePct ?? 0;
@@ -87,9 +106,18 @@ export default function StockCard() {
               trend === 'up' ? 'text-danger' : trend === 'down' ? 'text-success' : 'text-secondary';
             const trendBgColor =
               trend === 'up' ? 'bg-pink' : trend === 'down' ? 'bg-pinkgreen' : 'border bg-light';
+
+            // 判斷是否需要模糊：第三頁以後（index >= 12）且未登入
+            // 手機版：每頁 3 張（rows: 4 但實際顯示3張），第三頁從 index 6 開始
+            // 桌機版：每頁 4 張（2x2），第三頁從 index 8 開始
+            const shouldBlur = !isAuth && index >= 8;
+
             return (
-              <SwiperSlide key={stock.id}>
-                <div className="stockCard border round-24 p-16 d-md-flex justify-content-md-between py-md-48 px-md-24">
+              <SwiperSlide key={stock.id} className={shouldBlur ? 'position-relative' : ''}>
+                <div
+                  className="stockCard border round-24 p-16 d-md-flex justify-content-md-between py-md-48 px-md-24"
+                  style={shouldBlur ? { filter: 'blur(8px)', pointerEvents: 'none' } : {}}
+                >
                   <div className="d-flex justify-content-between align-items-center border-bottom pb-8 mb-8 pb-md-0 mb-md-0 border-md-0">
                     <div className="d-flex gap-16 align-items-center me-md-16">
                       <div
@@ -119,6 +147,22 @@ export default function StockCard() {
                     </div>
                   </div>
                 </div>
+
+                {/* 未登入時顯示登入提示遮罩 */}
+                {shouldBlur && (
+                  <div
+                    className="position-absolute top-50 start-50 translate-middle text-center"
+                    style={{ zIndex: 10 }}
+                  >
+                    <button
+                      className="btn btn-outline-primary py-12 px-32 round-8"
+                      data-bs-toggle="modal"
+                      data-bs-target="#loginModal"
+                    >
+                      登入查看更多
+                    </button>
+                  </div>
+                )}
               </SwiperSlide>
             );
           })}

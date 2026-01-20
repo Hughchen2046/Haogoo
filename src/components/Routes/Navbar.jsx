@@ -8,6 +8,25 @@ import Login from './Login';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);
+
+  // 檢查登入狀態
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuth(!!token);
+    };
+
+    checkAuth();
+
+    // 監聽 storage 事件（跨頁面）和 authChange 事件（同頁面）
+    window.addEventListener('storage', checkAuth);
+    window.addEventListener('authChange', checkAuth);
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('authChange', checkAuth);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,7 +80,7 @@ export default function Navbar() {
                 data-bs-toggle="modal"
                 data-bs-target="#loginModal"
               >
-                登入
+                {isAuth ? '登出' : '登入'}
               </button>
             </li>
             <ButtonPrimary className="w-auto py-10 px-32 ">免費註冊</ButtonPrimary>
@@ -129,7 +148,7 @@ export default function Navbar() {
               data-bs-target="#loginModal"
               data-bs-dismiss="offcanvas"
             >
-              登入
+              {isAuth ? '登出' : '登入'}
             </ButtonOutline>
             <ButtonPrimary className="py-10 px-32 mb-24 ">免費註冊</ButtonPrimary>
           </div>
