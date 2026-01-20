@@ -13,37 +13,86 @@ export default function Regist() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    reValidateMode: 'onChange',
+  });
+
   const onSubmit = async (data) => {
-    const { Email, Password } = data;
+    // 強制明確對應欄位，確保資料結構正確
     const submitData = {
-      email: Email,
-      password: Password,
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      createdAt: new Date().toLocaleString(),
     };
+
+    console.log('--- 準備送出註冊 ---');
+    console.table(submitData);
+
+    // 額外保險：如果資料遺失則中斷
+    if (!submitData.email || !submitData.password) {
+      alert('註冊資料未完整填寫，請確認欄位紅字提示。');
+      return;
+    }
+
     try {
       const response = await axios.post(registUrl, submitData);
-      console.log(response.data);
+      console.log('註冊伺服器回應：', response.data);
+
+      const token = response.data.accessToken;
       alert('註冊成功');
       setIsRegist(true);
+      reset(); // 清空表單
+
+      if (token) {
+        localStorage.setItem('authToken', token);
+        window.dispatchEvent(new Event('authChange'));
+      }
+
+      window.dispatchEvent(
+        new CustomEvent('registSuccess', {
+          detail: { nickname: submitData.name },
+        })
+      );
     } catch (error) {
-      console.error(error);
-      alert('註冊失敗');
+      const errorData = error.response?.data;
+      console.error('註冊出錯細節：', errorData || error.message);
+
+      let msg = '註冊失敗，請稍後再試';
+      if (errorData === 'Email and password are required') {
+        msg = '伺服器接收到空資料，請重新整理頁面再試一次。';
+      } else if (typeof errorData === 'string') {
+        msg = errorData;
+      }
+
+      alert(msg);
       setIsRegist(false);
     }
   };
+
+  useEffect(() => {
+    const modalElement = document.getElementById('registModal');
+    if (!modalElement) return;
+
+    // 當 Modal 開啟時，重置註冊狀態，確保下次還能自動關閉
+    const handleShow = () => setIsRegist(false);
+    modalElement.addEventListener('show.bs.modal', handleShow);
+
+    return () => modalElement.removeEventListener('show.bs.modal', handleShow);
+  }, []);
+
   useEffect(() => {
     if (isRegist) {
       const modalElement = document.getElementById('registModal');
       if (modalElement) {
-        // 觸發關閉按鈕的點擊事件
         const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
-        if (closeButton) {
-          closeButton.click();
-        }
+        if (closeButton) closeButton.click();
       }
     }
   }, [isRegist]);
+
   return (
     <>
       <div
@@ -77,10 +126,10 @@ export default function Regist() {
                   <div className="form-floating">
                     <input
                       type="email"
-                      className={`form-control ${errors.Email ? 'is-invalid' : ''}`}
+                      className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                       id="registEmailInput"
                       placeholder="請輸入信箱"
-                      {...register('Email', {
+                      {...register('email', {
                         required: '請輸入正確 Email',
                         pattern: {
                           value: /^\S+@\S+$/i,
@@ -89,8 +138,32 @@ export default function Regist() {
                       })}
                     />
                     <label htmlFor="registEmailInput">請輸入信箱</label>
-                    {errors.Email && (
-                      <div className="invalid-feedback text-start">{errors.Email.message}</div>
+                    {errors.email && (
+                      <div className="invalid-feedback text-start">{errors.email.message}</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 暱稱欄位 */}
+                <div className="w-100">
+                  <h6 className="text-start mb-8">暱稱</h6>
+                  <div className="form-floating">
+                    <input
+                      type="text"
+                      className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                      id="registNicknameInput"
+                      placeholder="請輸入暱稱"
+                      {...register('name', {
+                        required: '請輸入暱稱',
+                        maxLength: {
+                          value: 20,
+                          message: '暱稱最多 20 個字元',
+                        },
+                      })}
+                    />
+                    <label htmlFor="registNicknameInput">請輸入暱稱</label>
+                    {errors.name && (
+                      <div className="invalid-feedback text-start">{errors.name.message}</div>
                     )}
                   </div>
                 </div>
@@ -101,10 +174,10 @@ export default function Regist() {
                   <div className="form-floating">
                     <input
                       type="password"
-                      className={`form-control ${errors.Password ? 'is-invalid' : ''}`}
+                      className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                       id="registPasswordInput"
                       placeholder="請輸入密碼"
-                      {...register('Password', {
+                      {...register('password', {
                         required: '請輸入正確密碼',
                         minLength: {
                           value: 4,
@@ -117,8 +190,8 @@ export default function Regist() {
                       })}
                     />
                     <label htmlFor="registPasswordInput">請輸入密碼（4-20 字元）</label>
-                    {errors.Password && (
-                      <div className="invalid-feedback text-start">{errors.Password.message}</div>
+                    {errors.password && (
+                      <div className="invalid-feedback text-start">{errors.password.message}</div>
                     )}
                   </div>
                 </div>
@@ -127,16 +200,16 @@ export default function Regist() {
                 <div className="form-check w-100 text-start">
                   <input
                     type="checkbox"
-                    className={`form-check-input ${errors.Terms ? 'is-invalid' : ''}`}
+                    className={`form-check-input ${errors.terms ? 'is-invalid' : ''}`}
                     id="termsCheck"
-                    {...register('Terms', {
+                    {...register('terms', {
                       required: '需同意服務條款',
                     })}
                   />
                   <label className="form-check-label" htmlFor="termsCheck">
                     我同意服務條款與隱私政策
                   </label>
-                  {errors.Terms && <div className="invalid-feedback">{errors.Terms.message}</div>}
+                  {errors.terms && <div className="invalid-feedback">{errors.terms.message}</div>}
                 </div>
 
                 {/* 提交按鈕 */}

@@ -10,6 +10,7 @@ import Regist from './Regist';
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
+  const [isRegist, setIsRegist] = useState(false);
 
   // 檢查登入狀態
   useEffect(() => {
@@ -20,12 +21,18 @@ export default function Navbar() {
 
     checkAuth();
 
+    const checkRegist = (e) => {
+      console.log('收到註冊成功了喔', e.detail.nickname);
+    };
+
     // 監聽 storage 事件（跨頁面）和 authChange 事件（同頁面）
     window.addEventListener('storage', checkAuth);
     window.addEventListener('authChange', checkAuth);
+    window.addEventListener('registSuccess', checkRegist);
     return () => {
       window.removeEventListener('storage', checkAuth);
       window.removeEventListener('authChange', checkAuth);
+      window.removeEventListener('registSuccess', checkRegist);
     };
   }, []);
 
@@ -58,8 +65,8 @@ export default function Navbar() {
           </Link>
           <ButtonPrimary
             className="w-auto py-10 px-24 d-lg-none"
-            data-bs-toggle="modal"
-            data-bs-target="#registModal"
+            data-bs-toggle={isAuth ? '' : 'modal'}
+            data-bs-target={isAuth ? '' : '#registModal'}
           >
             {isAuth ? '使用者資料' : '免費註冊'}
           </ButtonPrimary>
@@ -106,9 +113,9 @@ export default function Navbar() {
               )}
             </li>
             <ButtonPrimary
-              className="w-auto py-10 px-32 "
-              data-bs-toggle="modal"
-              data-bs-target="#registModal"
+              className="w-auto py-10 px-32"
+              data-bs-toggle={isAuth ? '' : 'modal'}
+              data-bs-target={isAuth ? '' : '#registModal'}
             >
               {isAuth ? '使用者資料' : '免費註冊'}
             </ButtonPrimary>
@@ -189,7 +196,7 @@ export default function Navbar() {
               </ButtonOutline>
             )}
             <ButtonPrimary
-              className="py-10 px-32 mb-24 "
+              className="py-10 px-32 mb-24"
               data-bs-toggle="modal"
               data-bs-target="#registModal"
             >
