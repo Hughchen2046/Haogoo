@@ -4,6 +4,7 @@ import Test from './components/Routes/Test';
 import Navbar from './components/Routes/Navbar';
 import Footer from './components/Routes/Footer';
 import Login from './components/Routes/Login';
+import Regist from './components/Routes/Regist';
 import { Routes, Route } from 'react-router-dom';
 
 const { VITE_stocksUrl } = import.meta.env;
@@ -18,6 +19,7 @@ function App() {
       </Routes>
       <Footer />
       <Login />
+      <Regist />
     </>
   );
 }

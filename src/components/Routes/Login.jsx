@@ -16,9 +16,22 @@ export default function Login() {
   const [password, setPassword] = useState('');
 
   // 初始化時檢查登入狀態
+  // 初始化時檢查登入狀態
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setIsAuth(!!token);
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuth(!!token);
+    };
+
+    checkAuth();
+
+    // 監聽 storage 事件（跨頁面）和 authChange 事件（同頁面）
+    window.addEventListener('storage', checkAuth);
+    window.addEventListener('authChange', checkAuth);
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('authChange', checkAuth);
+    };
   }, []);
 
   const logoutAuth = () => {
@@ -156,7 +169,13 @@ export default function Login() {
                 </ButtonPrimary>
                 <div className="d-flex">
                   <p>沒有帳號？</p>
-                  <a href="#" className="link-primary">
+                  <a
+                    href="#"
+                    className="link-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#registModal"
+                    data-bs-dismiss="modal"
+                  >
                     立即註冊
                   </a>
                 </div>

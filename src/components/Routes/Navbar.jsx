@@ -5,6 +5,7 @@ import ButtonOutline from '../ButtonOutline';
 import Logo from '../Logo';
 import { Search, Menu, X } from 'lucide-react';
 import Login from './Login';
+import Regist from './Regist';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,6 +37,12 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const logoutAuth = () => {
+    localStorage.removeItem('authToken');
+    setIsAuth(false);
+    window.dispatchEvent(new Event('authChange'));
+  };
+
   return (
     <>
       <nav
@@ -49,7 +56,13 @@ export default function Navbar() {
           <Link className="navbar-brand" to="/">
             <Logo className="nav-logo" />
           </Link>
-          <ButtonPrimary className="w-auto py-10 px-24 d-lg-none">免費註冊</ButtonPrimary>
+          <ButtonPrimary
+            className="w-auto py-10 px-24 d-lg-none"
+            data-bs-toggle="modal"
+            data-bs-target="#registModal"
+          >
+            {isAuth ? '使用者資料' : '免費註冊'}
+          </ButtonPrimary>
           <div className=" d-none position-relative d-lg-flex w-100">
             <input
               type="text"
@@ -75,15 +88,30 @@ export default function Navbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <button
-                className="nav-link btn btn-link text-gray-300 py-10 px-16 border-0 shadow-none"
-                data-bs-toggle="modal"
-                data-bs-target="#loginModal"
-              >
-                {isAuth ? '登出' : '登入'}
-              </button>
+              {isAuth ? (
+                <button
+                  className="nav-link btn btn-link text-gray-300 py-10 px-16 border-0 shadow-none"
+                  onClick={logoutAuth}
+                >
+                  登出
+                </button>
+              ) : (
+                <button
+                  className="nav-link btn btn-link text-gray-300 py-10 px-16 border-0 shadow-none"
+                  data-bs-toggle="modal"
+                  data-bs-target="#loginModal"
+                >
+                  登入
+                </button>
+              )}
             </li>
-            <ButtonPrimary className="w-auto py-10 px-32 ">免費註冊</ButtonPrimary>
+            <ButtonPrimary
+              className="w-auto py-10 px-32 "
+              data-bs-toggle="modal"
+              data-bs-target="#registModal"
+            >
+              {isAuth ? '使用者資料' : '免費註冊'}
+            </ButtonPrimary>
           </ul>
           <button
             className="navbar-toggler border-0"
@@ -142,15 +170,31 @@ export default function Navbar() {
           </ul>
           {/* 底部按鈕 - 使用 mt-auto 推到底部 */}
           <div className="mt-auto d-flex gap-12 flex-column font-zh-tw">
-            <ButtonOutline
-              className="py-10 px-32"
+            {isAuth ? (
+              <ButtonOutline
+                className="py-10 px-32"
+                onClick={logoutAuth}
+                data-bs-dismiss="offcanvas"
+              >
+                登出
+              </ButtonOutline>
+            ) : (
+              <ButtonOutline
+                className="py-10 px-32"
+                data-bs-toggle="modal"
+                data-bs-target="#loginModal"
+                data-bs-dismiss="offcanvas"
+              >
+                登入
+              </ButtonOutline>
+            )}
+            <ButtonPrimary
+              className="py-10 px-32 mb-24 "
               data-bs-toggle="modal"
-              data-bs-target="#loginModal"
-              data-bs-dismiss="offcanvas"
+              data-bs-target="#registModal"
             >
-              {isAuth ? '登出' : '登入'}
-            </ButtonOutline>
-            <ButtonPrimary className="py-10 px-32 mb-24 ">免費註冊</ButtonPrimary>
+              免費註冊
+            </ButtonPrimary>
           </div>
         </div>
       </div>
