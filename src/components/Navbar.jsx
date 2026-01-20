@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import ButtonPrimary from './ButtonPrimary';
 import ButtonOutline from './ButtonOutline';
 import Logo from './Logo';
@@ -19,18 +20,18 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`navbar navbar-expand-md position-fixed top-0 start-0 end-0 p-12 font-zh-tw transition-all ${
+        className={`navbar navbar-expand-lg position-fixed top-0 start-0 end-0 p-12 font-zh-tw transition-all ${
           isScrolled ? 'navbar-scrolled' : ''
         }`}
         style={{ zIndex: 999 }}
         data-bs-theme="dark"
       >
         <div className="container d-flex gap-md-48 justify-content-between px-0 ">
-          <a className="navbar-brand" href="#">
+          <Link className="navbar-brand" to="/">
             <Logo className="nav-logo" />
-          </a>
-          <ButtonPrimary className="w-auto py-10 px-24 d-md-none">免費註冊</ButtonPrimary>
-          <div className=" d-none position-relative d-md-flex w-100">
+          </Link>
+          <ButtonPrimary className="w-auto py-10 px-24 d-lg-none">免費註冊</ButtonPrimary>
+          <div className=" d-none position-relative d-lg-flex w-100">
             <input
               type="text"
               className="form-control bg-gray-50 text-gray-200 font-weight-light placeholder-gray-200 border-0 round-8 py-12 ps-24 pe-16 shadow-none"
@@ -43,16 +44,16 @@ export default function Navbar() {
               <Search size={24} />
             </button>
           </div>
-          <ul className="navbar-nav w-100 d-none d-md-flex gap-md-8">
+          <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
             <li className="nav-item">
-              <a className="nav-link text-gray-300 py-10 px-16" href="#">
+              <Link className="nav-link text-gray-300 py-10 px-16" to="/test">
                 我的選股清單
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-gray-300 py-10 px-16" href="#">
+              <Link className="nav-link text-gray-300 py-10 px-16" to="/">
                 熱門話題
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
               <button
@@ -78,7 +79,7 @@ export default function Navbar() {
 
       {/* 手機版側邊選單 - 移至 nav 外部避免高度被縮限 */}
       <div
-        className="offcanvas d-md-none offcanvas-start w-100 border-0"
+        className="offcanvas d-lg-none offcanvas-start w-100 border-0"
         tabIndex="-1"
         id="mobileMenu"
         data-bs-theme="light"
@@ -110,14 +111,14 @@ export default function Navbar() {
           {/* 選單列表 */}
           <ul className="navbar-nav font-zh-tw text-center gap-24 h6">
             <li className="nav-item py-10 px-16">
-              <a href="" className="text-decoration-none text-gray-900">
+              <Link to="/test" className="text-decoration-none text-gray-900">
                 我的選股清單
-              </a>
+              </Link>
             </li>
             <li className="nav-item py-10 px-16">
-              <a href="" className="text-decoration-none text-gray-900">
+              <Link to="/" className="text-decoration-none text-gray-900">
                 熱門話題
-              </a>
+              </Link>
             </li>
           </ul>
           {/* 底部按鈕 - 使用 mt-auto 推到底部 */}
@@ -134,27 +135,6 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-
-      <Login />
-      {/*
-          <div className=" justify-content-end" id="navbarSupportedContent">
-            <form className="position-relative w-100" style={{ height: 48 }}>
-              <input
-                type="search"
-                className="form-control h-100 pe-5 bg-transparent text-gray-200 placeholder-gray-200 border-gray-300"
-                placeholder="輸入台/美股代號，查看公司價值"
-                style={{ fontWeight: 400 }}
-              />
-
-              <button
-                type="submit"
-                className="position-absolute top-50 end-0 translate-middle-y me-3 border-0 bg-transparent p-0 d-flex align-items-center justify-content-center"
-                aria-label="search"
-              >
-                <Search size={24} />
-              </button>
-            </form>
-          </div> */}
     </>
   );
 }
