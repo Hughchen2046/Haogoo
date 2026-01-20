@@ -1,4 +1,4 @@
-import Google_Icon from '../assets/Google_Icon.png';
+import Google_Icon from '../../assets/Google_Icon.png';
 import Logo from '../Logo';
 import ButtonOutline from '../ButtonOutline';
 import ButtonPrimary from '../ButtonPrimary';
