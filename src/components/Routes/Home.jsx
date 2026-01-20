@@ -1,4 +1,4 @@
-import Header from '../Header';
+import Header from './Header';
 import StockCard from '../StockCard';
 import EtfsList from '../EtfsList';
 import IndustryList from '../IndustryList';

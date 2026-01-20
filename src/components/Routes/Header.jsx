@@ -1,4 +1,4 @@
-import ButtonOutline from './ButtonOutline';
+import ButtonOutline from '../ButtonOutline';
 
 export default function Header() {
   return (

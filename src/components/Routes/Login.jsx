@@ -1,7 +1,7 @@
 import Google_Icon from '../assets/Google_Icon.png';
-import Logo from '../components/Logo';
-import ButtonOutline from './ButtonOutline';
-import ButtonPrimary from './ButtonPrimary';
+import Logo from '../Logo';
+import ButtonOutline from '../ButtonOutline';
+import ButtonPrimary from '../ButtonPrimary';
 
 export default function Login() {
   return (

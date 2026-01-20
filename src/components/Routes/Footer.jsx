@@ -1,4 +1,4 @@
-import Logo from './Logo';
+import Logo from '../Logo';
 import { IdCard, Phone, Mail, Map } from 'lucide-react';
 
 export default function Footer() {
