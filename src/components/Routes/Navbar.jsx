@@ -85,7 +85,7 @@ export default function Navbar() {
           </div>
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
             <li className="nav-item">
-              <Link className="nav-link text-gray-300 py-10 px-16" to="/test">
+              <Link className="nav-link text-gray-300 py-10 px-16" to="/">
                 我的選股清單
               </Link>
             </li>

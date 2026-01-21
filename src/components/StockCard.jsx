@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowDown, ArrowUp, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
-
+import ButtonPrimary from './ButtonPrimary';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Grid, Navigation } from 'swiper/modules';
 
@@ -110,7 +110,7 @@ export default function StockCard() {
             // 判斷是否需要模糊：第三頁以後（index >= 12）且未登入
             // 手機版：每頁 3 張（rows: 4 但實際顯示3張），第三頁從 index 6 開始
             // 桌機版：每頁 4 張（2x2），第三頁從 index 8 開始
-            const shouldBlur = !isAuth && index >= 8;
+            const shouldBlur = !isAuth && index >= 4;
 
             return (
               <SwiperSlide key={stock.id} className={shouldBlur ? 'position-relative' : ''}>
@@ -154,13 +154,13 @@ export default function StockCard() {
                     className="position-absolute top-50 start-50 translate-middle text-center"
                     style={{ zIndex: 10 }}
                   >
-                    <button
+                    <ButtonPrimary
                       className="btn btn-outline-primary py-12 px-32 round-8"
                       data-bs-toggle="modal"
                       data-bs-target="#loginModal"
                     >
                       登入查看更多
-                    </button>
+                    </ButtonPrimary>
                   </div>
                 )}
               </SwiperSlide>

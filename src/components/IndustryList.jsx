@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import ButtonPrimary from './ButtonPrimary';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -12,6 +13,24 @@ import 'swiper/css/navigation';
 
 export default function IndustryList() {
   const [symbols, setSymbols] = useState([]);
+  const [isAuth, setIsAuth] = useState(false);
+  // 檢查登入狀態
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      setIsAuth(!!token);
+    };
+
+    checkAuth();
+
+    // 監聽 storage 事件（跨頁面）和 authChange 事件（同頁面）
+    window.addEventListener('storage', checkAuth);
+    window.addEventListener('authChange', checkAuth);
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('authChange', checkAuth);
+    };
+  }, []);
 
   useEffect(() => {
     const baseURL = import.meta.env.PROD
@@ -73,10 +92,13 @@ export default function IndustryList() {
               if (!values.length) return '--';
               return (values.reduce((sum, v) => sum + v, 0) / values.length).toFixed(2);
             })();
-
+            const shouldBlur = !isAuth && index >= 1;
             return (
-              <SwiperSlide key={index}>
-                <div className="card industryCard h-100">
+              <SwiperSlide key={index} className={shouldBlur ? 'position-relative' : ''}>
+                <div
+                  className="card industryCard h-100"
+                  style={shouldBlur ? { filter: 'blur(8px)', pointerEvents: 'none' } : {}}
+                >
                   <div className="p-24">
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-center mb-16">
@@ -134,6 +156,20 @@ export default function IndustryList() {
                     </div>
                   </div>
                 </div>
+                {shouldBlur && (
+                  <div
+                    className="position-absolute top-50 start-50 translate-middle text-center"
+                    style={{ zIndex: 10 }}
+                  >
+                    <ButtonPrimary
+                      className=" py-12 px-32 round-8"
+                      data-bs-toggle="modal"
+                      data-bs-target="#loginModal"
+                    >
+                      登入查看更多
+                    </ButtonPrimary>
+                  </div>
+                )}
               </SwiperSlide>
             );
           })}
