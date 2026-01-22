@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import ButtonOutline from './ButtonOutline';
-import Mixed from './Mixed';
+import ButtonOutline from './Tools/ButtonOutline';
+import Mixed from './Tools/Mixed';
 
 export default function EtfsList() {
   const containerRef = useRef(null);

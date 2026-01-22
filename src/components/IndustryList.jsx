@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import ButtonPrimary from './ButtonPrimary';
+import ButtonPrimary from './Tools/ButtonPrimary';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';

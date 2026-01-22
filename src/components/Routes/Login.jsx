@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import Google_Icon from '../../assets/Google_Icon.png';
-import Logo from '../Logo';
-import ButtonOutline from '../ButtonOutline';
-import ButtonPrimary from '../ButtonPrimary';
+import Logo from '../Tools/Logo';
+import ButtonOutline from '../Tools/ButtonOutline';
+import ButtonPrimary from '../Tools/ButtonPrimary';
 import axios from 'axios';
 
 const loginUrl = import.meta.env.PROD

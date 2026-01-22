@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import ButtonPrimary from '../ButtonPrimary';
-import ButtonOutline from '../ButtonOutline';
-import Logo from '../Logo';
+import ButtonPrimary from '../Tools/ButtonPrimary';
+import ButtonOutline from '../Tools/ButtonOutline';
+import Logo from '../Tools/Logo';
 import { Search, Menu, X } from 'lucide-react';
 import Login from './Login';
 import Regist from './Regist';
