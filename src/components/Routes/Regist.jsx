@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import Logo from '../Logo';
-import ButtonPrimary from '../ButtonPrimary';
+import Logo from '../Tools/Logo';
+import ButtonPrimary from '../Tools/ButtonPrimary';
 import axios from 'axios';
 
 export default function Regist() {

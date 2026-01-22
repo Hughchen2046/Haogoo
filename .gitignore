@@ -25,5 +25,9 @@ dist-ssr
 *.sln
 *.sw?
 .prettierrc
-
+.Dockerfile
+admin-delete.js
+server.cjs
+test_fin01.js
+test.js
 *.env
