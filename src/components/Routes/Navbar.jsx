@@ -22,6 +22,14 @@ export default function Navbar() {
     logout();
   };
 
+  const closeOffcanvas = () => {
+    const offcanvasElement = document.getElementById('mobileMenu');
+    if (offcanvasElement) {
+      const closeBtn = offcanvasElement.querySelector('[data-bs-dismiss="offcanvas"]');
+      if (closeBtn) closeBtn.click();
+    }
+  };
+
   return (
     <>
       <nav
@@ -140,7 +148,7 @@ export default function Navbar() {
               <NavLink
                 to="/"
                 className="text-decoration-none text-gray-900"
-                data-bs-dismiss="offcanvas"
+                onClick={closeOffcanvas}
               >
                 我的選股清單
               </NavLink>
@@ -149,7 +157,7 @@ export default function Navbar() {
               <NavLink
                 to="/"
                 className="text-decoration-none text-gray-900"
-                data-bs-dismiss="offcanvas"
+                onClick={closeOffcanvas}
               >
                 熱門話題
               </NavLink>
@@ -158,7 +166,7 @@ export default function Navbar() {
               <NavLink
                 to="/test"
                 className="text-decoration-none text-gray-900"
-                data-bs-dismiss="offcanvas"
+                onClick={closeOffcanvas}
               >
                 GuideLine
               </NavLink>
