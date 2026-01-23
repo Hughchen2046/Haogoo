@@ -1,68 +1,42 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import ButtonOutline from './Tools/ButtonOutline';
+import Mixed from './Tools/Mixed';
 
 export default function EtfsList() {
-  // 標籤分行堆疊
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: false, amount: 0.5 });
+
   const tagRows = [
-    ["國泰永續高股息", "群益台灣精選高股息"],
-    ["元大台灣50正2", "元大高股息", "復華富時不動產"],
-    ["元大台灣50", "富邦特選高股息30"],
-    ["中信高評級公司債", "統一FANG+", "富邦台50"],
-    ["國泰台灣科技龍頭"],
+    ['國泰永續高股息', '群益台灣精選高股息'],
+    ['元大台灣50正2', '元大高股息', '復華富時不動產'],
+    ['元大台灣50', '富邦特選高股息30'],
+    ['中信高評級公司債', '統一FANG+', '富邦台50'],
+    ['國泰台灣科技龍頭'],
   ];
 
-  // 動畫設定：自然重力落下
-  const tagVariants = {
-    hidden: { y: -120, opacity: 1, rotate: 0 }, // 初始上方
-    visible: (i) => ({
-      y: 0,
-      opacity: 1,
-      rotate: (Math.random() - 0.5) * 40, // 微微旋轉
-      transition: {
-        y: { type: "spring", stiffness: 90, damping: 40 }, // 模擬重力落下
-        rotate: { type: "spring", stiffness: 100, damping: 40 },
-        delay: i * 0.02, // 每個標籤延遲
-      },
-    }),
-  };
-
   return (
-    <div className='etfsbox round-96 position-relative p-5'>
-      {/* 左側內容 */}
-      <div className="etfs-content text-center text-md-start">
-        <section className="etfstitle fs-2 pt-6 px-4">熱門ETF</section>
-        <span className='etfsEngtitle p-3'>Popular ETFs</span> 
-        <div className="d-flex justify-content-center justify-content-md-start">
-          <button className='etfsbtn bt-btn primarly-light round-8 fs-6 mt-3' a href="#">
-            查看更多
-          </button>
-        </div>
-      </div> 
+    <section className="bg-gray-400">
+      <div className="container py-64 py-md-96">
+        <div className="etfsbox bg-primary-700 font-zh-tw round-48 round-md-96 p-32 mb-24 py-md-72 px-md-96">
+          <div className="row">
+            <div
+              className="col-12 col-md-6 text-center text-white text-md-start"
+              ref={containerRef}
+            >
+              <h3 className=" h3 h2-md mb-8">熱門ETF</h3>
+              <h2 className="display-2 display-1-md mb-32 mb-md-64">Popular ETFs</h2>
+              <ButtonOutline className="w-initial mx-auto ms-md-0 py-12 px-40">
+                查看更多
+              </ButtonOutline>
+            </div>
 
-      {/* 標籤區塊 */}
-      <div className="etfsTagContainer mt-4 mt-md-0">
-        {tagRows.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="d-flex justify-content-center justify-content-md-start gap-3 mb-3"
-          >
-            {row.map((tagText, i) => (
-              <motion.a
-                key={tagText}
-                href ="#"
-                custom={i + rowIndex * 10}
-                initial="hidden"                     // 頁面刷新先堆疊
-                whileInView="visible"                 // 滑到才掉落
-                viewport={{ once: true, amount: 0.3 }} // 30%可見才觸發
-                variants={tagVariants}
-                className="etfsTag fs-5 round-pill p-3"
-              >
-                {tagText}
-              </motion.a>
-            ))}
+            <div className="col-12 col-md-6 etfsTagWrapper position-relative overflow-hidden">
+              <Mixed tags={tagRows.flat()} start={isInView} />
+            </div>
           </div>
-        ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
