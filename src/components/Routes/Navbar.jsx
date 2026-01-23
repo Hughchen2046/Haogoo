@@ -1,40 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import ButtonPrimary from '../Tools/ButtonPrimary';
 import ButtonOutline from '../Tools/ButtonOutline';
 import Logo from '../Tools/Logo';
 import { Search, Menu, X } from 'lucide-react';
-import Login from './Login';
-import Regist from './Regist';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isAuth, setIsAuth] = useState(false);
-  const [isRegist, setIsRegist] = useState(false);
-
-  // 檢查登入狀態
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('authToken');
-      setIsAuth(!!token);
-    };
-
-    checkAuth();
-
-    const checkRegist = (e) => {
-      console.log('收到註冊成功了喔', e.detail.nickname);
-    };
-
-    // 監聽 storage 事件（跨頁面）和 authChange 事件（同頁面）
-    window.addEventListener('storage', checkAuth);
-    window.addEventListener('authChange', checkAuth);
-    window.addEventListener('registSuccess', checkRegist);
-    return () => {
-      window.removeEventListener('storage', checkAuth);
-      window.removeEventListener('authChange', checkAuth);
-      window.removeEventListener('registSuccess', checkRegist);
-    };
-  }, []);
+  const { isAuth, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,10 +18,8 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const logoutAuth = () => {
-    localStorage.removeItem('authToken');
-    setIsAuth(false);
-    window.dispatchEvent(new Event('authChange'));
+  const handleLogout = () => {
+    logout();
   };
 
   return (
@@ -60,9 +32,9 @@ export default function Navbar() {
         data-bs-theme="dark"
       >
         <div className="container d-flex gap-md-48 justify-content-between px-0 ">
-          <Link className="navbar-brand" to="/">
+          <NavLink className="navbar-brand" to="/">
             <Logo className="nav-logo" />
-          </Link>
+          </NavLink>
           <ButtonPrimary
             className="w-auto py-10 px-24 d-lg-none"
             data-bs-toggle={isAuth ? '' : 'modal'}
@@ -84,21 +56,21 @@ export default function Navbar() {
             </button>
           </div>
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
-            <li className="nav-item">
-              <Link className="nav-link text-gray-300 py-10 px-16" to="/">
+            <li className="nav-item d-flex flex-column justify-content-center align-items-center">
+              <NavLink className="nav-link text-gray-300 py-10 px-16" to="/">
                 我的選股清單
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-gray-300 py-10 px-16" to="/">
+              <NavLink className="nav-link text-gray-300 py-10 px-16" to="/">
                 熱門話題
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
               {isAuth ? (
                 <button
                   className="nav-link btn btn-link text-gray-300 py-10 px-16 border-0 shadow-none"
-                  onClick={logoutAuth}
+                  onClick={handleLogout}
                 >
                   登出
                 </button>
@@ -131,7 +103,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* 手機版側邊選單 - 移至 nav 外部避免高度被縮限 */}
+      {/* 小螢幕側邊 */}
       <div
         className="offcanvas d-lg-none offcanvas-start w-100 border-0"
         tabIndex="-1"
@@ -148,9 +120,9 @@ export default function Navbar() {
             <X size={24} />
           </button>
         </div>
-        {/* Body: 搜尋框 + 選單連結 */}
+        {/* 小螢幕側邊: 搜尋框 + 選單連結 */}
         <div className="offcanvas-body d-flex flex-column p-12 bg-light text-gray-900">
-          {/* 搜尋框區塊 */}
+          {/* 搜尋框 */}
           <div className="position-relative mb-40">
             <input
               type="text"
@@ -162,25 +134,41 @@ export default function Navbar() {
               size={24}
             />
           </div>
-          {/* 選單列表 */}
+          {/* 選單 */}
           <ul className="navbar-nav font-zh-tw text-center gap-24 h6">
             <li className="nav-item py-10 px-16">
-              <Link to="/test" className="text-decoration-none text-gray-900">
+              <NavLink
+                to="/"
+                className="text-decoration-none text-gray-900"
+                data-bs-dismiss="offcanvas"
+              >
                 我的選股清單
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item py-10 px-16">
-              <Link to="/" className="text-decoration-none text-gray-900">
+              <NavLink
+                to="/"
+                className="text-decoration-none text-gray-900"
+                data-bs-dismiss="offcanvas"
+              >
                 熱門話題
-              </Link>
+              </NavLink>
+            </li>
+            <li className="nav-item py-10 px-16">
+              <NavLink
+                to="/test"
+                className="text-decoration-none text-gray-900"
+                data-bs-dismiss="offcanvas"
+              >
+                GuideLine
+              </NavLink>
             </li>
           </ul>
-          {/* 底部按鈕 - 使用 mt-auto 推到底部 */}
           <div className="mt-auto d-flex gap-12 flex-column font-zh-tw">
             {isAuth ? (
               <ButtonOutline
                 className="py-10 px-32"
-                onClick={logoutAuth}
+                onClick={handleLogout}
                 data-bs-dismiss="offcanvas"
               >
                 登出

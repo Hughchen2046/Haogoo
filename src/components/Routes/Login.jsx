@@ -3,75 +3,31 @@ import Google_Icon from '../../assets/Google_Icon.png';
 import Logo from '../Tools/Logo';
 import ButtonOutline from '../Tools/ButtonOutline';
 import ButtonPrimary from '../Tools/ButtonPrimary';
-import axios from 'axios';
-
-const loginUrl = import.meta.env.PROD
-  ? 'https://haogoo-data.zeabur.app/login'
-  : 'http://localhost:3000/login';
-let method = 'POST';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Login() {
-  const [isAuth, setIsAuth] = useState(false);
+  const { isAuth, login, logout } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // 初始化時檢查登入狀態
-  // 初始化時檢查登入狀態
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('authToken');
-      setIsAuth(!!token);
-    };
-
-    checkAuth();
-
-    // 監聽 storage 事件（跨頁面）和 authChange 事件（同頁面）
-    window.addEventListener('storage', checkAuth);
-    window.addEventListener('authChange', checkAuth);
-    return () => {
-      window.removeEventListener('storage', checkAuth);
-      window.removeEventListener('authChange', checkAuth);
-    };
-  }, []);
-
-  const logoutAuth = () => {
-    localStorage.removeItem('authToken');
-    setIsAuth(false);
-    window.dispatchEvent(new Event('authChange'));
-  };
-  const loginSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    // 如果已登入，則執行登出
     if (isAuth) {
-      localStorage.removeItem('authToken');
-      setIsAuth(false);
+      logout();
       alert('已登出');
       return;
     }
 
-    // 執行登入
-    const loginData = {
-      email,
-      password,
-    };
-    try {
-      const response = await axios.post(loginUrl, loginData);
-      const token = response.data.accessToken;
+    const { success, error } = await login({ email, password });
 
-      // 儲存 token 到 localStorage
-      localStorage.setItem('authToken', token);
-      console.log('登入成功，Token:', token);
+    if (success) {
+      console.log('登入成功');
       alert('登入成功');
-      setIsAuth(true);
       setEmail('');
       setPassword('');
-      // 觸發 custom event 通知其他組件更新認證狀態
-      window.dispatchEvent(new Event('authChange'));
-    } catch (error) {
+    } else {
       console.log('登入失敗:', error);
       alert('登入失敗，請檢查帳號密碼');
-      setIsAuth(false);
     }
   };
 
@@ -160,11 +116,7 @@ export default function Login() {
                     <label htmlFor="passwordInput">請輸入密碼</label>
                   </div>
                 </div>
-                <ButtonPrimary
-                  type="submit"
-                  className="py-12 px-40 round-8"
-                  onClick={isAuth ? logoutAuth : loginSubmit}
-                >
+                <ButtonPrimary type="submit" className="py-12 px-40 round-8" onClick={handleLogin}>
                   {isAuth ? '登出' : '登入'}
                 </ButtonPrimary>
                 <div className="d-flex">

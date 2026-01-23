@@ -1,12 +1,40 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import 'bootstrap';
 import './scss/all.scss';
+import Home from './components/Routes/Home';
+import Test from './components/Routes/Test';
+import Nopages from './components/Routes/Nopages';
+import { RouterProvider, createHashRouter } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+
+const routes = [
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: 'test',
+        element: <Test />,
+      },
+      {
+        path: '*',
+        element: <Nopages />,
+      },
+    ],
+  },
+];
+const router = createHashRouter(routes);
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter basename={import.meta.env.BASE_URL}>
-    <App />
-  </BrowserRouter>
+  <StrictMode>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </StrictMode>
 );

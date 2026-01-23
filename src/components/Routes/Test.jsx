@@ -1,20 +1,13 @@
-import PopularNews from '../PopularNews';
-import Regist from './Regist';
+import Guideline from '../Tools/Guideline';
 
 export default function Test() {
+  console.log('Test rendering');
   return (
     <>
-      <div className="container py-64">
+      <div className="bg-dark text-white py-96">
         <h2 className="mb-32">測試頁面</h2>
-        <button
-          className="btn btn-primary py-12 px-32"
-          data-bs-toggle="modal"
-          data-bs-target="#registModal"
-        >
-          開啟註冊 Modal
-        </button>
       </div>
-      <Regist />
+      <Guideline />
     </>
   );
 }

@@ -2,13 +2,11 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Logo from '../Tools/Logo';
 import ButtonPrimary from '../Tools/ButtonPrimary';
-import axios from 'axios';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Regist() {
   const [isRegist, setIsRegist] = React.useState(false);
-  const registUrl = import.meta.env.PROD
-    ? 'https://haogoo-data.zeabur.app/register'
-    : 'http://localhost:3000/register';
+  const { register: registerAuth } = useAuth(); // 使用別名與 hook form 的 register 區隔
 
   const {
     register,
@@ -37,36 +35,28 @@ export default function Regist() {
       return;
     }
 
-    try {
-      const response = await axios.post(registUrl, submitData);
-      console.log('註冊伺服器回應：', response.data);
+    const { success, error, data: responseData } = await registerAuth(submitData);
 
-      const token = response.data.accessToken;
+    if (success) {
+      console.log('註冊伺服器回應：', responseData);
       alert('註冊成功');
       setIsRegist(true);
       reset(); // 清空表單
 
-      if (token) {
-        localStorage.setItem('authToken', token);
-        window.dispatchEvent(new Event('authChange'));
-      }
-
+      // 觸發自定義事件，讓 Navbar 可以監聽並 Log 暱稱 (保留此邏輯)
       window.dispatchEvent(
         new CustomEvent('registSuccess', {
           detail: { nickname: submitData.name },
         })
       );
-    } catch (error) {
-      const errorData = error.response?.data;
-      console.error('註冊出錯細節：', errorData || error.message);
-
+    } else {
+      console.error('註冊出錯細節：', error);
       let msg = '註冊失敗，請稍後再試';
-      if (errorData === 'Email and password are required') {
+      if (typeof error === 'string') {
+        msg = error;
+      } else if (error === 'Email and password are required') {
         msg = '伺服器接收到空資料，請重新整理頁面再試一次。';
-      } else if (typeof errorData === 'string') {
-        msg = errorData;
       }
-
       alert(msg);
       setIsRegist(false);
     }

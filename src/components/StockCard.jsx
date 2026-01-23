@@ -10,35 +10,17 @@ import 'swiper/css/pagination';
 import 'swiper/css/grid';
 import 'swiper/css/navigation';
 
+import { useAuth } from '../contexts/AuthContext';
+
 export default function StockCard() {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isAuth, setIsAuth] = useState(false);
-
-  // 檢查登入狀態
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('authToken');
-      setIsAuth(!!token);
-    };
-
-    checkAuth();
-
-    // 監聽 storage 事件（跨頁面）和 authChange 事件（同頁面）
-    window.addEventListener('storage', checkAuth);
-    window.addEventListener('authChange', checkAuth);
-    return () => {
-      window.removeEventListener('storage', checkAuth);
-      window.removeEventListener('authChange', checkAuth);
-    };
-  }, []);
+  const { isAuth } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const baseURL = import.meta.env.PROD
-          ? 'https://haogoo-data.zeabur.app'
-          : 'http://localhost:3000';
+        const baseURL = import.meta.env.VITE_API_BASE;
 
         const res = await axios.get(`${baseURL}/symbols?_embed=prices&_limit=1000`);
 
