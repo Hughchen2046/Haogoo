@@ -1,5 +1,5 @@
 export default function MystockList() {
   return (
-   <h1></h1>
+   <h1>123</h1>
    )
 }

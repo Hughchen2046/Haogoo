@@ -8,6 +8,7 @@ import Test from './components/Routes/Test';
 import Nopages from './components/Routes/Nopages';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import StockInfo from './pages/StockInfo.jsx';
 
 const routes = [
   {
@@ -19,8 +20,8 @@ const routes = [
         element: <Home />,
       },
       {
-        path: 'test',
-        element: <Test />,
+        path: 'stockInfo',
+        element: <StockInfo />,
       },
       {
         path: '*',
