@@ -1,0 +1,8 @@
+.stockInfoCard {
+  background-color: #f2f2f2;     /* 灰色背景 */
+  border-radius: 24px;           /* 圓角矩形 */
+  padding: 20px;
+  max-width: 400px;              /* 卡片寬度（可調） */
+  margin: 24px auto 0;           /* 置中 + 往下 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}

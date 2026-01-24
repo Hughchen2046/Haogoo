@@ -8,6 +8,7 @@ import Test from './components/Routes/Test';
 import Nopages from './components/Routes/Nopages';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import StockInfo from './pages/StockInfo.jsx';
 import { Topics } from './contexts/Topics';
 import TopicFeedPage from './components/Routes/TopicFeedPage';
 
@@ -23,8 +24,8 @@ const routes = [
       { path: 'topics', element: <TopicFeedPage /> },
       { path: 'topics/:topicSlug', element: <TopicFeedPage /> },
       {
-        path: 'test',
-        element: <Test />,
+        path: 'stockInfo',
+        element: <StockInfo />,
       },
       {
         path: '*',
