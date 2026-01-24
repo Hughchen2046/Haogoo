@@ -155,7 +155,9 @@ $header-sizes: (
   font-weight: 900;
   line-height: 1.2;
 }
-
+.font-weight-bold {
+  font-weight: 700 !important;
+}
 .font-weight-light {
   font-weight: 400 !important;
 }
@@ -445,4 +447,31 @@ $utilities: map-merge(
 }
 .w-initial {
   width: initial !important;
+}
+.topic-border-img {
+  box-shadow: 0px 4px 20px 0px #00000014;
+
+  @media (min-width: 992px) {
+    border-bottom: 1px solid #12121214;
+    img {
+      height: 126px;
+    }
+  }
+}
+.nav-topic {
+  .nav-link {
+    color: var(--bs-gray-800);
+    &:hover {
+      color: var(--bs-primary) !important;
+    }
+    &.active {
+      color: var(--bs-primary) !important;
+    }
+  }
+}
+.nav-topic-underline {
+  height: 4px;
+  border-top-left-radius: 99px;
+  border-top-right-radius: 99px;
+  background-color: var(--bs-primary);
 }
