@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import ButtonPrimary from '../Tools/ButtonPrimary';
 import ButtonOutline from '../Tools/ButtonOutline';
 import Logo from '../Tools/Logo';
@@ -9,6 +9,13 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const { isAuth, logout } = useAuth();
+  const location = useLocation();
+  const isIndex = location.pathname === '/';
+  const navLogoColor = isIndex ? 'text-white' : 'text-primary';
+  const navLinkColor = isIndex ? 'text-white' : 'text-gray-900';
+  const navSearchColor = isIndex
+    ? 'bg-gray-50 text-gray-200 placeholder-gray-200'
+    : 'bg-gray-400 text-gray-800 placeholder-gray-800';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,7 +40,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`navbar navbar-expand-lg position-fixed top-0 start-0 end-0 p-12 font-zh-tw transition-all ${
+        className={`navbar navbar-expand-lg position-fixed top-0 start-0 end-0 p-12 py-lg-16 font-zh-tw transition-all ${
           isScrolled ? 'navbar-scrolled' : ''
         }`}
         style={{ zIndex: 999 }}
@@ -41,7 +48,7 @@ export default function Navbar() {
       >
         <div className="container d-flex gap-md-48 justify-content-between px-0 ">
           <NavLink className="navbar-brand" to="/">
-            <Logo className="nav-logo" />
+            <Logo className={`nav-logo ${navLogoColor}`} />
           </NavLink>
           <ButtonPrimary
             className="w-auto py-10 px-24 d-lg-none"
@@ -53,38 +60,38 @@ export default function Navbar() {
           <div className=" d-none position-relative d-lg-flex w-100">
             <input
               type="text"
-              className="form-control bg-gray-50 text-gray-200 font-weight-light placeholder-gray-200 border-0 round-8 py-12 ps-24 pe-16 shadow-none"
+              className={`form-control ${navSearchColor} font-weight-light border-0 round-8 py-12 ps-24 pe-16 shadow-none`}
               placeholder="輸入台/美股代號，查看公司價值"
             />
             <button
               type="submit"
               className="position-absolute end-0 top-50 translate-middle-y me-12 text-white bg-transparent border-0"
             >
-              <Search size={24} />
+              <Search size={24} className={navLinkColor} />
             </button>
           </div>
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
             <li className="nav-item d-flex flex-column justify-content-center align-items-center">
-              <NavLink className="nav-link text-gray-300 py-10 px-16" to="/">
+              <NavLink className={`nav-link ${navLinkColor} py-10 px-16`} to="/">
                 我的選股清單
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link text-gray-300 py-10 px-16" to="/">
+              <NavLink className={`nav-link ${navLinkColor} py-10 px-16`} to="/topics">
                 熱門話題
               </NavLink>
             </li>
             <li className="nav-item">
               {isAuth ? (
                 <button
-                  className="nav-link btn btn-link text-gray-300 py-10 px-16 border-0 shadow-none"
+                  className={`nav-link btn btn-link ${navLinkColor} py-10 px-16 border-0 shadow-none`}
                   onClick={handleLogout}
                 >
                   登出
                 </button>
               ) : (
                 <button
-                  className="nav-link btn btn-link text-gray-300 py-10 px-16 border-0 shadow-none"
+                  className={`nav-link btn btn-link ${navLinkColor} py-10 px-16 border-0 shadow-none`}
                   data-bs-toggle="modal"
                   data-bs-target="#loginModal"
                 >
