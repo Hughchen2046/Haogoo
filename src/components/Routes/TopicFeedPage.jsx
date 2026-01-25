@@ -1,37 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
-import { Dropdown } from 'bootstrap';
 import { Topics } from '../../contexts/Topics';
 import { ChevronUp, ChevronDown, ChevronRight, MessageCircleMore } from 'lucide-react';
 import pigbank from '../../assets/pigbank.png';
 
 export default function TopicFeedPage() {
   const { topicSlug } = useParams();
-  const dropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const currentTopic =
     Object.values(Topics).find((topic) => topic.slug === (topicSlug ?? '')) ?? Topics.all;
-
-  useEffect(() => {
-    const dropdownEl = dropdownRef.current;
-    if (!dropdownEl) return;
-
-    const bsDropdown = new Dropdown(dropdownEl);
-
-    // 監聽 Bootstrap 事件來同步 React 狀態（用於旋轉 icon）
-    const onShow = () => setIsOpen(true);
-    const onHide = () => setIsOpen(false);
-
-    dropdownEl.addEventListener('show.bs.dropdown', onShow);
-    dropdownEl.addEventListener('hide.bs.dropdown', onHide);
-
-    return () => {
-      dropdownEl.removeEventListener('show.bs.dropdown', onShow);
-      dropdownEl.removeEventListener('hide.bs.dropdown', onHide);
-      bsDropdown.dispose();
-    };
-  }, []);
 
   return (
     <>
@@ -55,21 +33,23 @@ export default function TopicFeedPage() {
               <h3 className="mb-8">熱門話題</h3>
               <h2 className="display-2 text-primary">Trending Now</h2>
             </div>
+            {/*小螢幕用dropdown*/}
             <div className={`dropdown mb-32 font-zh-tw d-lg-none ${isOpen ? 'show' : ''}`}>
               <button
-                ref={dropdownRef}
                 className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
                 type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                data-bs-offset="0,20"
+                onClick={() => setIsOpen(!isOpen)}
+                aria-expanded={isOpen}
               >
                 <span className="ps-16">{currentTopic.label}</span>
                 <ChevronDown />
               </button>
               <ul
-                className="dropdown-menu w-100 py-16 px-24 border-0"
-                style={{ backgroundColor: '#F3F3F3' }}
+                className={`dropdown-menu w-100 py-16 px-24 border-0 ${isOpen ? 'show' : ''}`}
+                style={{
+                  backgroundColor: '#F3F3F3',
+                  display: isOpen ? 'block' : 'none',
+                }}
               >
                 <li className="d-flex justify-content-between align-items-start">
                   <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
@@ -81,6 +61,7 @@ export default function TopicFeedPage() {
                       to={topic.path}
                       className="dropdown-item font-weight-light py-8 mb-8"
                       end
+                      onClick={() => setIsOpen(false)}
                     >
                       {topic.label}
                     </NavLink>
@@ -93,10 +74,10 @@ export default function TopicFeedPage() {
               <ul className="nav nav-topic gap-40 px-8">
                 {Object.values(Topics).map((topic) => (
                   <li key={topic.slug} className="nav-item">
-                    <NavLink to={topic.path} className="nav-link px-0 pt-0 pb-0 border-0" end>
+                    <NavLink to={topic.path} className="nav-link h4 px-0 pt-0 pb-0 border-0" end>
                       {({ isActive }) => (
                         <>
-                          <div className="pb-0">{topic.label}</div>
+                          <div className="pb-16">{topic.label}</div>
                           {isActive && <div className="nav-topic-underline"></div>}
                         </>
                       )}

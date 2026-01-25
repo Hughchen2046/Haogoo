@@ -162,7 +162,7 @@ export default function Navbar() {
             </li>
             <li className="nav-item py-10 px-16">
               <NavLink
-                to="/"
+                to="/topics"
                 className="text-decoration-none text-gray-900"
                 onClick={closeOffcanvas}
               >

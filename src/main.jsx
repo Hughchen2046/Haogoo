@@ -28,6 +28,10 @@ const routes = [
         element: <StockInfo />,
       },
       {
+        path: 'test',
+        element: <Test />,
+      },
+      {
         path: '*',
         element: <Nopages />,
       },
