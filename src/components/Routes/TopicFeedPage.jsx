@@ -55,8 +55,7 @@ export default function TopicFeedPage() {
               <h3 className="mb-8">熱門話題</h3>
               <h2 className="display-2 text-primary">Trending Now</h2>
             </div>
-            {/*小螢幕用dropdown*/}
-            <div className="dropdown mb-32 font-zh-tw d-lg-none">
+            <div className={`dropdown mb-32 font-zh-tw d-lg-none ${isOpen ? 'show' : ''}`}>
               <button
                 ref={dropdownRef}
                 className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
