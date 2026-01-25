@@ -1,8 +1,86 @@
+/* 自訂 container 最大寬度 */
+.custom-container {
+  max-width: 1076px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 全頁背景 */
+.stock-info-page {
+  background-color: #fff;
+}
+
+/* 卡片 */
 .stockInfoCard {
-  background-color: #f2f2f2;     /* 灰色背景 */
-  border-radius: 24px;           /* 圓角矩形 */
-  padding: 20px;
-  max-width: 400px;              /* 卡片寬度（可調） */
-  margin: 24px auto 0;           /* 置中 + 往下 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+/* 按鈕共用樣式 */
+.stock-dropdown-btn {
+  color: #333;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  position: relative;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #111;
+  }
+
+  &.active {
+    color: #111;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background-color: #333;
+      border-radius: 2px;
+    }
+  }
+}
+
+/* 手機 dropdown 特殊樣式 */
+@media (max-width: 767px) {
+  .stock-dropdown-btn {
+    background-color: #e5e5e5;
+    border-radius: 1rem;
+
+    &.active::after {
+      content: none;
+    }
+  }
+
+  .dropdown-menu {
+    border-radius: 1rem;
+    border: none;
+    padding: 0.5rem 0;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+
+    .dropdown-item {
+      padding: 0.75rem 1.25rem;
+
+      &:hover {
+        background-color: #f2f2f2;
+      }
+    }
+  }
+}
+
+/* 桌機按鈕 */
+@media (min-width: 768px) {
+  .tab-btn {
+    border-radius: 0;
+    background-color: transparent;
+  }
+}
+
+.card-title{
+  font-size: 48px;
+  font-weight: 700;
 }
