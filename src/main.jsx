@@ -11,6 +11,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import StockInfo from './pages/StockInfo.jsx';
 import { Topics } from './contexts/Topics';
 import TopicFeedPage from './components/Routes/TopicFeedPage';
+import TopicETF from './components/Routes/TopicETF.jsx';
+import TopicAll from './components/Routes/TopicAll.jsx';
 
 const routes = [
   {
@@ -21,8 +23,15 @@ const routes = [
         index: true,
         element: <Home />,
       },
-      { path: 'topics', element: <TopicFeedPage /> },
-      { path: 'topics/:topicSlug', element: <TopicFeedPage /> },
+      {
+        path: 'topics',
+        element: <TopicFeedPage />,
+        children: [
+          { index: true, element: <TopicAll /> },
+          { path: 'etf', element: <TopicETF /> },
+          { path: ':topicSlug', element: <TopicAll /> },
+        ],
+      },
       {
         path: 'stockInfo',
         element: <StockInfo />,

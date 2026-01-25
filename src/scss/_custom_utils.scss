@@ -450,8 +450,26 @@ $utilities: map-merge(
 }
 .topic-border-img {
   box-shadow: 0px 4px 20px 0px #00000014;
+  .topic-img-frame {
+    width: 100%;
+    img {
+      width: 100%;
+    }
+  }
+  &:hover {
+    cursor: pointer;
+    img {
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.2);
+      transition: all 0.3s ease-in-out;
+    }
+  }
 
   @media (min-width: 992px) {
+    .topic-img-frame {
+      width: 168px;
+    }
     border-bottom: 1px solid #12121214;
     img {
       height: 126px;
