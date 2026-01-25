@@ -13,6 +13,7 @@ import { Topics } from './contexts/Topics';
 import TopicFeedPage from './components/Routes/TopicFeedPage';
 import TopicETF from './components/Routes/TopicETF.jsx';
 import TopicAll from './components/Routes/TopicAll.jsx';
+import TopicBeginner from './components/Routes/TopicBeginner.jsx';
 
 const routes = [
   {
@@ -29,6 +30,7 @@ const routes = [
         children: [
           { index: true, element: <TopicAll /> },
           { path: 'etf', element: <TopicETF /> },
+          { path: 'beginners', element: <TopicBeginner /> },
           { path: ':topicSlug', element: <TopicAll /> },
         ],
       },
