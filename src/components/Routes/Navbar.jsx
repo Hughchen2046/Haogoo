@@ -19,7 +19,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 200);
+      isIndex ? setIsScrolled(window.scrollY > 200) : setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -162,7 +162,7 @@ export default function Navbar() {
             </li>
             <li className="nav-item py-10 px-16">
               <NavLink
-                to="/"
+                to="/topics"
                 className="text-decoration-none text-gray-900"
                 onClick={closeOffcanvas}
               >
