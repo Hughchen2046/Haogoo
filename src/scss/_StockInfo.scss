@@ -3,9 +3,11 @@
 ========================= */
 .custom-container {
   max-width: 1076px;
+  min-width: 351px;
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+  justify-content: start;
 }
 
 /* =========================
@@ -22,8 +24,11 @@
   border: none;
   background-color: #ffffff;
 
+ 
+
   .card-body {
     background-color: #ffffff;
+    
   }
 
   .card-title {
@@ -59,15 +64,20 @@
 .stock-dropdown-btn {
   border: none;
   padding: 0.75rem 1.5rem;
-  text-align: left;
+  text-align: start;
   position: relative;
-  color: #333;
+  color: #000000;
   background-color: transparent;
   transition: color 0.2s ease;
+  background-color: #ffffff;
 
-  &:hover {
-    color: #111;
-  }
+  &:hover,
+    &:focus {
+      background-color: #fff;
+      color: #212529;
+      box-shadow: none;
+      text-align: start;
+    }
 }
 
 /* =========================
@@ -143,5 +153,21 @@
         background-color: #f2f2f2;
       }
     }
+  }
+}
+
+@media (max-width: 767px) {
+  .stockInfoCard {
+    width: 351px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .custom-container {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
