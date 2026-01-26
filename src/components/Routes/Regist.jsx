@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import Logo from '../Tools/Logo';
 import ButtonPrimary from '../Tools/ButtonPrimary';
 import { useAuth } from '../../contexts/AuthContext';
+import * as bootstrap from 'bootstrap';
 
 export default function Regist() {
   const [isRegist, setIsRegist] = React.useState(false);
-  const { register: registerAuth } = useAuth(); // 使用別名與 hook form 的 register 區隔
+  const nextModalRef = useRef(null);
+  const { register: registerAuth } = useAuth();
 
   const {
     register,
@@ -17,8 +19,15 @@ export default function Regist() {
     reValidateMode: 'onChange',
   });
 
+  const handleSwitch = (targetId) => {
+    nextModalRef.current = targetId;
+    const modalElement = document.getElementById('registModal');
+    if (modalElement) {
+      bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+    }
+  };
+
   const onSubmit = async (data) => {
-    // 強制明確對應欄位，確保資料結構正確
     const submitData = {
       email: data.email,
       password: data.password,
@@ -26,10 +35,6 @@ export default function Regist() {
       createdAt: new Date().toLocaleString(),
     };
 
-    console.log('--- 準備送出註冊 ---');
-    console.table(submitData);
-
-    // 額外保險：如果資料遺失則中斷
     if (!submitData.email || !submitData.password) {
       alert('註冊資料未完整填寫，請確認欄位紅字提示。');
       return;
@@ -41,9 +46,7 @@ export default function Regist() {
       console.log('註冊伺服器回應：', responseData);
       alert('註冊成功');
       setIsRegist(true);
-      reset(); // 清空表單
 
-      // 觸發自定義事件，讓 Navbar 可以監聽並 Log 暱稱 (保留此邏輯)
       window.dispatchEvent(
         new CustomEvent('registSuccess', {
           detail: { nickname: submitData.name },
@@ -54,8 +57,6 @@ export default function Regist() {
       let msg = '註冊失敗，請稍後再試';
       if (typeof error === 'string') {
         msg = error;
-      } else if (error === 'Email and password are required') {
-        msg = '伺服器接收到空資料，請重新整理頁面再試一次。';
       }
       alert(msg);
       setIsRegist(false);
@@ -66,19 +67,41 @@ export default function Regist() {
     const modalElement = document.getElementById('registModal');
     if (!modalElement) return;
 
-    // 當 Modal 開啟時，重置註冊狀態，確保下次還能自動關閉
-    const handleShow = () => setIsRegist(false);
-    modalElement.addEventListener('show.bs.modal', handleShow);
+    const handleHidden = () => {
+      reset();
+      setIsRegist(false);
+      document.querySelector('.modal-backdrop')?.remove();
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
 
-    return () => modalElement.removeEventListener('show.bs.modal', handleShow);
-  }, []);
+      if (nextModalRef.current) {
+        const nextEl = document.getElementById(nextModalRef.current);
+        if (nextEl) {
+          bootstrap.Modal.getOrCreateInstance(nextEl).show();
+        }
+        nextModalRef.current = null;
+      }
+    };
+
+    const handleShown = () => {
+      document.getElementById('registEmailInput')?.focus();
+    };
+
+    modalElement.addEventListener('hidden.bs.modal', handleHidden);
+    modalElement.addEventListener('shown.bs.modal', handleShown);
+
+    return () => {
+      modalElement.removeEventListener('hidden.bs.modal', handleHidden);
+      modalElement.removeEventListener('shown.bs.modal', handleShown);
+    };
+  }, [reset]);
 
   useEffect(() => {
     if (isRegist) {
       const modalElement = document.getElementById('registModal');
       if (modalElement) {
         const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
-        if (closeButton) closeButton.click();
+        closeButton?.click();
       }
     }
   }, [isRegist]);
@@ -86,7 +109,7 @@ export default function Regist() {
   return (
     <>
       <div
-        className="modal fade "
+        className="modal fade"
         id="registModal"
         tabIndex="-1"
         aria-labelledby="registLabel"
@@ -110,7 +133,6 @@ export default function Regist() {
                 onSubmit={handleSubmit(onSubmit)}
                 className="d-flex flex-column gap-24 align-items-center"
               >
-                {/* Email 欄位 */}
                 <div className="w-100">
                   <h6 className="text-start mb-8">Email帳號</h6>
                   <div className="form-floating">
@@ -134,7 +156,6 @@ export default function Regist() {
                   </div>
                 </div>
 
-                {/* 暱稱欄位 */}
                 <div className="w-100">
                   <h6 className="text-start mb-8">暱稱</h6>
                   <div className="form-floating">
@@ -158,7 +179,6 @@ export default function Regist() {
                   </div>
                 </div>
 
-                {/* 密碼欄位 */}
                 <div className="w-100">
                   <h6 className="text-start mb-8">密碼</h6>
                   <div className="form-floating">
@@ -186,7 +206,6 @@ export default function Regist() {
                   </div>
                 </div>
 
-                {/* 同意條款 */}
                 <div className="form-check w-100 text-start">
                   <input
                     type="checkbox"
@@ -202,21 +221,13 @@ export default function Regist() {
                   {errors.terms && <div className="invalid-feedback">{errors.terms.message}</div>}
                 </div>
 
-                {/* 提交按鈕 */}
                 <ButtonPrimary type="submit" className="py-12 px-40 round-8">
                   註冊
                 </ButtonPrimary>
 
-                {/* 登入連結 */}
                 <div className="d-flex">
                   <p>已有帳號？</p>
-                  <a
-                    href="#"
-                    className="link-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#loginModal"
-                    data-bs-dismiss="modal"
-                  >
+                  <a href="#" className="link-primary" onClick={() => handleSwitch('loginModal')}>
                     立即登入
                   </a>
                 </div>

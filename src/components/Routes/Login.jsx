@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import * as bootstrap from 'bootstrap';
 import Google_Icon from '../../assets/Google_Icon.png';
 import Logo from '../Tools/Logo';
 import ButtonOutline from '../Tools/ButtonOutline';
@@ -31,27 +32,66 @@ export default function Login() {
     }
   };
 
+  const nextModalRef = useRef(null);
+
+  // 處理切換 Modal 的邏輯
+  const handleSwitch = (targetId) => {
+    nextModalRef.current = targetId;
+    const modalElement = document.getElementById('loginModal');
+    if (modalElement) {
+      bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+    }
+  };
+
+  useEffect(() => {
+    const modalElement = document.getElementById('loginModal');
+    if (!modalElement) return;
+
+    const handleHidden = () => {
+      setEmail('');
+      setPassword('');
+      document.querySelector('.modal-backdrop')?.remove();
+      document.body.style.overflow = '';
+
+      if (nextModalRef.current) {
+        const nextEl = document.getElementById(nextModalRef.current);
+        if (nextEl) {
+          const modalInstance = bootstrap.Modal.getOrCreateInstance(nextEl);
+          modalInstance.show();
+        }
+        nextModalRef.current = null;
+      }
+    };
+
+    const handleShown = () => {
+      document.getElementById('accountInput')?.focus();
+    };
+
+    modalElement.addEventListener('hidden.bs.modal', handleHidden);
+    modalElement.addEventListener('shown.bs.modal', handleShown);
+
+    return () => {
+      modalElement.removeEventListener('hidden.bs.modal', handleHidden);
+      modalElement.removeEventListener('shown.bs.modal', handleShown);
+    };
+  }, []);
+
   useEffect(() => {
     if (isAuth) {
-      // 登入成功後關閉 modal
+      // 登入成功後觸發關閉
       const modalElement = document.getElementById('loginModal');
       if (modalElement) {
-        // 觸發關閉按鈕的點擊事件
         const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
-        if (closeButton) {
-          closeButton.click();
-        }
+        closeButton?.click();
       }
 
-      // 同時關閉 offcanvas（手機版選單）
+      // 同時關閉 offcanvas
       const offcanvasElement = document.getElementById('mobileMenu');
       if (offcanvasElement) {
         const offcanvasCloseButton = offcanvasElement.querySelector(
           '[data-bs-dismiss="offcanvas"]'
         );
-        if (offcanvasCloseButton) {
-          offcanvasCloseButton.click();
-        }
+        offcanvasCloseButton?.click();
       }
     }
   }, [isAuth]);
@@ -121,17 +161,18 @@ export default function Login() {
                 </ButtonPrimary>
                 <div className="d-flex">
                   <p>沒有帳號？</p>
-                  <a
-                    href="#"
-                    className="link-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#registModal"
-                    data-bs-dismiss="modal"
-                  >
+                  <a href="#" className="link-primary" onClick={() => handleSwitch('registModal')}>
                     立即註冊
                   </a>
                 </div>
               </div>
+              <a
+                href="#"
+                className="d-inline-block mb-8"
+                onClick={() => handleSwitch('forgetPWModal')}
+              >
+                忘記密碼?
+              </a>
             </div>
           </div>
         </div>

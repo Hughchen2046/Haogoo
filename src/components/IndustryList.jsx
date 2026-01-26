@@ -22,7 +22,7 @@ export default function IndustryList() {
 
     fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`)
       .then((res) => res.json())
-      .then((data) => setSymbols(data))
+      .then((data) => setSymbols(data.data))
       .catch((err) => console.error(err));
   }, []);
 

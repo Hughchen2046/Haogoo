@@ -183,8 +183,10 @@ export default function Navbar() {
             {isAuth ? (
               <ButtonOutline
                 className="py-10 px-32"
-                onClick={handleLogout}
-                data-bs-dismiss="offcanvas"
+                onClick={() => {
+                  handleLogout();
+                  closeOffcanvas();
+                }}
               >
                 登出
               </ButtonOutline>
@@ -193,7 +195,7 @@ export default function Navbar() {
                 className="py-10 px-32"
                 data-bs-toggle="modal"
                 data-bs-target="#loginModal"
-                data-bs-dismiss="offcanvas"
+                onClick={closeOffcanvas}
               >
                 登入
               </ButtonOutline>
@@ -202,6 +204,7 @@ export default function Navbar() {
               className="py-10 px-32 mb-24"
               data-bs-toggle="modal"
               data-bs-target="#registModal"
+              onClick={closeOffcanvas}
             >
               免費註冊
             </ButtonPrimary>

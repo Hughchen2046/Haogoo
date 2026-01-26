@@ -13,7 +13,7 @@ export default function TopicETF() {
       try {
         const res = await axios.get(`${topicUrl}?_expand=user&category=ETF`);
         console.log('取得資料成功:', res.data);
-        setEtfData(res.data);
+        setEtfData(res.data.data);
       } catch (err) {
         console.error('API 錯誤:', err);
       }

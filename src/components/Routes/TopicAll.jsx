@@ -13,7 +13,7 @@ export default function TopicAll() {
       try {
         const res = await axios.get(`${topicUrl}?_expand=user&_page=1&_limit=5`);
         console.log('取得資料成功:', res.data);
-        setAllData(res.data);
+        setAllData(res.data.data);
       } catch (err) {
         console.error('API 錯誤:', err);
       }

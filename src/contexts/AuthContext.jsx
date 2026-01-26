@@ -54,6 +54,7 @@ export const AuthProvider = ({ children }) => {
       if (response.data.user) {
         setUser(response.data.user);
       }
+      console.log('登入成功', response);
 
       return { success: true, data: response.data };
     } catch (error) {
