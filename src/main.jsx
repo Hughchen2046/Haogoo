@@ -14,6 +14,9 @@ import TopicFeedPage from './components/Routes/TopicFeedPage';
 import TopicETF from './components/Routes/TopicETF.jsx';
 import TopicAll from './components/Routes/TopicAll.jsx';
 import TopicBeginner from './components/Routes/TopicBeginner.jsx';
+import TopicInternation from './components/Routes/TopicInternation.jsx';
+import TopicTaiwanStock from './components/Routes/TopicTaiwanStock.jsx';
+import TopHot from './components/Routes/TopHot.jsx';
 
 const routes = [
   {
@@ -31,6 +34,9 @@ const routes = [
           { index: true, element: <TopicAll /> },
           { path: 'etf', element: <TopicETF /> },
           { path: 'beginners', element: <TopicBeginner /> },
+          { path: 'global-finance', element: <TopicInternation /> },
+          { path: 'tw-market', element: <TopicTaiwanStock /> },
+          { path: 'hot', element: <TopHot /> },
           { path: ':topicSlug', element: <TopicAll /> },
         ],
       },
@@ -52,9 +58,7 @@ const routes = [
 const router = createHashRouter(routes);
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  </StrictMode>
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>
 );

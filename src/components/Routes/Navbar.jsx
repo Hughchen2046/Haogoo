@@ -113,7 +113,7 @@ export default function Navbar() {
             data-bs-toggle="offcanvas"
             data-bs-target="#mobileMenu"
           >
-            <Menu className="text-white" />
+            <Menu className={navLogoColor} />
           </button>
         </div>
       </nav>

@@ -51,7 +51,7 @@ export default function TopicAll() {
                 </div>
                 <a href="#" className="d-flex gap-8 py-8 link-dark text-decoration-none me-8">
                   <MessageCircleMore />
-                  <span className="text-end">{allData.commentCount}</span>
+                  <span className="text-end">{allData.likeCount}</span>
                 </a>
               </div>
             </div>

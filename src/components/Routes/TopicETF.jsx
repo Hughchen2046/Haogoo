@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import pigbank from '../../assets/pigbank.png';
 import { MessageCircleMore } from 'lucide-react';
 
 export default function TopicETF() {
@@ -11,7 +9,7 @@ export default function TopicETF() {
     console.log('當前 Topic URL:', topicUrl);
     const fetchTopicData = async () => {
       try {
-        const res = await axios.get(`${topicUrl}?_expand=user&category=ETF`);
+        const res = await axios.get(`${topicUrl}?_expand=user&category=ETF&_page=1&_limit=5`);
         console.log('取得資料成功:', res.data);
         setEtfData(res.data.data);
       } catch (err) {
@@ -51,7 +49,7 @@ export default function TopicETF() {
                 </div>
                 <a href="#" className="d-flex gap-8 py-8 link-dark text-decoration-none me-8">
                   <MessageCircleMore />
-                  <span className="text-end">{etfData.commentCount}</span>
+                  <span className="text-end">{etfData.likeCount}</span>
                 </a>
               </div>
             </div>

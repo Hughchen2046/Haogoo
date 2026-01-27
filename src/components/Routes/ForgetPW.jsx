@@ -6,18 +6,38 @@ import ButtonPrimary from '../Tools/ButtonPrimary';
 export default function ForgetPW() {
   const [email, setEmail] = useState('');
   const nextModalRef = useRef(null);
+  const modalInstanceRef = useRef(null);
 
   const handleSwitch = (targetId) => {
     nextModalRef.current = targetId;
     const modalElement = document.getElementById('forgetPWModal');
     if (modalElement) {
-      bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+      const modalInstance = modalInstanceRef.current || bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
     }
   };
 
   useEffect(() => {
     const modalElement = document.getElementById('forgetPWModal');
     if (!modalElement) return;
+
+    // Check if instance already exists (created by data-bs-toggle)
+    let modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+    if (!modalInstance) {
+      modalInstance = new bootstrap.Modal(modalElement);
+    }
+
+    modalInstanceRef.current = modalInstance;
+
+    const handleHide = () => {
+      // 在 Modal 開始關閉時立即移除焦點，修復 aria-hidden 警告
+      if (document.activeElement && modalElement.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
+    };
 
     const handleHidden = () => {
       setEmail('');
@@ -28,14 +48,29 @@ export default function ForgetPW() {
       if (nextModalRef.current) {
         const nextEl = document.getElementById(nextModalRef.current);
         if (nextEl) {
-          bootstrap.Modal.getOrCreateInstance(nextEl).show();
+          let nextInstance = bootstrap.Modal.getInstance(nextEl);
+          if (!nextInstance) {
+            nextInstance = new bootstrap.Modal(nextEl);
+          }
+          nextInstance.show();
         }
         nextModalRef.current = null;
       }
     };
 
+    modalElement.addEventListener('hide.bs.modal', handleHide);
     modalElement.addEventListener('hidden.bs.modal', handleHidden);
-    return () => modalElement.removeEventListener('hidden.bs.modal', handleHidden);
+
+    return () => {
+      modalElement.removeEventListener('hide.bs.modal', handleHide);
+      modalElement.removeEventListener('hidden.bs.modal', handleHidden);
+
+      const instance = bootstrap.Modal.getInstance(modalElement);
+      if (instance) {
+        instance.dispose();
+      }
+      modalInstanceRef.current = null;
+    };
   }, []);
 
   const handleResetPassword = (e) => {

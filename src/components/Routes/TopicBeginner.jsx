@@ -9,7 +9,9 @@ export default function TopicBeginner() {
     console.log('當前 Topic URL:', topicUrl);
     const fetchTopicData = async () => {
       try {
-        const res = await axios.get(`${topicUrl}?_expand=user&category=新手村秘笈`);
+        const res = await axios.get(
+          `${topicUrl}?_expand=user&category=新手村秘笈&_page=1&_limit=5`
+        );
         console.log('取得資料成功:', res.data);
         setBeginData(res.data.data);
       } catch (err) {
@@ -49,7 +51,7 @@ export default function TopicBeginner() {
                 </div>
                 <a href="#" className="d-flex gap-8 py-8 link-dark text-decoration-none me-8">
                   <MessageCircleMore />
-                  <span className="text-end">{beginData.commentCount}</span>
+                  <span className="text-end">{beginData.likeCount}</span>
                 </a>
               </div>
             </div>

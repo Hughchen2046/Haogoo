@@ -26,6 +26,8 @@
     "json-server": "0.17.4",
     "json-server-auth": "2.1.0",
     "jsonwebtoken": "^9.0.2",
+    "lightweight-charts": "^5.1.0",
+    "lightweight-charts-react-components": "^1.4.0",
     "lucide-react": "^0.562.0",
     "matter-js": "^0.20.0",
     "path-to-regexp": "0.1.7",

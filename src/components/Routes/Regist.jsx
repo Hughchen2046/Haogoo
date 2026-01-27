@@ -8,37 +8,57 @@ import * as bootstrap from 'bootstrap';
 export default function Regist() {
   const [isRegist, setIsRegist] = React.useState(false);
   const nextModalRef = useRef(null);
+  const modalInstanceRef = useRef(null);
   const { register: registerAuth } = useAuth();
 
   const {
     register,
     handleSubmit,
     reset,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm({
+    mode: 'onSubmit',
     reValidateMode: 'onChange',
+    shouldFocusError: true,
   });
 
   const handleSwitch = (targetId) => {
     nextModalRef.current = targetId;
     const modalElement = document.getElementById('registModal');
     if (modalElement) {
-      bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+      const modalInstance = modalInstanceRef.current || bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
     }
   };
 
   const onSubmit = async (data) => {
+    // 防禦性檢查：確保資料不為空（雙重保險）
+    if (!data.email?.trim() || !data.password?.trim() || !data.name?.trim()) {
+      if (!data.email?.trim()) {
+        setError('email', { type: 'manual', message: '請輸入 Email' });
+      }
+      if (!data.password?.trim()) {
+        setError('password', { type: 'manual', message: '請輸入密碼' });
+      }
+      if (!data.name?.trim()) {
+        setError('name', { type: 'manual', message: '請輸入暱稱' });
+      }
+      if (!data.terms) {
+        setError('terms', { type: 'manual', message: '請同意條款' });
+      }
+      return;
+    }
+
     const submitData = {
       email: data.email,
       password: data.password,
       name: data.name,
       createdAt: new Date().toLocaleString(),
     };
-
-    if (!submitData.email || !submitData.password) {
-      alert('註冊資料未完整填寫，請確認欄位紅字提示。');
-      return;
-    }
 
     const { success, error, data: responseData } = await registerAuth(submitData);
 
@@ -54,11 +74,14 @@ export default function Regist() {
       );
     } else {
       console.error('註冊出錯細節：', error);
-      let msg = '註冊失敗，請稍後再試';
-      if (typeof error === 'string') {
-        msg = error;
+      // 設定具體的錯誤訊息到各欄位
+      if (error?.includes('email') || error?.includes('Email')) {
+        setError('email', { type: 'manual', message: 'Email 已被使用或格式錯誤' });
+      } else if (error?.includes('password') || error?.includes('密碼')) {
+        setError('password', { type: 'manual', message: '密碼格式不符合要求' });
+      } else {
+        setError('email', { type: 'manual', message: '註冊失敗，請稍後再試' });
       }
-      alert(msg);
       setIsRegist(false);
     }
   };
@@ -67,8 +90,26 @@ export default function Regist() {
     const modalElement = document.getElementById('registModal');
     if (!modalElement) return;
 
+    // Check if instance already exists (created by data-bs-toggle)
+    let modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+    if (!modalInstance) {
+      modalInstance = new bootstrap.Modal(modalElement);
+    }
+
+    modalInstanceRef.current = modalInstance;
+
+    const handleHide = () => {
+      // 在 Modal 開始關閉時立即移除焦點，修復 aria-hidden 警告
+      if (document.activeElement && modalElement.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
+    };
+
     const handleHidden = () => {
+      // Modal 關閉時重置表單並清除錯誤
       reset();
+      clearErrors();
       setIsRegist(false);
       document.querySelector('.modal-backdrop')?.remove();
       document.body.style.overflow = '';
@@ -77,7 +118,11 @@ export default function Regist() {
       if (nextModalRef.current) {
         const nextEl = document.getElementById(nextModalRef.current);
         if (nextEl) {
-          bootstrap.Modal.getOrCreateInstance(nextEl).show();
+          let nextInstance = bootstrap.Modal.getInstance(nextEl);
+          if (!nextInstance) {
+            nextInstance = new bootstrap.Modal(nextEl);
+          }
+          nextInstance.show();
         }
         nextModalRef.current = null;
       }
@@ -87,14 +132,22 @@ export default function Regist() {
       document.getElementById('registEmailInput')?.focus();
     };
 
+    modalElement.addEventListener('hide.bs.modal', handleHide);
     modalElement.addEventListener('hidden.bs.modal', handleHidden);
     modalElement.addEventListener('shown.bs.modal', handleShown);
 
     return () => {
+      modalElement.removeEventListener('hide.bs.modal', handleHide);
       modalElement.removeEventListener('hidden.bs.modal', handleHidden);
       modalElement.removeEventListener('shown.bs.modal', handleShown);
+
+      const instance = bootstrap.Modal.getInstance(modalElement);
+      if (instance) {
+        instance.dispose();
+      }
+      modalInstanceRef.current = null;
     };
-  }, [reset]);
+  }, [reset, clearErrors]);
 
   useEffect(() => {
     if (isRegist) {
@@ -132,6 +185,7 @@ export default function Regist() {
               <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="d-flex flex-column gap-24 align-items-center"
+                noValidate
               >
                 <div className="w-100">
                   <h6 className="text-start mb-8">Email帳號</h6>

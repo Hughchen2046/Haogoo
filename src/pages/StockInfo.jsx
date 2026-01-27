@@ -1,46 +1,45 @@
-import { useEffect, useRef, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../scss/_StockInfo.scss";
-import { ArrowDown, ArrowUp, Minus, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from 'react';
+import '../scss/_StockInfo.scss';
+import { ArrowDown, ArrowUp, Minus, ChevronRight } from 'lucide-react';
 
 export default function StockInfo() {
-  const [activeTab, setActiveTab] = useState("股價走勢");
+  const [activeTab, setActiveTab] = useState('股價走勢');
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
 
   const tvRef = useRef(null);
   const widgetRef = useRef(null);
 
   const changePct = 0.5;
-  const trend = changePct > 0 ? "up" : changePct < 0 ? "down" : "flat";
+  const trend = changePct > 0 ? 'up' : changePct < 0 ? 'down' : 'flat';
   const trendColor =
-    trend === "up" ? "text-danger" : trend === "down" ? "text-success" : "text-secondary";
+    trend === 'up' ? 'text-danger' : trend === 'down' ? 'text-success' : 'text-secondary';
   const trendBgColor =
-    trend === "up" ? "bg-pink" : trend === "down" ? "bg-pinkgreen" : "border bg-light";
+    trend === 'up' ? 'bg-pink' : trend === 'down' ? 'bg-pinkgreen' : 'border bg-light';
 
-  const tabs = ["股價走勢", "股利政策", "股價 K 線"];
+  const tabs = ['股價走勢', '股利政策', '股價 K 線'];
 
   // ===== TradingView Advanced Chart Widget =====
   useEffect(() => {
-    if (activeTab !== "股價走勢") return;
+    if (activeTab !== '股價走勢') return;
     if (!tvRef.current) return;
 
-    tvRef.current.innerHTML = "";
+    tvRef.current.innerHTML = '';
 
-    const script = document.createElement("script");
-    script.src = "https://s3.tradingview.com/tv.js";
+    const script = document.createElement('script');
+    script.src = 'https://s3.tradingview.com/tv.js';
     script.async = true;
     script.onload = () => {
       widgetRef.current = new window.TradingView.widget({
-        container_id: "tradingview_chart",
-        symbol: "TWSE:0056",
-        interval: "D",
+        container_id: 'tradingview_chart',
+        symbol: 'TWSE:0056',
+        interval: 'D',
         width: tvRef.current.offsetWidth,
         height: window.innerWidth < 768 ? 400 : 500, // 手機板/桌面板高度
-        timezone: "Asia/Taipei",
-        theme: "light",
+        timezone: 'Asia/Taipei',
+        theme: 'light',
         style: 1, // 1 = 折線圖
-        locale: "zh_TW",
-        toolbar_bg: "#f1f3f6",
+        locale: 'zh_TW',
+        toolbar_bg: '#f1f3f6',
         enable_publishing: false,
         allow_symbol_change: false,
       });
@@ -85,16 +84,14 @@ export default function StockInfo() {
               <div
                 className={`d-flex justify-content-center align-items-center icon-48 round-8 ${trendBgColor}`}
               >
-                {trend === "up" && <ArrowUp className={`icon-24 ${trendColor}`} />}
-                {trend === "down" && <ArrowDown className={`icon-24 ${trendColor}`} />}
-                {trend === "flat" && <Minus className={`icon-24 ${trendColor}`} />}
+                {trend === 'up' && <ArrowUp className={`icon-24 ${trendColor}`} />}
+                {trend === 'down' && <ArrowDown className={`icon-24 ${trendColor}`} />}
+                {trend === 'flat' && <Minus className={`icon-24 ${trendColor}`} />}
               </div>
               <div className="stockRate text-danger">0.01 (0.03%)</div>
             </div>
 
-            <p className="card-content mb-0 text-muted">
-              2026/01/01 14:30 更新 | 總量 22,134 張
-            </p>
+            <p className="card-content mb-0 text-muted">2026/01/01 14:30 更新 | 總量 22,134 張</p>
           </div>
         </div>
       </div>
@@ -132,7 +129,7 @@ export default function StockInfo() {
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={`btn stock-dropdown-btn btn-lg ${activeTab === tab ? "active" : ""}`}
+            className={`btn stock-dropdown-btn btn-lg ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
@@ -142,11 +139,11 @@ export default function StockInfo() {
 
       {/* 內容 */}
       <div className="custom-container mb-5">
-        {activeTab === "股價走勢" && (
-          <div ref={tvRef} id="tradingview_chart" style={{ width: "100%", height: "500px" }} />
+        {activeTab === '股價走勢' && (
+          <div ref={tvRef} id="tradingview_chart" style={{ width: '100%', height: '500px' }} />
         )}
 
-        {activeTab !== "股價走勢" && (
+        {activeTab !== '股價走勢' && (
           <div className="text-muted text-center py-5">尚未實作內容</div>
         )}
       </div>

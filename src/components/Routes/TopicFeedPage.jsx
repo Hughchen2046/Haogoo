@@ -8,7 +8,6 @@ export default function TopicFeedPage() {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  // 1. 先用 params 找，如果沒有（多半是在 /topics/etf 這種寫死路徑的情況），則從路徑字串分析
   const slug = topicSlug || pathname.split('/').pop();
   const currentTopic = Object.values(Topics).find((topic) => topic.slug === slug) ?? Topics.all;
 

@@ -10,6 +10,16 @@
   }
 }
 
+html::-webkit-scrollbar {
+  width: 5px;
+  background-color: #ffffff;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: #47c8b4;
+  border-radius: 8px;
+}
+
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
 @import 'bootstrap/scss/maps';
