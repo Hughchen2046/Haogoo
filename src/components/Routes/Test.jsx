@@ -1,5 +1,6 @@
 import Guideline from '../Tools/Guideline';
 import StockInfo from '../../pages/StockInfo';
+import TradingChart1 from '../Tools/TradingChart1';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
@@ -29,6 +30,9 @@ export default function Test() {
     <>
       <div className="bg-dark text-white py-96">
         <h2 className="mb-32">測試頁面</h2>
+      </div>
+      <div style={{ height: '600px', display: 'flex', padding: '20px' }}>
+        <TradingChart1 />
       </div>
       <StockInfo />
       <Guideline />
