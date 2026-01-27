@@ -9,7 +9,7 @@ export default function StockInfo() {
   const [stockData, setStockData] = useState(null);
   const [loading, setLoading] = useState(true);
   const stockUrl = import.meta.env.VITE_symbolsUrl;
-  const stockSelect = '0050';
+  const stockSelect = '0056';
 
   useEffect(() => {
     const api = async () => {
