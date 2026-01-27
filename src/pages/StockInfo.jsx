@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import '../scss/_StockInfo.scss';
 import { ArrowDown, ArrowUp, Minus, ChevronRight } from 'lucide-react';
 
 export default function StockInfo() {
