@@ -49,8 +49,6 @@ import {
   CandlestickSeries,
   Chart,
   HistogramSeries,
-  LineSeries,
-  PriceLine,
   TimeScale,
   TimeScaleFitContentTrigger,
   Pane,
@@ -69,93 +67,25 @@ const colors = {
 };
 
 // ---- Helper functions ----
-// 創建指定長度的空陣列
-const createStubArray = (length) => Array.from({ length });
-
 /**
- * 生成折線圖資料
- * @param {number} length - 資料點數量
- * @param {Object} options - 選項
- * @param {string} options.lastItemTime - 最後一個時間點（可選）
- * @returns {Array} 格式: [{ time: 'YYYY-MM-DD', value: number }]
- */
-const generateLineData = (length, { lastItemTime } = {}) => {
-  // 計算開始日期（從今天往前推 length 天）
-  const start = lastItemTime
-    ? dayjs(lastItemTime).subtract(length, 'day')
-    : dayjs().subtract(length, 'day');
-  let lastValue = Math.floor(Math.random() * 100);
-
-  return createStubArray(length).map((_, i) => {
-    // 每天隨機變化 -10 到 +10
-    const change = Math.floor(Math.random() * 21) - 10;
-    lastValue = Math.max(0, lastValue + change); // 確保不為負數
-
-    return {
-      time: start.add(i, 'day').format('YYYY-MM-DD'),
-      value: lastValue,
-    };
-  });
-};
-
-/**
- * 生成 OHLC (開高低收) 蠟燭圖資料
- * @param {number} length - 資料點數量
+ * 從 stockData 提取 OHLC (開高低收) 蠟燭圖資料
+ * @param {Object} stockData - 股票資料物件
  * @returns {Array} 格式: [{ time, open, high, low, close }]
  */
-const generateOHLCData = (length) => {
-  const start = dayjs().subtract(length, 'day');
-  let previousClose = Math.max(1, Math.random() * 100);
+const generateOHLCData = (stockData) => {
+  if (!stockData?.prices || stockData.prices.length === 0) {
+    console.log('generateOHLCData: 沒有股票資料');
+    return [];
+  }
+  console.log('generateOHLCData: 產生 K線資料', '，共', stockData.prices.length, '筆');
 
-  return createStubArray(length).map((_, i) => {
-    // 開盤價 = 前一天的收盤價
-    const open = previousClose;
-    // 最高價 = 開盤價 + 隨機值
-    const high = open + Math.random() * 10;
-    // 最低價 = 開盤價 - 隨機值
-    let low = open - Math.random() * 10;
-
-    low = Math.max(0, low); // 確保不為負數
-
-    // 確保 high >= low（最小間距 0.01）
-    const minimalDistance = 0.01;
-    const adjustedHigh = Math.max(high, low + minimalDistance);
-
-    // 收盤價在最高和最低之間隨機
-    const close = low + Math.random() * (adjustedHigh - low);
-
-    previousClose = close; // 儲存為下一根K線的開盤價
-
+  return stockData.prices.map((price) => {
     return {
-      time: start.add(i, 'day').format('YYYY-MM-DD'),
-      open,
-      high: adjustedHigh,
-      low,
-      close,
-    };
-  });
-};
-
-/**
- * 生成柱狀圖資料（常用於成交量）
- * @param {number} length - 資料點數量
- * @param {Object} options - 選項
- * @param {string} options.upColor - 上漲顏色
- * @param {string} options.downColor - 下跌顏色
- * @returns {Array} 格式: [{ time, value, color }]
- */
-const generateHistogramData = (length, { upColor, downColor } = {}) => {
-  const lineData = generateLineData(length);
-
-  return lineData.map((data, i) => {
-    const isFirst = i === 0;
-    // 判斷是否比前一天下跌
-    const valueDecreased = !isFirst && data.value < lineData[i - 1].value;
-
-    return {
-      time: data.time,
-      value: data.value,
-      color: valueDecreased ? downColor : upColor, // 下跌用 downColor，上漲用 upColor
+      time: price.date,
+      open: price.open,
+      high: price.high,
+      low: price.low,
+      close: price.close,
     };
   });
 };
@@ -167,104 +97,82 @@ function Watermark({ text }) {
       lines={[
         {
           text,
-          color: `${colors.blue}90`,
+          color: `${colors.blue}`,
           fontSize: 12,
         },
       ]}
-      horzAlign="center"
-      vertAlign="center"
+      horzAlign="right"
+      vertAlign="bottom"
     />
   );
 }
 
-/**
- * 計算 RSI (相對強弱指標)
- * RSI 範圍: 0-100
- * - RSI > 70: 超買區（可能回調）
- * - RSI < 30: 超賣區（可能反彈）
- *
- * @param {Array} ohlcData - OHLC 資料陣列
- * @param {number} period - 計算週期（預設 14 天）
- * @returns {Array} 格式: [{ time, value? }] (前 period 天無 value)
- */
-function calculateRSI(ohlcData, period = 14) {
-  const closes = ohlcData.map((d) => d.close); // 提取收盤價
-  const rsiData = [];
-
-  let gainSum = 0; // 累計漲幅
-  let lossSum = 0; // 累計跌幅
-  let avgGain = null; // 平均漲幅
-  let avgLoss = null; // 平均跌幅
-
-  for (let i = 0; i < closes.length; i++) {
-    if (i === 0) {
-      // 第一天: 只有時間，無數值（佔位點）
-      rsiData.push({ time: ohlcData[i].time });
-      continue;
-    }
-
-    // 計算價格變化
-    const change = closes[i] - closes[i - 1];
-    const gain = Math.max(change, 0); // 上漲幅度（負數視為 0）
-    const loss = Math.max(-change, 0); // 下跌幅度（正數視為 0）
-
-    // 累積前 period 天的漲跌幅，還無法計算 RSI
-    if (i < period) {
-      gainSum += gain;
-      lossSum += loss;
-      rsiData.push({ time: ohlcData[i].time }); // 佔位點
-      continue;
-    }
-
-    // 第 period 天: 計算初始平均漲跌幅
-    if (i === period) {
-      gainSum += gain;
-      lossSum += loss;
-      avgGain = gainSum / period;
-      avgLoss = lossSum / period;
-    } else {
-      // 之後使用平滑移動平均(Wilder's smoothing)
-      avgGain = (avgGain * (period - 1) + gain) / period;
-      avgLoss = (avgLoss * (period - 1) + loss) / period;
-    }
-
-    // 計算 RSI
-    // RS = 平均漲幅 / 平均跌幅
-    // RSI = 100 - (100 / (1 + RS))
-    const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
-    const rsi = 100 - 100 / (1 + rs);
-
-    rsiData.push({ time: ohlcData[i].time, value: rsi });
-  }
-
-  return rsiData;
-}
-
-export default function TradingChart1() {
+export default function TradingChart1({ stockData, stockSelect }) {
   /**
    * 使用 useMemo 只在組件初次渲染時生成資料
    * 避免每次 re-render 都重新計算
    */
-  const { ohlcData, rsiData, volumeData } = useMemo(() => {
-    // 1. 生成 100 天的 OHLC 資料
-    const ohlc = generateOHLCData(100);
+  console.log('由父層來的資料', stockData);
+  console.log('由父層來的資料', stockSelect);
 
-    // 2. 計算 14 日 RSI
-    const rsi = calculateRSI(ohlc, 14);
+  const { ohlcData, volumeData } = useMemo(() => {
+    // 1. 生成 OHLC 資料從 stockData
+    const ohlc = generateOHLCData(stockData);
 
-    // 3. 生成成交量資料
+    // 2. 如果沒有資料，返回空陣列
+    if (ohlc.length === 0) {
+      return { ohlcData: [], volumeData: [] };
+    }
+
+    // 3. 生成成交量資料（使用真實的 volume 數據）
     // 根據 K線紅綠設定顏色（收盤 > 開盤 = 紅色，否則綠色）
-    const volume = generateHistogramData(100).map((d, i) => {
-      const bar = ohlc[i];
+    const volume = stockData.prices.map((price) => {
       return {
-        time: bar.time,
-        value: d.value,
-        color: bar.close > bar.open ? `${colors.red}90` : `${colors.green}90`,
+        time: price.date,
+        value: price.volume,
+        color: price.close > price.open ? `${colors.red}90` : `${colors.green}90`,
       };
     });
 
-    return { ohlcData: ohlc, rsiData: rsi, volumeData: volume };
-  }, []);
+    console.log('生成成交量資料:', volume.length, '筆，範例:', volume[0]);
+
+    return { ohlcData: ohlc, volumeData: volume };
+  }, [stockData, stockSelect]);
+
+  // 早期返回：如果沒有資料，顯示提示訊息
+  if (!stockData || !stockData.prices || stockData.prices.length === 0) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          color: '#666',
+        }}
+      >
+        無可用的股票資料
+      </div>
+    );
+  }
+
+  if (ohlcData.length === 0) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          color: '#666',
+        }}
+      >
+        資料處理失敗
+      </div>
+    );
+  }
 
   return (
     // Chart: 主圖表容器
@@ -302,43 +210,6 @@ export default function TradingChart1() {
         />
       </Pane>
 
-      {/* Pane 2: RSI 指標 (高度比例 1) */}
-      <Pane stretchFactor={1}>
-        {/* LineSeries: RSI 折線圖 */}
-        <LineSeries
-          data={rsiData}
-          options={{
-            priceLineVisible: false, // 隱藏價格線
-            color: colors.blue100, // 線條顏色
-            lineWidth: 2, // 線條寬度
-            priceScaleId: 'right', // 價格軸位置（右側）
-          }}
-        >
-          {/* PriceLine: 超買線 (RSI > 70) */}
-          <PriceLine
-            price={70}
-            options={{
-              color: colors.violet, // 線條顏色
-              lineWidth: 1, // 線條寬度
-              lineStyle: 3, // 線條樣式 (3 = 虛線)
-              axisLabelVisible: true, // 顯示軸標籤
-            }}
-          />
-          {/* PriceLine: 超賣線 (RSI < 30) */}
-          <PriceLine
-            price={30}
-            options={{
-              color: colors.violet,
-              lineWidth: 1,
-              lineStyle: 3, // 虛線
-              axisLabelVisible: true,
-            }}
-          />
-        </LineSeries>
-        {/* Watermark: 浮水印文字 */}
-        <Watermark text="RSI-14" />
-      </Pane>
-
       {/* Pane 3: 成交量 (高度比例 1) */}
       <Pane stretchFactor={1}>
         {/* HistogramSeries: 成交量柱狀圖 */}
@@ -348,7 +219,7 @@ export default function TradingChart1() {
             priceLineVisible: false, // 隱藏價格線
           }}
         />
-        <Watermark text="VOLUME" />
+        <Watermark text="交易量" />
       </Pane>
     </Chart>
   );

@@ -1,9 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, Minus, ChevronRight } from 'lucide-react';
+import TradingChart1 from '../components/Tools/TradingChart1';
+import axios from 'axios';
 
 export default function StockInfo() {
   const [activeTab, setActiveTab] = useState('股價走勢');
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const [stockData, setStockData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const stockUrl = import.meta.env.VITE_symbolsUrl;
+  const stockSelect = '0050';
+
+  useEffect(() => {
+    const api = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${stockUrl}?id=${stockSelect}&_embed=prices`);
+        console.log('StockInfo API 回傳:', res.data);
+        if (res.data.data && res.data.data.length > 0) {
+          setStockData(res.data.data[0]);
+        }
+      } catch (error) {
+        console.error('載入股票資料失敗:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    api();
+  }, [stockSelect]);
 
   const tvRef = useRef(null);
   const widgetRef = useRef(null);
@@ -138,13 +162,27 @@ export default function StockInfo() {
 
       {/* 內容 */}
       <div className="custom-container mb-5">
-        {activeTab === '股價走勢' && (
+        <h3 className="mt-24 bg-primary text-white">股票選擇 {stockSelect}</h3>
+        <div className="mb-80" style={{ height: '600px', display: 'flex', padding: '20px' }}>
+          {loading ? (
+            <div className="text-muted text-center w-100 d-flex align-items-center justify-content-center">
+              載入中...
+            </div>
+          ) : stockData && stockData.prices && stockData.prices.length > 0 ? (
+            <TradingChart1 stockData={stockData} stockSelect={stockSelect} />
+          ) : (
+            <div className="text-muted text-center w-100 d-flex align-items-center justify-content-center">
+              無股票資料
+            </div>
+          )}
+        </div>
+        {/*activeTab === '股價走勢' && (
           <div ref={tvRef} id="tradingview_chart" style={{ width: '100%', height: '500px' }} />
         )}
 
         {activeTab !== '股價走勢' && (
           <div className="text-muted text-center py-5">尚未實作內容</div>
-        )}
+        ) */}
       </div>
     </div>
   );
