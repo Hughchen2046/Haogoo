@@ -12,7 +12,7 @@ export default function TopicAll() {
     const fetchTopicData = async () => {
       try {
         const res = await axios.get(`${topicUrl}?_expand=user&_page=${page}&_limit=5`);
-        console.log(`第 ${page} 頁資料取得成功:`, res.data);
+        // console.log(`第 ${page} 頁資料取得成功:`, res.data);
         setAllData((prev) => (page === 1 ? res.data.data : [...prev, ...res.data.data]));
       } catch (err) {
         console.error('API 錯誤:', err);
@@ -24,7 +24,7 @@ export default function TopicAll() {
   const topicLoadingMore = (e) => {
     e.preventDefault();
     setPage((prev) => prev + 1);
-    console.log('page', page);
+    // console.log('page', page);
   };
 
   return (
