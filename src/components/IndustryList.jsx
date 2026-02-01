@@ -27,10 +27,12 @@ export default function IndustryList() {
   }, []);
 
   // 每 2 筆 symbols 組成一張卡
-  const groups = [];
-  for (let i = 0; i < symbols.length; i += 2) {
-    groups.push(symbols.slice(i, i + 2));
-  }
+ const groups = [];
+const safeSymbols = symbols || []; 
+for (let i = 0; i < safeSymbols.length; i += 2) {
+  groups.push(safeSymbols.slice(i, i + 2));
+}
+
 
   return (
     <section>
