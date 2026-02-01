@@ -34,7 +34,7 @@ export default function TopicFeedPage() {
               <h2 className="display-2 text-primary">Trending Now</h2>
             </div>
             {/*小螢幕用dropdown*/}
-            <div className={`dropdown mb-32 font-zh-tw d-lg-none ${isOpen ? 'show' : ''}`}>
+            <div className={`dropdown mb-32 font-zh-tw d-md-none ${isOpen ? 'show' : ''}`}>
               <button
                 className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
                 type="button"
@@ -70,8 +70,8 @@ export default function TopicFeedPage() {
               </ul>
             </div>
             {/*大螢幕用nav-underline*/}
-            <div className="d-none d-lg-block">
-              <ul className="nav nav-topic gap-40 px-8">
+            <div className="d-none d-md-block">
+              <ul className="nav nav-topic gap-24 gap-lg-40 px-8">
                 {Object.values(Topics).map((topic) => (
                   <li key={topic.slug} className="nav-item">
                     <NavLink to={topic.path} className="nav-link h4 px-0 pt-0 pb-0 border-0" end>

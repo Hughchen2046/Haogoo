@@ -5,19 +5,27 @@ import { MessageCircleMore } from 'lucide-react';
 export default function TopicAll() {
   const topicUrl = import.meta.env.VITE_TopicUrl;
   const [allData, setAllData] = useState([]);
+  const [page, setPage] = useState(1);
+
   useEffect(() => {
-    console.log('當前 Topic URL:', topicUrl);
+    // console.log('當前 Topic URL:', topicUrl);
     const fetchTopicData = async () => {
       try {
-        const res = await axios.get(`${topicUrl}?_expand=user&_page=1&_limit=5`);
-        console.log('取得資料成功:', res.data);
-        setAllData(res.data.data);
+        const res = await axios.get(`${topicUrl}?_expand=user&_page=${page}&_limit=5`);
+        console.log(`第 ${page} 頁資料取得成功:`, res.data);
+        setAllData((prev) => (page === 1 ? res.data.data : [...prev, ...res.data.data]));
       } catch (err) {
         console.error('API 錯誤:', err);
       }
     };
     fetchTopicData();
-  }, []);
+  }, [page]);
+
+  const topicLoadingMore = (e) => {
+    e.preventDefault();
+    setPage((prev) => prev + 1);
+    console.log('page', page);
+  };
 
   return (
     <div>
@@ -56,7 +64,15 @@ export default function TopicAll() {
           </div>
         ))}
       </div>
-      <div className="text-center">查看更多</div>
+      <div className="text-center">
+        <a
+          href="#"
+          className="text-decoration-none font-zh-tw link-primary"
+          onClick={topicLoadingMore}
+        >
+          查看更多
+        </a>
+      </div>
     </div>
   );
 }
