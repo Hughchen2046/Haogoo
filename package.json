@@ -11,7 +11,9 @@
     "deploy": "gh-pages -d dist",
     "start": "node server.cjs",
     "server": "node server.cjs",
-    "clear": "taskkill //F //IM node.exe"
+    "clear": "taskkill //F //IM node.exe",
+    "fetchdb": "node scripts/fetch-db.cjs backup",
+    "update-db": "node scripts/fetch-db.cjs sync"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
