@@ -9,6 +9,8 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function Login() {
   const { isAuth, login, logout } = useAuth();
+  const toastRef = useRef(null);
+  const loginToastRef = useRef(null);
 
   const {
     register,
@@ -40,7 +42,6 @@ export default function Login() {
     const { success } = await login({ email: data.email, password: data.password });
 
     if (success) {
-      alert('登入成功');
       reset();
     } else {
       setError('email', { type: 'manual', message: '帳號輸入錯誤，請重新輸入' });
@@ -135,7 +136,12 @@ export default function Login() {
       const modalElement = document.getElementById('loginModal');
       if (modalElement) {
         const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
-        closeButton?.click();
+        loginToastRef.current = new bootstrap.Toast(toastRef.current);
+        loginToastRef.current.show();
+        setTimeout(() => {
+          loginToastRef.current.hide();
+          closeButton?.click();
+        }, 1000);
       }
 
       const offcanvasElement = document.getElementById('mobileMenu');
@@ -182,7 +188,28 @@ export default function Login() {
                   <img src={Google_Icon} className="me-8 icon-24" alt="Google-icon" />
                   <h6 className="m-0">使用 Google 帳號快速登入</h6>
                 </ButtonOutline>
-                <p className="caption">或</p>
+                <div className="w-100 position-relative">
+                  <p className="caption">或</p>
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                    className="toast font-zh-tw round-12 overflow-hidden position-absolute z-2 w-100 top-0 start-50 translate-middle-x"
+                    ref={toastRef}
+                  >
+                    <div className="toast-header bg-primary text-white">
+                      <strong className="me-auto">HaoGoo</strong>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="toast"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div className="toast-body bg-gray-100 py-24">登入成功</div>
+                  </div>
+                </div>
+
                 <div className="w-100">
                   <h6 className="text-start mb-8">帳號</h6>
                   <div className="form-floating">

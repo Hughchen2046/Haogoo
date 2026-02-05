@@ -10,6 +10,8 @@ export default function Regist() {
   const nextModalRef = useRef(null);
   const modalInstanceRef = useRef(null);
   const { register: registerAuth } = useAuth();
+  const toastRef = useRef(null);
+  const registToastRef = useRef(null);
 
   const {
     register,
@@ -64,9 +66,7 @@ export default function Regist() {
 
     if (success) {
       console.log('註冊伺服器回應：', responseData);
-      alert('註冊成功');
       setIsRegist(true);
-
       window.dispatchEvent(
         new CustomEvent('registSuccess', {
           detail: { nickname: submitData.name },
@@ -154,7 +154,12 @@ export default function Regist() {
       const modalElement = document.getElementById('registModal');
       if (modalElement) {
         const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
-        closeButton?.click();
+        registToastRef.current = new bootstrap.Toast(toastRef.current);
+        registToastRef.current.show();
+        setTimeout(() => {
+          registToastRef.current.hide();
+          closeButton?.click();
+        }, 2000);
       }
     }
   }, [isRegist]);
@@ -260,7 +265,7 @@ export default function Regist() {
                   </div>
                 </div>
 
-                <div className="form-check w-100 text-start">
+                <div className="form-check w-100 text-start position-relative">
                   <input
                     type="checkbox"
                     className={`form-check-input ${errors.terms ? 'is-invalid' : ''}`}
@@ -273,6 +278,24 @@ export default function Regist() {
                     我同意服務條款與隱私政策
                   </label>
                   {errors.terms && <div className="invalid-feedback">{errors.terms.message}</div>}
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                    className="toast font-zh-tw round-12 overflow-hidden position-absolute top-0 start-50 translate-middle-x"
+                    ref={toastRef}
+                  >
+                    <div className="toast-header bg-primary text-white">
+                      <strong className="me-auto">HaoGoo</strong>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="toast"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div className="toast-body bg-gray-100">註冊成功，請直接登入</div>
+                  </div>
                 </div>
 
                 <ButtonPrimary type="submit" className="py-12 px-40 round-8">
