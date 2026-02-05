@@ -1,17 +1,4 @@
 import React from "react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
-
-// 註冊 Chart.js 元件
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 // 指標資料
 const dividendSummary = {
@@ -30,57 +17,12 @@ const dividendData = [
   { year: "2021", cash: 1.05, highlight: false },
   { year: "2022", cash: 1.2, highlight: false },
   { year: "2023", cash: 1.3, highlight: false },
-  { year: "2024", cash: 3.63, highlight: true },
+  { year: "2024", cash: 3.63, highlight: true }, // 高亮柱子
   { year: "2025", cash: 2.0, highlight: false },
 ];
 
-// Chart.js 資料
-const data = {
-  labels: dividendData.map((d) => d.year),
-  datasets: [
-    {
-      label: "現金股利",
-      data: dividendData.map((d) => d.cash),
-      backgroundColor: dividendData.map((d) =>
-        d.highlight ? "#3343FF" : "#CBD9FF"
-      ),
-      borderRadius: 8,
-    },
-  ],
-};
-
-// Chart.js 配置
-const options = {
-  responsive: true,
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      callbacks: {
-        label: (tooltipItem) => `現金股利: ${tooltipItem.raw}`,
-      },
-    },
-    title: {
-      display: true,
-      text: "近10年現金股利",
-      font: { size: 16 },
-    },
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-      title: {
-        display: true,
-        text: "股利 (元)",
-      },
-    },
-    x: {
-      title: {
-        display: true,
-        text: "年份",
-      },
-    },
-  },
-};
+// 計算最大值用來比例化柱子高度
+const maxCash = Math.max(...dividendData.map((d) => d.cash));
 
 export default function DividendPolicy() {
   return (
@@ -107,9 +49,59 @@ export default function DividendPolicy() {
         ))}
       </div>
 
-      {/* Chart.js 長條圖 */}
-      <div className="card rounded-4 shadow-sm p-3">
-        <Bar data={data} options={options} />
+      {/* 長條圖區 */}
+      <div
+        className="card rounded-4 shadow-sm p-3"
+        style={{ backgroundColor: "#f8f9fa" }}
+      >
+        <div
+          className="d-flex align-items-end justify-content-between"
+          style={{
+            height: "360px",
+            gap: "12px",
+            padding: "0 10px",
+            borderBottom: "1px solid #dee2e6",
+            backgroundColor: "#e9ecef", // 背景顏色方便檢查柱子
+          }}
+        >
+          {dividendData.map((d, idx) => {
+            const barHeight = (d.cash / maxCash) * 100; // 百分比高度
+            return (
+              <div
+                key={idx}
+                className="d-flex flex-column align-items-center"
+                style={{ width: "40px", flexShrink: 0 }}
+              >
+                {/* 柱子 */}
+                <div
+                  style={{
+                    height: `${barHeight}%`,
+                    width: "100%",
+                    backgroundColor: d.highlight ? "#3343FF" : "#CBD9FF",
+                    borderRadius: "8px 8px 0 0",
+                    transition: "height 0.5s, background-color 0.3s",
+                  }}
+                ></div>
+
+                {/* 年份 */}
+                <div
+                  className="text-muted mt-2"
+                  style={{ fontSize: "0.8rem", textAlign: "center" }}
+                >
+                  {d.year}
+                </div>
+
+                {/* 股利數值 */}
+                <div
+                  className="fw-bold mt-1"
+                  style={{ fontSize: "0.8rem", textAlign: "center" }}
+                >
+                  {d.cash}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
