@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import FBIcon from '../assets/FB Icon.png';
 import IGIcon from '../assets/IG Icon.png';
 import LineIcon from '../assets/LINE Icon.png';
@@ -9,7 +9,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import { Pagination } from 'swiper/modules';
+import { Autoplay, Pagination } from 'swiper/modules';
 const topics = [
   {
     category: '所有主題',
@@ -92,9 +92,14 @@ export default function SocialFeed() {
             >
               <Swiper
                 pagination={{ el: '.social-pagination', clickable: true }}
-                modules={[Pagination]}
+                modules={[Autoplay, Pagination]}
                 spaceBetween={10}
                 slidesPerView={1}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
+                loop={true}
                 onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
                 className="socialSwiper font-zh-tw"
               >

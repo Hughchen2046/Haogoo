@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { MessageCircleMore } from 'lucide-react';
+import LazyImage from '../LazyImage';
 
 export default function TopicInternation() {
   const topicUrl = import.meta.env.VITE_TopicUrl;
@@ -36,7 +37,7 @@ export default function TopicInternation() {
             key={internationData.id}
           >
             <div className="overflow-hidden topic-img-frame">
-              <img src={internationData.imgUrl} alt={internationData.title} />
+              <LazyImage src={internationData.imgUrl} alt={internationData.title} />
             </div>
             <div className="w-100">
               <a href={internationData.url} className="h3 mb-8 text-decoration-none">

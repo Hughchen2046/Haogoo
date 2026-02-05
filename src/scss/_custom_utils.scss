@@ -236,6 +236,7 @@ $utilities: map-merge(
           '0': 0px,
           '4': 4px,
           '8': 8px,
+          '12': 12px,
           '24': 24px,
           '36': 36px,
           '48': 48px,
@@ -502,4 +503,40 @@ $utilities: map-merge(
   border-top-left-radius: 99px;
   border-top-right-radius: 99px;
   background-color: var(--bs-primary);
+}
+
+// LazyImage Component Styles
+.lazy-image-wrapper {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lazy-image-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #1a1a2e 0%, #2d2d44 50%, #1a1a2e 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.lazy-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+
+  &.loaded {
+    opacity: 1;
+  }
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowDown, ArrowUp, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
+import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Grid, Navigation } from 'swiper/modules';
@@ -15,6 +16,7 @@ import { useAuth } from '../contexts/AuthContext';
 export default function StockCard() {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [primaryColor, setPrimaryColor] = useState('#0d6efd');
   const { isAuth } = useAuth();
 
   useEffect(() => {
@@ -42,7 +44,30 @@ export default function StockCard() {
     fetchData();
   }, []);
 
-  if (loading) return <div>資料載入中...</div>;
+  useEffect(() => {
+    const color = getComputedStyle(document.documentElement)
+      .getPropertyValue('--bs-primary')
+      .trim();
+    if (color) setPrimaryColor(color);
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="bg-gray-400">
+        <div
+          className="container py-64 py-md-96"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '300px',
+          }}
+        >
+          <BeatLoader color={primaryColor} size={15} />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-gray-400">

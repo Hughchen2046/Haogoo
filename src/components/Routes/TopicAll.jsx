@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MessageCircleMore } from 'lucide-react';
+import LazyImage from '../LazyImage';
 
 export default function TopicAll() {
   const topicUrl = import.meta.env.VITE_TopicUrl;
@@ -36,7 +37,7 @@ export default function TopicAll() {
             key={allData.id}
           >
             <div className="overflow-hidden topic-img-frame">
-              <img src={allData.imgUrl} alt={allData.title} />
+              <LazyImage src={allData.imgUrl} alt={allData.title} />
             </div>
             <div className="w-100">
               <a href={allData.url} className="h3 mb-8 text-decoration-none">

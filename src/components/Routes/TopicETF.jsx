@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MessageCircleMore } from 'lucide-react';
+import LazyImage from '../LazyImage';
 
 export default function TopicETF() {
   const topicUrl = import.meta.env.VITE_TopicUrl;
@@ -34,7 +35,7 @@ export default function TopicETF() {
             key={etfData.id}
           >
             <div className="overflow-hidden topic-img-frame">
-              <img src={etfData.imgUrl} alt={etfData.title} />
+              <LazyImage src={etfData.imgUrl} alt={etfData.title} />
             </div>
             <div className="w-100">
               <a href={etfData.url} className="h3 mb-8 text-decoration-none">

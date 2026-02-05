@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MessageCircleMore } from 'lucide-react';
+import LazyImage from '../LazyImage';
 
 export default function TopHot() {
   const topicUrl = import.meta.env.VITE_TopicUrl;
@@ -39,7 +40,7 @@ export default function TopHot() {
             key={hotData.id}
           >
             <div className="overflow-hidden topic-img-frame">
-              <img src={hotData.imgUrl} alt={hotData.title} />
+              <LazyImage src={hotData.imgUrl} alt={hotData.title} />
             </div>
             <div className="w-100">
               <a href={hotData.url} className="h3 mb-8 text-decoration-none">
