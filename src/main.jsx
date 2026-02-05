@@ -43,6 +43,7 @@ const routes = [
       {
         path: 'stockInfo',
         element: <StockInfo />,
+       
       },
       {
         path: 'test',
