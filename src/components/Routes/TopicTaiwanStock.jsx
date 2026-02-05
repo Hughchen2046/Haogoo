@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MessageCircleMore } from 'lucide-react';
+import LazyImage from '../LazyImage';
 
 export default function TopicTaiwanStock() {
   const topicUrl = import.meta.env.VITE_TopicUrl;
@@ -36,7 +37,7 @@ export default function TopicTaiwanStock() {
             key={taiwanStockData.id}
           >
             <div className="overflow-hidden topic-img-frame">
-              <img src={taiwanStockData.imgUrl} alt={taiwanStockData.title} />
+              <LazyImage src={taiwanStockData.imgUrl} alt={taiwanStockData.title} />
             </div>
             <div className="w-100">
               <a href={taiwanStockData.url} className="h3 mb-8 text-decoration-none">

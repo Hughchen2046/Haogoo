@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
 
 // Swiper
@@ -15,6 +16,8 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function IndustryList() {
   const [symbols, setSymbols] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [primaryColor, setPrimaryColor] = useState('#0d6efd');
   const { isAuth } = useAuth();
 
   useEffect(() => {
@@ -23,17 +26,41 @@ export default function IndustryList() {
     fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`)
       .then((res) => res.json())
       .then((data) => setSymbols(data.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const color = getComputedStyle(document.documentElement)
+      .getPropertyValue('--bs-primary')
+      .trim();
+    if (color) setPrimaryColor(color);
   }, []);
 
   // 每 2 筆 symbols 組成一張卡
- const groups = [];
-const safeSymbols = symbols || []; 
-for (let i = 0; i < safeSymbols.length; i += 2) {
-  groups.push(safeSymbols.slice(i, i + 2));
-}
+  const groups = [];
+  const safeSymbols = symbols || [];
+  for (let i = 0; i < safeSymbols.length; i += 2) {
+    groups.push(safeSymbols.slice(i, i + 2));
+  }
 
-
+  if (loading) {
+    return (
+      <section>
+        <div
+          className="container py-64 py-md-96"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '300px',
+          }}
+        >
+          <BeatLoader color={primaryColor} size={15} />
+        </div>
+      </section>
+    );
+  }
   return (
     <section>
       <div className="container py-64 py-md-96 font-zh-tw">
