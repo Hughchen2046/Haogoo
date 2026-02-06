@@ -1,53 +1,61 @@
-import { useEffect, useRef } from 'react';
+import React, { useMemo } from 'react';
+import {
+  Chart,
+  Pane,
+  LineSeries,
+  TimeScale,
+  TimeScaleFitContentTrigger,
+  WatermarkText,
+} from 'lightweight-charts-react-components';
 
-export default function StockPriceTrend({ stockSelect }) {
-  const tvRef = useRef(null);
-  const widgetRef = useRef(null);
+const colors = { blue: '#2962FF', gray100: '#E0E0E0' };
 
-  useEffect(() => {
-    if (!tvRef.current) return;
+const generateLineData = (stockData) =>
+  stockData?.prices?.map((p) => ({ time: p.date, value: p.close })) || [];
 
-    tvRef.current.innerHTML = '';
+export default function StockPriceTrend({ stockData }) {
+  const lineData = useMemo(() => generateLineData(stockData), [stockData]);
 
-    const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/tv.js';
-    script.async = true;
-
-    script.onload = () => {
-      widgetRef.current = new window.TradingView.widget({
-        container_id: 'tradingview_chart',
-        symbol: `TWSE:${stockSelect}`,
-        interval: 'D',
-        width: tvRef.current.offsetWidth,
-        height: window.innerWidth < 768 ? 400 : 500,
-        timezone: 'Asia/Taipei',
-        theme: 'light',
-        style: 1,
-        locale: 'zh_TW',
-        enable_publishing: false,
-        allow_symbol_change: false,
-      });
-    };
-
-    tvRef.current.appendChild(script);
-
-    const resizeObserver = new ResizeObserver(() => {
-      widgetRef.current?.resize(
-        tvRef.current.offsetWidth,
-        window.innerWidth < 768 ? 400 : 500
-      );
-    });
-
-    resizeObserver.observe(tvRef.current);
-
-    return () => resizeObserver.disconnect();
-  }, [stockSelect]);
+  if (!lineData.length) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '400px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#666',
+        }}
+      >
+        無股價資料
+      </div>
+    );
+  }
 
   return (
-    <div
-      ref={tvRef}
-      id="tradingview_chart"
-      style={{ width: '100%', height: '500px' }}
-    />
+    <Chart
+      key={stockData.id} // 防止舊 chart 殘留
+      options={{
+        layout: { background: { color: '#fff' }, textColor: '#333' },
+        grid: { vertLines: { color: colors.gray100 }, horzLines: { color: colors.gray100 } },
+        rightPriceScale: { borderVisible: false },
+        timeScale: { borderVisible: false, timeVisible: true },
+      }}
+      containerProps={{ style: { flexGrow: 1, height: '500px' } }}
+    >
+      <TimeScale>
+        <TimeScaleFitContentTrigger deps={[lineData]} />
+      </TimeScale>
+
+      <Pane stretchFactor={1}>
+        <LineSeries data={lineData} options={{ color: colors.blue, lineWidth: 2 }} />
+        <WatermarkText
+          lines={[{ text: '股價走勢', color: '#999', fontSize: 12 }]}
+          horzAlign="right"
+          vertAlign="bottom"
+        />
+      </Pane>
+    </Chart>
   );
 }

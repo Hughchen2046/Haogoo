@@ -21,7 +21,6 @@ const dividendData = [
   { year: "2025", cash: 2.0, highlight: false },
 ];
 
-// 計算最大值用來比例化柱子高度
 const maxCash = Math.max(...dividendData.map((d) => d.cash));
 
 export default function DividendPolicy() {
@@ -50,18 +49,15 @@ export default function DividendPolicy() {
       </div>
 
       {/* 長條圖區 */}
-      <div
-        className="card rounded-4 shadow-sm p-3"
-        style={{ backgroundColor: "#f8f9fa" }}
-      >
+      <div className="card rounded-4 shadow-sm p-3" style={{ backgroundColor: "#f8f9fa" }}>
         <div
-          className="d-flex align-items-end justify-content-between"
           style={{
-            height: "360px",
-            gap: "12px",
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            height: "360px", // 父容器高度固定
             padding: "0 10px",
             borderBottom: "1px solid #dee2e6",
-            backgroundColor: "#e9ecef", // 背景顏色方便檢查柱子
           }}
         >
           {dividendData.map((d, idx) => {
@@ -69,8 +65,13 @@ export default function DividendPolicy() {
             return (
               <div
                 key={idx}
-                className="d-flex flex-column align-items-center"
-                style={{ width: "40px", flexShrink: 0 }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  width: "40px",
+                  flexShrink: 0,
+                }}
               >
                 {/* 柱子 */}
                 <div
@@ -83,20 +84,28 @@ export default function DividendPolicy() {
                   }}
                 ></div>
 
-                {/* 年份 */}
-                <div
-                  className="text-muted mt-2"
-                  style={{ fontSize: "0.8rem", textAlign: "center" }}
-                >
-                  {d.year}
-                </div>
-
                 {/* 股利數值 */}
                 <div
-                  className="fw-bold mt-1"
-                  style={{ fontSize: "0.8rem", textAlign: "center" }}
+                  style={{
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                    marginTop: "4px",
+                    textAlign: "center",
+                  }}
                 >
                   {d.cash}
+                </div>
+
+                {/* 年份 */}
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#6c757d",
+                    marginTop: "2px",
+                    textAlign: "center",
+                  }}
+                >
+                  {d.year}
                 </div>
               </div>
             );
