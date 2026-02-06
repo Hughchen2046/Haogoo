@@ -9,7 +9,6 @@ import Nopages from './components/Routes/Nopages';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import StockInfo from './pages/StockInfo.jsx';
-import { Topics } from './contexts/Topics';
 import TopicFeedPage from './components/Routes/TopicFeedPage';
 import TopicETF from './components/Routes/TopicETF.jsx';
 import TopicAll from './components/Routes/TopicAll.jsx';
@@ -43,7 +42,6 @@ const routes = [
       {
         path: 'stockInfo',
         element: <StockInfo />,
-       
       },
       {
         path: 'test',

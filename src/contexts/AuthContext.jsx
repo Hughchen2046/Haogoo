@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }) => {
       const url = `${BASE_URL}/login`;
       const response = await axios.post(url, data);
       const token = response.data.accessToken;
+      // console.log('登入成功', response);
 
       localStorage.setItem('authToken', token);
       setIsAuth(true);

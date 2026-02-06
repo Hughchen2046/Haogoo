@@ -145,14 +145,14 @@ app.use(['/login', '/register'], (req, res, next) => {
             try {
                 // 如果 body 是字串，嘗試解析它
                 let data = typeof body === 'string' ? JSON.parse(body) : body;
-
+                console.log('data', data)
                 // 檢查是否已經被封裝過
                 if (data && !data.hasOwnProperty('success')) {
                     const formattedBody = {
                         success: true,
                         code: res.statusCode,
                         message: 'OK',
-                        data: data
+                        ...(data.data || data)
                     };
                     // 重新設定 Content-Length 避免傳輸錯誤
                     res.set('Content-Length', Buffer.byteLength(JSON.stringify(formattedBody)));
@@ -180,8 +180,8 @@ router.render = (req, res) => {
     let response = {
         success: !isError,
         code: statusCode,
-        message: isError ? (data?.error || data?.message || 'Request failed') : 'OK',
-        data: data || null
+        message: isError ? (data?.error || data?.message || 'Request failed') : '成功',
+        ...data
     };
 
     // --- 針對不同 API 路徑進行自定義 (客製化邏輯區) ---
@@ -198,7 +198,7 @@ router.render = (req, res) => {
 
     // 範例：針對 Auth (登入/註冊) 可能有的特殊結構
     if (path.includes('login') || path.includes('register')) {
-        response.authStatus = isError ? 'failed' : 'success';
+        response.authStatus = isError ? 'failed' : '成功';
     }
 
     // --- 統一錯誤處理補充 ---

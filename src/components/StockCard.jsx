@@ -25,8 +25,10 @@ export default function StockCard() {
         const baseURL = import.meta.env.VITE_API_BASE;
 
         const res = await axios.get(`${baseURL}/symbols?_embed=prices&_limit=1000`);
-
-        const symbolsWithPrices = res.data.data
+        // console.log(res.data);
+        console.log(res);
+        const data = Object.values(res.data);
+        const symbolsWithPrices = data
           .filter((s) => s.prices?.length)
           .map((s) => {
             const sorted = [...s.prices].sort((a, b) => new Date(b.date) - new Date(a.date));
