@@ -23,13 +23,9 @@ export default function IndustryList() {
   useEffect(() => {
     const baseURL = import.meta.env.VITE_API_BASE;
 
-    const getIndustryList = async () => {
-      tr;
-    };
-
     fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`)
       .then((res) => res.json())
-      .then((data) => setSymbols(data))
+      .then((data) => setSymbols(data.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);

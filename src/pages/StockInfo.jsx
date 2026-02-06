@@ -23,8 +23,8 @@ export default function StockInfo() {
         const res = await axios.get(`${stockUrl}?id=${stockSelect}&_embed=prices`);
         console.log(res);
 
-        if (Array.isArray(res.data) && res.data.length > 0) {
-          const data = res.data[0];
+        if (Array.isArray(res.data.data) && res.data.data.length > 0) {
+          const data = res.data.data[0];
           console.log('data', data);
 
           // 取最後兩筆價格

@@ -181,7 +181,7 @@ router.render = (req, res) => {
         success: !isError,
         code: statusCode,
         message: isError ? (data?.error || data?.message || 'Request failed') : '成功',
-        ...data
+        data: data || null
     };
 
     // --- 針對不同 API 路徑進行自定義 (客製化邏輯區) ---
