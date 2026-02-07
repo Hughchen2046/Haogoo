@@ -18,18 +18,14 @@ export default function StockInfo() {
 
   useEffect(() => {
     const fetchData = async () => {
-      
       try {
         setLoading(true);
         const res = await axios.get(`${stockUrl}?id=${stockSelect}&_embed=prices`);
-        console.log('股票資料:', res.data[0]);
+        console.log(res);
 
-        if (Array.isArray(res.data) && res.data.length > 0) {
-          const data = res.data[0];
-          
-
-
-          
+        if (Array.isArray(res.data.data) && res.data.data.length > 0) {
+          const data = res.data.data[0];
+          console.log('data', data);
 
           // 取最後兩筆價格
           const latest = data.prices?.[data.prices.length - 1] || {};
@@ -63,19 +59,11 @@ export default function StockInfo() {
   }, [stockSelect, stockUrl]);
 
   if (loading) {
-    return (
-      <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>
-        載入中…
-      </div>
-    );
+    return <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>載入中…</div>;
   }
 
   if (!stockData) {
-    return (
-      <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>
-        無股票資料
-      </div>
-    );
+    return <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>無股票資料</div>;
   }
 
   return (
@@ -84,65 +72,65 @@ export default function StockInfo() {
       <div className="custom-container mt-5 text-muted mb-3 d-flex align-items-center gap-1 px-3">
         <span>首頁</span>
         <ChevronRight size={16} />
-        <span>{stockSelect} {stockData.name}</span>
+        <span>
+          {stockSelect} {stockData.name}
+        </span>
       </div>
 
       {/* 股票資訊卡 */}
-<div className="custom-container mb-4">
-  <div
-    className="card rounded-4 shadow-sm"
-    style={{
-      backgroundColor: '#fff',
-      border: 'none',
-      padding: '2rem 2.5rem', // 內縮
-    }}
-  >
-    {/* 上方：股票名稱 + 代號 */}
-    <div className="d-flex align-items-baseline gap-2 mb-3">
-      <div className="fs-5 fw-bold">{stockData.name}</div>
-      <div className="text-muted">{stockData.id}</div>
-    </div>
-
-    {/* 中間：股價 + 漲跌 */}
-    <div className="d-flex align-items-center gap-3 mb-3">
-      <div className="fs-2 fw-bold">{stockData.latestPrice.toFixed(2)}</div>
-
-      <div className="d-flex align-items-center gap-2">
-        {/* 箭頭小框 */}
+      <div className="custom-container mb-4">
         <div
-          className="d-flex justify-content-center align-items-center rounded"
+          className="card rounded-4 shadow-sm"
           style={{
-            width: '24px',
-            height: '24px',
-            backgroundColor: stockData.change >= 0 ? '#ffe8e8' : '#e8f0ff',
-            color: stockData.change >= 0 ? '#ff4d4f' : '#2962FF',
-            fontSize: '0.9rem',
-            fontWeight: 'bold',
+            backgroundColor: '#fff',
+            border: 'none',
+            padding: '2rem 2.5rem', // 內縮
           }}
         >
-          {stockData.change >= 0 ? '↑' : '↓'}
+          {/* 上方：股票名稱 + 代號 */}
+          <div className="d-flex align-items-baseline gap-2 mb-3">
+            <div className="fs-5 fw-bold">{stockData.name}</div>
+            <div className="text-muted">{stockData.id}</div>
+          </div>
+
+          {/* 中間：股價 + 漲跌 */}
+          <div className="d-flex align-items-center gap-3 mb-3">
+            <div className="fs-2 fw-bold">{stockData.latestPrice.toFixed(2)}</div>
+
+            <div className="d-flex align-items-center gap-2">
+              {/* 箭頭小框 */}
+              <div
+                className="d-flex justify-content-center align-items-center rounded"
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  backgroundColor: stockData.change >= 0 ? '#ffe8e8' : '#e8f0ff',
+                  color: stockData.change >= 0 ? '#ff4d4f' : '#2962FF',
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold',
+                }}
+              >
+                {stockData.change >= 0 ? '↑' : '↓'}
+              </div>
+
+              <span
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  color: stockData.change >= 0 ? '#ff4d4f' : '#2962FF',
+                }}
+              >
+                {(stockData.change ?? 0).toFixed(2)} ({(stockData.changePercent ?? 0).toFixed(2)}%)
+              </span>
+            </div>
+          </div>
+
+          {/* 下方：更新時間與總量 */}
+          <div className="text-muted" style={{ fontSize: '0.85rem' }}>
+            {stockData.latestTime} 更新 | 總量：{(stockData.totalVolume ?? 0).toLocaleString()} 張
+          </div>
         </div>
-
-        
-        <span
-          style={{
-            fontSize: '0.9rem',
-            fontWeight: 500,
-            color: stockData.change >= 0 ? '#ff4d4f' : '#2962FF',
-          }}
-        >
-          {(stockData.change ?? 0).toFixed(2)} ({(stockData.changePercent ?? 0).toFixed(2)}%)
-        </span>
       </div>
-    </div>
-
-    {/* 下方：更新時間與總量 */}
-    <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-      {stockData.latestTime} 更新 | 總量：{(stockData.totalVolume ?? 0).toLocaleString()} 張
-    </div>
-  </div>
-</div>
-
 
       {/* Tab 手機版 */}
       <div className="custom-container mb-4 d-md-none" style={{ position: 'relative' }}>
@@ -188,22 +176,13 @@ export default function StockInfo() {
       {/* 內容 */}
       <div className="custom-container mb-5">
         {activeTab === '股價走勢' && stockData?.prices?.length > 0 && (
-          <StockPriceTrend
-            key={stockSelect + '-line'}
-            stockData={stockData}
-          />
+          <StockPriceTrend key={stockSelect + '-line'} stockData={stockData} />
         )}
 
-        {activeTab === '股利政策' && stockData && (
-          <DividendPolicy />
-        )}
+        {activeTab === '股利政策' && stockData && <DividendPolicy />}
 
         {activeTab === '股價 K 線' && stockData?.prices?.length > 0 && (
-          <StockKLine
-            key={stockSelect + '-kline'}
-            stockSelect={stockSelect}
-            stockUrl={stockUrl}
-          />
+          <StockKLine key={stockSelect + '-kline'} stockSelect={stockSelect} stockUrl={stockUrl} />
         )}
       </div>
 
