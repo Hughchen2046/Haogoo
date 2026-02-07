@@ -165,7 +165,7 @@ export default function DividendPolicy() {
   return (
     <div className="container my-4">
       {/* 第一排：三個資訊卡 */}
-      <div className="row g-3 mb-3">
+      <div className="row g-3 mb-3 mt-2">
         <div className="col-12 col-md-4">
           <div className="card rounded-4 shadow-sm p-3 text-center">
             <div className="text-muted mb-1">填息機率</div>
@@ -188,7 +188,6 @@ export default function DividendPolicy() {
         </div>
       </div>
 
-     
 
       {/* 第三排：測試股利長條圖卡片 */}
       <div className="row g-3">

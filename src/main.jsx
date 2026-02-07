@@ -41,7 +41,7 @@ const routes = [
         ],
       },
       {
-        path: 'stockInfo',
+        path: '/stockInfo/:id',
         element: <StockInfo />,
        
       },

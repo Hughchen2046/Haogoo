@@ -1,33 +1,37 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ChevronRight } from 'lucide-react';
+import { NavLink, useParams, useNavigate } from 'react-router-dom';
 
 import DividendPolicy from './DividendPolicy';
 import StockKLine from './StockKLine';
 import StockPriceTrend from './StockPriceTrend';
 
 export default function StockInfo() {
+  const { id } = useParams(); // URL 參數 :id
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState('股價走勢');
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const [stockData, setStockData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const stockUrl = import.meta.env.VITE_symbolsUrl;
-  const stockSelect = '0056';
   const tabs = ['股價走勢', '股利政策', '股價 K 線'];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${stockUrl}?id=${stockSelect}&_embed=prices`);
-        console.log(res);
+        setError(false);
 
-        if (Array.isArray(res.data.data) && res.data.data.length > 0) {
-          const data = res.data.data[0];
-          console.log('data', data);
+        const res = await axios.get(`${stockUrl}?id=${id}&_embed=prices`);
+        const dataArray = res.data.data || res.data; // 適配不同 API 格式
 
-          // 取最後兩筆價格
+        if (Array.isArray(dataArray) && dataArray.length > 0) {
+          const data = dataArray[0];
+
           const latest = data.prices?.[data.prices.length - 1] || {};
           const prev = data.prices?.[data.prices.length - 2] || latest;
 
@@ -46,34 +50,46 @@ export default function StockInfo() {
           });
         } else {
           setStockData(null);
+          setError(true);
         }
       } catch (err) {
         console.error('載入股票資料失敗:', err);
         setStockData(null);
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [stockSelect, stockUrl]);
+  }, [id, stockUrl]);
 
   if (loading) {
     return <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>載入中…</div>;
   }
 
-  if (!stockData) {
-    return <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>無股票資料</div>;
+  if (error || !stockData) {
+    return (
+      <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>
+        找不到股票 ID: {id}
+        <br />
+        <button onClick={() => navigate('/')} className="btn btn-primary mt-3">
+          回首頁
+        </button>
+      </div>
+    );
   }
 
   return (
     <div className="stock-info-page pt-5">
       {/* 麵包屑 */}
       <div className="custom-container mt-5 text-muted mb-3 d-flex align-items-center gap-1 px-3">
-        <span>首頁</span>
+        <NavLink to="/" className="text-muted text-decoration-none">
+          首頁
+        </NavLink>
         <ChevronRight size={16} />
         <span>
-          {stockSelect} {stockData.name}
+          {stockData.id} {stockData.name}
         </span>
       </div>
 
@@ -84,21 +100,18 @@ export default function StockInfo() {
           style={{
             backgroundColor: '#fff',
             border: 'none',
-            padding: '2rem 2.5rem', // 內縮
+            padding: '2rem 2.5rem',
           }}
         >
-          {/* 上方：股票名稱 + 代號 */}
           <div className="d-flex align-items-baseline gap-2 mb-3">
             <div className="fs-5 fw-bold">{stockData.name}</div>
             <div className="text-muted">{stockData.id}</div>
           </div>
 
-          {/* 中間：股價 + 漲跌 */}
           <div className="d-flex align-items-center gap-3 mb-3">
             <div className="fs-2 fw-bold">{stockData.latestPrice.toFixed(2)}</div>
 
             <div className="d-flex align-items-center gap-2">
-              {/* 箭頭小框 */}
               <div
                 className="d-flex justify-content-center align-items-center rounded"
                 style={{
@@ -120,14 +133,14 @@ export default function StockInfo() {
                   color: stockData.change >= 0 ? '#ff4d4f' : '#2962FF',
                 }}
               >
-                {(stockData.change ?? 0).toFixed(2)} ({(stockData.changePercent ?? 0).toFixed(2)}%)
+                {(stockData.change ?? 0).toFixed(2)} (
+                {(stockData.changePercent ?? 0).toFixed(2)}%)
               </span>
             </div>
           </div>
 
-          {/* 下方：更新時間與總量 */}
           <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-            {stockData.latestTime} 更新 | 總量：{(stockData.totalVolume ?? 0).toLocaleString()} 張
+            {stockData.latestTime} 更新 | 總量: {(stockData.totalVolume ?? 0).toLocaleString()} 張
           </div>
         </div>
       </div>
@@ -176,13 +189,13 @@ export default function StockInfo() {
       {/* 內容 */}
       <div className="custom-container mb-5">
         {activeTab === '股價走勢' && stockData?.prices?.length > 0 && (
-          <StockPriceTrend key={stockSelect + '-line'} stockData={stockData} />
+          <StockPriceTrend key={stockData.id + '-line'} stockData={stockData} />
         )}
 
         {activeTab === '股利政策' && stockData && <DividendPolicy />}
 
         {activeTab === '股價 K 線' && stockData?.prices?.length > 0 && (
-          <StockKLine key={stockSelect + '-kline'} stockSelect={stockSelect} stockUrl={stockUrl} />
+          <StockKLine key={stockData.id + '-kline'} stockSelect={stockData.id} stockUrl={stockUrl} />
         )}
       </div>
 
