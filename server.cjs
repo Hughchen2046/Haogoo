@@ -145,14 +145,14 @@ app.use(['/login', '/register'], (req, res, next) => {
             try {
                 // 如果 body 是字串，嘗試解析它
                 let data = typeof body === 'string' ? JSON.parse(body) : body;
-                console.log('data', data)
+
                 // 檢查是否已經被封裝過
                 if (data && !data.hasOwnProperty('success')) {
                     const formattedBody = {
                         success: true,
                         code: res.statusCode,
                         message: 'OK',
-                        ...(data.data || data)
+                        data: data
                     };
                     // 重新設定 Content-Length 避免傳輸錯誤
                     res.set('Content-Length', Buffer.byteLength(JSON.stringify(formattedBody)));
@@ -165,98 +165,6 @@ app.use(['/login', '/register'], (req, res, next) => {
         return originalSend.call(this, body);
     };
     next();
-});
-
-// TWSE OpenAPI 代理 (解決 CORS 問題)
-app.get('/api/twse/*', async (req, res) => {
-    try {
-        const twsePath = req.params[0];
-        const axios = require('axios');
-
-        console.log(`📡 [TWSE Proxy] 請求: /api/twse/${twsePath}`);
-
-        const response = await axios.get(`https://openapi.twse.com.tw/v1/${twsePath}`, {
-            headers: {
-                'Accept': 'application/json',
-                'User-Agent': 'Mozilla/5.0'
-            }
-        });
-
-        console.log(`[TWSE Proxy] 成功取得資料，共 ${response.data?.length || 0} 筆`);
-
-        res.json({
-            success: true,
-            code: 200,
-            message: '成功',
-            data: response.data
-        });
-    } catch (error) {
-        console.error(`[TWSE Proxy] 錯誤:`, error.message);
-        res.status(500).json({
-            success: false,
-            code: 500,
-            message: '無法取得 TWSE 資料',
-            data: null,
-            error: error.message
-        });
-    }
-});
-
-// Finmind測試
-const FINMIND_URL = "https://api.finmindtrade.com/api/v4/data";
-
-// FinMind API 代理 (解決 CORS 問題)
-app.get('/api/finmind/:dataset', async (req, res) => {
-    try {
-        const { dataset } = req.params;
-        const axios = require('axios');
-
-        // 從查詢參數中取得 data_id, start_date, end_date 等
-        const { data_id, stock_id, start_date, end_date, token } = req.query;
-
-        console.log(`📡 [FinMind Proxy] 請求: dataset=${dataset}, data_id=${data_id || stock_id || 'all'}`);
-
-        // 建立請求參數
-        const params = {
-            dataset: dataset,
-        };
-
-        // 加入可選參數
-        if (data_id) params.data_id = data_id;
-        if (stock_id) params.data_id = stock_id; // stock_id 也對應到 data_id
-        if (start_date) params.start_date = start_date;
-        if (end_date) params.end_date = end_date;
-
-        // 建立請求標頭（如果有 token）
-        const headers = {};
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const response = await axios.get('https://api.finmindtrade.com/api/v4/data', {
-            params: params,
-            headers: headers
-        });
-
-        console.log(`✅ [FinMind Proxy] 成功取得資料，共 ${response.data?.data?.length || 0} 筆`);
-
-        res.json({
-            success: true,
-            code: 200,
-            message: '成功',
-            data: response.data.data || [],
-            msg: response.data.msg || null
-        });
-    } catch (error) {
-        console.error(`❌ [FinMind Proxy] 錯誤:`, error.message);
-        res.status(500).json({
-            success: false,
-            code: 500,
-            message: '無法取得 FinMind 資料',
-            data: null,
-            error: error.message
-        });
-    }
 });
 
 app.use(auth);
@@ -272,7 +180,7 @@ router.render = (req, res) => {
     let response = {
         success: !isError,
         code: statusCode,
-        message: isError ? (data?.error || data?.message || 'Request failed') : '成功',
+        message: isError ? (data?.error || data?.message || 'Request failed') : 'OK',
         data: data || null
     };
 
@@ -290,7 +198,7 @@ router.render = (req, res) => {
 
     // 範例：針對 Auth (登入/註冊) 可能有的特殊結構
     if (path.includes('login') || path.includes('register')) {
-        response.authStatus = isError ? 'failed' : '成功';
+        response.authStatus = isError ? 'failed' : 'success';
     }
 
     // --- 統一錯誤處理補充 ---
@@ -312,7 +220,6 @@ router.render = (req, res) => {
 };
 
 app.use(router);
-
 
 const PORT = process.env.PORT || 3000;
 

@@ -18,7 +18,6 @@ export default function StockCard() {
   const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
   const { isAuth } = useAuth();
-  const [stocklists, setStocklists] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +25,6 @@ export default function StockCard() {
         const baseURL = import.meta.env.VITE_API_BASE;
 
         const res = await axios.get(`${baseURL}/symbols?_embed=prices&_limit=1000`);
-        // console.log(res.data);
 
         const symbolsWithPrices = res.data.data
           .filter((s) => s.prices?.length)
@@ -34,11 +32,8 @@ export default function StockCard() {
             const sorted = [...s.prices].sort((a, b) => new Date(b.date) - new Date(a.date));
             return { ...s, latestPrice: sorted[0] };
           });
-        console.log(symbolsWithPrices);
+
         setStocks(symbolsWithPrices);
-        const stocknames = symbolsWithPrices.map((s) => s.id);
-        console.log(stocknames);
-        setStocklists(stocknames);
       } catch (e) {
         console.error('讀取資料失敗', e);
       } finally {
