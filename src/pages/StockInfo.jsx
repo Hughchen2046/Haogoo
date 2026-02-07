@@ -18,12 +18,18 @@ export default function StockInfo() {
 
   useEffect(() => {
     const fetchData = async () => {
+      
       try {
         setLoading(true);
         const res = await axios.get(`${stockUrl}?id=${stockSelect}&_embed=prices`);
+        console.log('股票資料:', res.data[0]);
 
         if (Array.isArray(res.data) && res.data.length > 0) {
           const data = res.data[0];
+          
+
+
+          
 
           // 取最後兩筆價格
           const latest = data.prices?.[data.prices.length - 1] || {};
