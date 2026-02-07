@@ -16,6 +16,9 @@ import TopicBeginner from './components/Routes/TopicBeginner.jsx';
 import TopicInternation from './components/Routes/TopicInternation.jsx';
 import TopicTaiwanStock from './components/Routes/TopicTaiwanStock.jsx';
 import TopHot from './components/Routes/TopHot.jsx';
+import MyStockFeed from './components/Routes/MyStockFeed.jsx';
+import MarketInfo from './components/Routes/MarketInfo.jsx';
+import MyWishlist from './components/Routes/MyWishlist.jsx';
 
 const routes = [
   {
@@ -42,6 +45,15 @@ const routes = [
       {
         path: 'stockInfo',
         element: <StockInfo />,
+      },
+      {
+        path: 'mystocklist',
+        element: <MyStockFeed />,
+        children: [
+          { index: true, element: <MarketInfo /> },
+          { path: 'marketinfo', element: <MarketInfo /> },
+          { path: 'mywishlist', element: <MyWishlist /> },
+        ],
       },
       {
         path: 'test',

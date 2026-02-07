@@ -30,3 +30,16 @@ export const Topics = {
     slug: 'beginners',
   },
 };
+
+export const MyStockList = {
+  marketinfo: {
+    label: '精選與行情',
+    path: '/mystocklist/marketinfo',
+    slug: 'marketinfo',
+  },
+  mywishlist: {
+    label: '我的好股',
+    path: '/mystocklist/mywishlist',
+    slug: 'mywishlist',
+  },
+};

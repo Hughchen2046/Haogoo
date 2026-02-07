@@ -72,7 +72,7 @@ export default function Navbar() {
           </div>
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
             <li className="nav-item d-flex flex-column justify-content-center align-items-center">
-              <NavLink className={`nav-link ${navLinkColor} py-10 px-16`} to="/">
+              <NavLink className={`nav-link ${navLinkColor} py-10 px-16`} to="/mystocklist">
                 我的選股清單
               </NavLink>
             </li>
@@ -153,7 +153,7 @@ export default function Navbar() {
           <ul className="navbar-nav font-zh-tw text-center gap-24 h6">
             <li className="nav-item py-10 px-16">
               <NavLink
-                to="/"
+                to="/mystocklist"
                 className="text-decoration-none text-gray-900"
                 onClick={closeOffcanvas}
               >
