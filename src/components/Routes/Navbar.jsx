@@ -26,11 +26,16 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      isIndex ? setIsScrolled(window.scrollY > 200) : setIsScrolled(window.scrollY > 15);
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY || window.pageYOffset;
+        isIndex ? setIsScrolled(scrollY > 200) : setIsScrolled(scrollY > 15);
+      });
     };
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isIndex]); // 加入 isIndex
 
   const handleLogout = () => {
     logout();

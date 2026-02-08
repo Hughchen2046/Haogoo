@@ -37,19 +37,21 @@ const dividendData = [
 // 計算最高股利，方便百分比顯示
 const maxCash = Math.max(...dividendData.map((d) => d.cash));
 
-export default function DividendPolicy() {
+export default function DividendPolicy({ stockId }) {
+  // const { stockId } = useParams();
   const [benifitData, setBenifitData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
+  console.log('stockId', stockId);
 
   useEffect(() => {
     const getBenifitData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:3001/stockbenifit?id=0056');
+        const response = await axios.get(`http://localhost:3001/stockbenifit?id=${stockId}`);
         console.log('完整回應:', response.data);
 
         // 正確的資料結構：response.data.data[0].data
@@ -70,7 +72,7 @@ export default function DividendPolicy() {
       }
     };
     getBenifitData();
-  }, []);
+  }, [stockId]); // ✅ 加入 stockId 依賴
 
   // 處理股利資料，轉換成圖表格式
   const chartData = useMemo(() => {
@@ -187,7 +189,6 @@ export default function DividendPolicy() {
           </div>
         </div>
       </div>
-
 
       {/* 第三排：測試股利長條圖卡片 */}
       <div className="row g-3">

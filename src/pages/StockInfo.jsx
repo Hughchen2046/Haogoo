@@ -16,6 +16,7 @@ export default function StockInfo() {
   const [stockData, setStockData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  console.log('id', id);
 
   const stockUrl = import.meta.env.VITE_symbolsUrl;
   const tabs = ['股價走勢', '股利政策', '股價 K 線'];
@@ -27,7 +28,8 @@ export default function StockInfo() {
         setError(false);
 
         const res = await axios.get(`${stockUrl}?id=${id}&_embed=prices`);
-        const dataArray = res.data.data || res.data; // 適配不同 API 格式
+        const dataArray = res.data.data || res.data;
+        console.log('dataArray', dataArray);
 
         if (Array.isArray(dataArray) && dataArray.length > 0) {
           const data = dataArray[0];
@@ -71,7 +73,7 @@ export default function StockInfo() {
   if (error || !stockData) {
     return (
       <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>
-        找不到股票 ID: {id}
+        找不到股票 ID: {stockID}
         <br />
         <button onClick={() => navigate('/')} className="btn btn-primary mt-3">
           回首頁
@@ -133,8 +135,7 @@ export default function StockInfo() {
                   color: stockData.change >= 0 ? '#ff4d4f' : '#2962FF',
                 }}
               >
-                {(stockData.change ?? 0).toFixed(2)} (
-                {(stockData.changePercent ?? 0).toFixed(2)}%)
+                {(stockData.change ?? 0).toFixed(2)} ({(stockData.changePercent ?? 0).toFixed(2)}%)
               </span>
             </div>
           </div>
@@ -192,10 +193,14 @@ export default function StockInfo() {
           <StockPriceTrend key={stockData.id + '-line'} stockData={stockData} />
         )}
 
-        {activeTab === '股利政策' && stockData && <DividendPolicy />}
+        {activeTab === '股利政策' && stockData && <DividendPolicy stockId={id} />}
 
         {activeTab === '股價 K 線' && stockData?.prices?.length > 0 && (
-          <StockKLine key={stockData.id + '-kline'} stockSelect={stockData.id} stockUrl={stockUrl} />
+          <StockKLine
+            key={stockData.id + '-kline'}
+            stockSelect={stockData.id}
+            stockUrl={stockUrl}
+          />
         )}
       </div>
 
