@@ -94,12 +94,18 @@ export default function Navbar() {
 
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
             <li className="nav-item d-flex flex-column justify-content-center align-items-center">
-              <NavLink className={`nav-link ${navLinkColor} py-10 px-16`} to="/mystocklist">
+              <NavLink
+                className={`nav-link  py-10 px-16 ${navLinkColor} ${isScrolled ? 'text-white' : ''}`}
+                to="/mystocklist"
+              >
                 我的選股清單
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className={`nav-link ${navLinkColor} py-10 px-16`} to="/topics">
+              <NavLink
+                className={`nav-link py-10 px-16 ${navLinkColor} ${isScrolled ? 'text-white' : ''}`}
+                to="/topics"
+              >
                 熱門話題
               </NavLink>
             </li>
@@ -179,7 +185,11 @@ export default function Navbar() {
         {/* 小螢幕選單 */}
         <ul className="navbar-nav font-zh-tw text-center gap-24 h6 px-12">
           <li className="nav-item py-10 px-16">
-            <NavLink to="/" className="text-decoration-none text-gray-900" onClick={closeOffcanvas}>
+            <NavLink
+              to="/mystocklist"
+              className="text-decoration-none text-gray-900"
+              onClick={closeOffcanvas}
+            >
               我的選股清單
             </NavLink>
           </li>

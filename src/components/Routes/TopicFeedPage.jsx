@@ -7,7 +7,7 @@ export default function TopicFeedPage() {
   const { topicSlug } = useParams();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-
+  console.log(Topics);
   const slug = topicSlug || pathname.split('/').pop();
   const currentTopic = Object.values(Topics).find((topic) => topic.slug === slug) ?? Topics.all;
 
@@ -22,6 +22,12 @@ export default function TopicFeedPage() {
                   首頁
                 </NavLink>
               </li>
+              <li>
+                <ChevronRight width={16} height={16} className="text-gray-800" />
+              </li>
+              <NavLink className="text-decoration-none text-gray-800" to="/topics">
+                熱門話題
+              </NavLink>
               <li>
                 <ChevronRight width={16} height={16} className="text-gray-800" />
               </li>
@@ -56,7 +62,7 @@ export default function TopicFeedPage() {
                   <ChevronUp />
                 </li>
                 {Object.values(Topics).map((topic) => (
-                  <li key={topic.slug}>
+                  <li key={topic.slug} className="dropdown-li-hover">
                     <NavLink
                       to={topic.path}
                       className="dropdown-item font-weight-light py-8 mb-8"

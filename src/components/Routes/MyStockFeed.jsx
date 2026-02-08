@@ -4,13 +4,13 @@ import { ChevronUp, ChevronDown, ChevronRight } from 'lucide-react';
 import { MyStockList } from '../../contexts/Topics';
 
 export default function MyStockFeed() {
-  const { topicSlug } = useParams();
+  const { mystockSlug } = useParams();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const slug = topicSlug || pathname.split('/').pop();
+  const slug = mystockSlug || pathname.split('/').pop();
   const currentTopic =
-    Object.values(MyStockList).find((topic) => topic.slug === slug) ?? MyStockList.marketinfo;
+    Object.values(MyStockList).find((topic) => topic.slug === slug) ?? MyStockList.all;
 
   return (
     <>
@@ -26,7 +26,13 @@ export default function MyStockFeed() {
               <li>
                 <ChevronRight width={16} height={16} className="text-gray-800" />
               </li>
-              <li className="">我的選股清單</li>
+              <NavLink className="text-decoration-none text-gray-800" to="/mystocklist">
+                我的選股清單
+              </NavLink>
+              <li>
+                <ChevronRight width={16} height={16} className="text-gray-800" />
+              </li>
+              <li className="">{currentTopic.label}</li>
             </ul>
           </nav>
           <div className="pt-32 pb-64">
@@ -57,7 +63,7 @@ export default function MyStockFeed() {
                   <ChevronUp />
                 </li>
                 {Object.values(MyStockList).map((topic) => (
-                  <li key={topic.slug}>
+                  <li key={topic.slug} className="dropdown-li-hover">
                     <NavLink
                       to={topic.path}
                       className="dropdown-item font-weight-light py-8 mb-8"
@@ -88,7 +94,7 @@ export default function MyStockFeed() {
               </ul>
             </div>
 
-            <div className="mt-24">
+            <div className="mt-32 mt-lg-24 mb-64 mb-lg-96">
               <Outlet />
             </div>
           </div>

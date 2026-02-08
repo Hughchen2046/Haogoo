@@ -20,6 +20,7 @@ import TopHot from './components/Routes/TopHot.jsx';
 import MyStockFeed from './components/Routes/MyStockFeed.jsx';
 import MarketInfo from './components/Routes/MarketInfo.jsx';
 import MyWishlist from './components/Routes/MyWishlist.jsx';
+import MystockList from './pages/MystockList.jsx';
 
 const routes = [
   {
@@ -46,20 +47,24 @@ const routes = [
       {
         path: '/stockInfo/:id',
         element: <StockInfo />,
-       
       },
       {
         path: 'mystocklist',
         element: <MyStockFeed />,
         children: [
           { index: true, element: <MarketInfo /> },
-          { path: 'marketinfo', element: <MarketInfo /> },
+          // { path: 'marketinfo', element: <MarketInfo /> },
           { path: 'mywishlist', element: <MyWishlist /> },
+          { path: ':mystockSlug', element: <MarketInfo /> },
         ],
       },
       {
         path: 'test',
         element: <Test />,
+      },
+      {
+        path: 'mystock',
+        element: <MystockList />,
       },
       {
         path: '*',

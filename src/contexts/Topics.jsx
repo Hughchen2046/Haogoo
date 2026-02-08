@@ -32,10 +32,10 @@ export const Topics = {
 };
 
 export const MyStockList = {
-  marketinfo: {
+  all: {
     label: '精選與行情',
-    path: '/mystocklist/marketinfo',
-    slug: 'marketinfo',
+    path: '/mystocklist',
+    slug: '',
   },
   mywishlist: {
     label: '我的好股',
