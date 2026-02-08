@@ -15,7 +15,7 @@ const TaiwanIndexChart = () => {
         const response = await axios.get(
           'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json&_=1770530872584'
         );
-        // console.log(response.data);
+        console.log(response.data);
         const taiex = [
           {
             title: response.data.title,
@@ -30,7 +30,7 @@ const TaiwanIndexChart = () => {
           },
         ];
         setTaiwanIndexData(taiex);
-        console.log(taiex);
+        // console.log(taiex);
       } catch (error) {
         console.error(error);
       }
@@ -174,26 +174,30 @@ const TaiwanIndexChart = () => {
 
   return (
     <div className="p-24">
-      <h2 className="mb-16 d-flex justify-content-between">
-        {taiwanIndexData[0].tablehead[1]}{' '}
-        <span className="caption">
-          {chartMode === 'realtime'
-            ? taiwanIndexData[0].title
-            : `${dayjs(taiwanIndexData[0].date).format('YYYY/MM/DD')}`}
-        </span>
-      </h2>
-      <div id="taiwan-index-chart-container" className="w-100 mb-24"></div>
-      <div className="d-flex justify-content-center gap-24">
+      {taiwanIndexData.length > 0 && (
+        <>
+          <h2 className="mb-16 d-flex justify-content-between">
+            {taiwanIndexData[0].tablehead[1]}{' '}
+            <span className="caption">
+              {chartMode === 'realtime'
+                ? taiwanIndexData[0].title
+                : `${dayjs(taiwanIndexData[0].date).format('YYYY/MM/DD')}`}
+            </span>
+          </h2>
+        </>
+      )}
+      <div id="taiwan-index-chart-container" className="w-100 mb-24 mb-lg-48"></div>
+      <div className="d-flex justify-content-center gap-24 gap-lg-96">
         <button
           type="button"
-          className={`btn ${chartMode === 'realtime' ? 'btn-primary' : 'btn-outline-primary'}`}
+          className={`btn py-lg-16 px-lg-24 ${chartMode === 'realtime' ? 'btn-primary text-white' : 'btn-outline-primary'}`}
           onClick={() => setChartMode('realtime')}
         >
           動態顯示:每5秒
         </button>
         <button
           type="button"
-          className={`btn ${chartMode === 'static' ? 'btn-primary' : 'btn-outline-primary'}`}
+          className={`btn py-lg-16 px-lg-24 ${chartMode === 'static' ? 'btn-primary text-white' : 'btn-outline-primary'}`}
           onClick={() => setChartMode('static')}
         >
           整體線圖

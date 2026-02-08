@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import TaiwanIndexChart from '../Tools/TaiwanIndexChart';
+import FoodIndexChart from '../Tools/FoodIndexChart';
 import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
 import axios from 'axios';
+import AllIndexChart from '../Tools/AllIndexChart';
 const API_URL = import.meta.env.VITE_stocksUrl;
 
 export default function MarketInfo() {
@@ -28,23 +30,43 @@ export default function MarketInfo() {
       slug: '',
     },
     {
-      label: '櫃買指數',
-      indicator: 'TWO:OTC',
+      label: '食品類指數',
+      indicator: 't02',
       path: '#',
-      slug: '櫃買指數',
+      slug: '食品類指數',
     },
     {
-      label: '台指期',
-      indicator: 'TAIEX:FITX1!',
+      label: '電子類指數',
+      indicator: 't13',
       path: '#',
-      slug: '台指期',
+      slug: '電子類指數',
     },
     {
-      label: '各項指數',
-      indicator: 'TWSE:IR0001',
+      label: '金融保險類指數',
+      indicator: 't17',
       path: '#',
+      slug: '金融保險類指數',
+    },
+    {
+      label: '生技醫療類指數',
+      indicator: 't22',
+      path: '#',
+      slug: '生技醫療類指數',
+    },
+    {
+      label: '半導體類指數',
+      indicator: 't24',
+      path: '#',
+      slug: '半導體類指數',
+    },
+    {
+      label: '資訊服務類指數',
+      indicator: 't30',
+      path: '#',
+      slug: '資訊服務類指數',
     },
   ];
+
   //精選產業 的設定
   const [industrySelect, setIndustrySelect] = useState([
     {
@@ -232,7 +254,15 @@ export default function MarketInfo() {
           }}
         >
           <div>
-            <TaiwanIndexChart />
+            {marketTab === '加權指數' ? (
+              <TaiwanIndexChart />
+            ) : (
+              <AllIndexChart
+                indexId={
+                  taiwanVariousIndicators.find((item) => item.label === marketTab)?.indicator
+                }
+              />
+            )}
           </div>
         </div>
       </section>
