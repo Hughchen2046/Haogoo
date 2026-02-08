@@ -219,6 +219,52 @@ router.render = (req, res) => {
     res.jsonp(response);
 };
 
+// FinMind API 代理路由 (避免 CORS 問題)
+app.get('/api/finmind/taiwan-index', async (req, res) => {
+    try {
+        const { start_date, end_date, index_id = 'TAIEX' } = req.query;
+
+        if (!start_date) {
+            return res.status(400).json({
+                success: false,
+                code: 400,
+                message: '缺少必要參數: start_date',
+                data: null
+            });
+        }
+
+        const axios = require('axios');
+
+        // 構建 FinMind API URL
+        // data_id 可以是:
+        // - TAIEX: 發行量加權股價報酬指數
+        // - TPEx: 櫃買指數與報酬指數
+        let apiUrl = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanVariousIndicators5Seconds&data_id=${index_id}&start_date=${start_date}`;
+        if (end_date) {
+            apiUrl += `&end_date=${end_date}`;
+        }
+
+        console.log(`📊 Fetching Taiwan Index from FinMind: ${apiUrl}`);
+
+        const response = await axios.get(apiUrl);
+
+        res.json({
+            success: true,
+            code: 200,
+            message: 'OK',
+            data: response.data.data || []
+        });
+    } catch (error) {
+        console.error('❌ FinMind API Error:', error.message);
+        res.status(500).json({
+            success: false,
+            code: 500,
+            message: `FinMind API 錯誤: ${error.message}`,
+            data: null
+        });
+    }
+});
+
 app.use(router);
 
 const PORT = process.env.PORT || 3000;

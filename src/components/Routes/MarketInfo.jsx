@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import TaiwanIndexChart from '../Tools/TaiwanIndexChart';
 import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
 import axios from 'axios';
 const API_URL = import.meta.env.VITE_stocksUrl;
@@ -133,7 +133,7 @@ export default function MarketInfo() {
               prices: item.prices,
             };
           });
-        console.log(industry);
+        // console.log(industry);
 
         // 使用 Map 來獲取不重複的產業，以 industryTW 為 key
         const uniqueIndustries = new Map();
@@ -231,8 +231,8 @@ export default function MarketInfo() {
             border: '1px solid white',
           }}
         >
-          <div className="bg-primary" style={{ height: '777px' }}>
-            Test page
+          <div>
+            <TaiwanIndexChart />
           </div>
         </div>
       </section>
