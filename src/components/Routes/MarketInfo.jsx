@@ -5,7 +5,12 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_stocksUrl;
 
 export default function MarketInfo() {
-  const [isOpen, setIsOpen] = useState(false);
+  // 各個 dropdown 的開關狀態
+  const [isMarketOpen, setIsMarketOpen] = useState(false);
+  const [isIndustryOpen, setIsIndustryOpen] = useState(false);
+  const [isCollectionOpen, setIsCollectionOpen] = useState(false);
+  const [isETFOpen, setIsETFOpen] = useState(false);
+
   // 建立一個狀態來記錄愛心是否為實心
   const [liked, setLiked] = useState(false);
   // 記錄藥丸按鈕目前選哪一個
@@ -164,21 +169,21 @@ export default function MarketInfo() {
       <section className="py-24 py-lg-40">
         <h2 className="fs-bold mb-24 font-zh-tw h1-lg">市場行情</h2>
         {/* 小螢幕用dropdown */}
-        <div className={`dropdown mb-32 font-zh-tw d-md-none ${isOpen ? 'show' : ''}`}>
+        <div className={`dropdown mb-32 font-zh-tw d-md-none ${isMarketOpen ? 'show' : ''}`}>
           <button
             className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
             type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-expanded={isOpen}
+            onClick={() => setIsMarketOpen(!isMarketOpen)}
+            aria-expanded={isMarketOpen}
           >
             <span className="ps-16">{marketTab}</span>
             <ChevronDown />
           </button>
           <ul
-            className={`dropdown-menu w-100 py-16 px-24 border-0 ${isOpen ? 'show' : ''}`}
+            className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isMarketOpen ? 'show' : ''}`}
             style={{
               backgroundColor: '#F3F3F3',
-              display: isOpen ? 'block' : 'none',
+              display: isMarketOpen ? 'block' : 'none',
             }}
           >
             <li className="d-flex justify-content-between align-items-start">
@@ -193,7 +198,7 @@ export default function MarketInfo() {
                   }`}
                   onClick={() => {
                     setMarketTab(topic.label);
-                    setIsOpen(false);
+                    setIsMarketOpen(false);
                   }}
                 >
                   {topic.label}
@@ -235,21 +240,21 @@ export default function MarketInfo() {
       <section className="py-24 py-lg-40">
         <h2 className="fs-bold mb-24 font-zh-tw h1-lg">精選產業</h2>
         {/* 小螢幕用dropdown */}
-        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isOpen ? 'show' : ''}`}>
+        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isIndustryOpen ? 'show' : ''}`}>
           <button
             className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
             type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-expanded={isOpen}
+            onClick={() => setIsIndustryOpen(!isIndustryOpen)}
+            aria-expanded={isIndustryOpen}
           >
             <span className="ps-16">{industryTab}</span>
             <ChevronDown />
           </button>
           <ul
-            className={`dropdown-menu w-100 py-16 px-24 border-0 ${isOpen ? 'show' : ''}`}
+            className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isIndustryOpen ? 'show' : ''}`}
             style={{
               backgroundColor: '#F3F3F3',
-              display: isOpen ? 'block' : 'none',
+              display: isIndustryOpen ? 'block' : 'none',
             }}
           >
             <li className="d-flex justify-content-between align-items-start">
@@ -265,7 +270,7 @@ export default function MarketInfo() {
                   }`}
                   onClick={() => {
                     setIndustryTab(topic.label);
-                    setIsOpen(false);
+                    setIsIndustryOpen(false);
                   }}
                 >
                   {topic.label}
@@ -431,21 +436,21 @@ export default function MarketInfo() {
       <section className="py-24 py-lg-40">
         <h2 className="fs-bold mb-24 font-zh-tw h1-lg">精選選股</h2>
         {/* 小螢幕用dropdown */}
-        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isOpen ? 'show' : ''}`}>
+        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isCollectionOpen ? 'show' : ''}`}>
           <button
             className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
             type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-expanded={isOpen}
+            onClick={() => setIsCollectionOpen(!isCollectionOpen)}
+            aria-expanded={isCollectionOpen}
           >
             <span className="ps-16">{collectionTab}</span>
             <ChevronDown />
           </button>
           <ul
-            className={`dropdown-menu w-100 py-16 px-24 border-0 ${isOpen ? 'show' : ''}`}
+            className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isCollectionOpen ? 'show' : ''}`}
             style={{
               backgroundColor: '#F3F3F3',
-              display: isOpen ? 'block' : 'none',
+              display: isCollectionOpen ? 'block' : 'none',
             }}
           >
             <li className="d-flex justify-content-between align-items-start">
@@ -461,7 +466,7 @@ export default function MarketInfo() {
                   }`}
                   onClick={() => {
                     setCollectionTab(topic.label);
-                    setIsOpen(false);
+                    setIsCollectionOpen(false);
                   }}
                 >
                   {topic.label}
@@ -627,21 +632,21 @@ export default function MarketInfo() {
       <section className="py-24 py-lg-40">
         <h2 className="fs-bold mb-24 font-zh-tw h1-lg">熱門 ETF</h2>
         {/* 小螢幕用dropdown */}
-        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isOpen ? 'show' : ''}`}>
+        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isETFOpen ? 'show' : ''}`}>
           <button
             className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
             type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-expanded={isOpen}
+            onClick={() => setIsETFOpen(!isETFOpen)}
+            aria-expanded={isETFOpen}
           >
             <span className="ps-16">{collectionETFTab}</span>
             <ChevronDown />
           </button>
           <ul
-            className={`dropdown-menu w-100 py-16 px-24 border-0 ${isOpen ? 'show' : ''}`}
+            className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isETFOpen ? 'show' : ''}`}
             style={{
               backgroundColor: '#F3F3F3',
-              display: isOpen ? 'block' : 'none',
+              display: isETFOpen ? 'block' : 'none',
             }}
           >
             <li className="d-flex justify-content-between align-items-start">
@@ -657,7 +662,7 @@ export default function MarketInfo() {
                   }`}
                   onClick={() => {
                     setCollectionETFTab(topic.label);
-                    setIsOpen(false);
+                    setIsETFOpen(false);
                   }}
                 >
                   {topic.label}

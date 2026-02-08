@@ -52,7 +52,7 @@ export default function MyStockFeed() {
                 <ChevronDown />
               </button>
               <ul
-                className={`dropdown-menu w-100 py-16 px-24 border-0 ${isOpen ? 'show' : ''}`}
+                className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isOpen ? 'show' : ''}`}
                 style={{
                   backgroundColor: '#F3F3F3',
                   display: isOpen ? 'block' : 'none',

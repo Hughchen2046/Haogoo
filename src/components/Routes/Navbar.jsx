@@ -60,7 +60,7 @@ export default function Navbar() {
         className={`navbar navbar-expand-lg position-fixed top-0 start-0 end-0 p-12 py-lg-16 font-zh-tw transition-all ${
           isScrolled ? 'navbar-scrolled' : ''
         }`}
-        style={{ zIndex: 999 }}
+        style={{ zIndex: 9999 }}
         data-bs-theme="dark"
       >
         <div className="container d-flex gap-md-48 justify-content-between px-0 ">
