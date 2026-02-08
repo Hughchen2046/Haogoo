@@ -14,15 +14,19 @@ export default function Navbar() {
   const navigate = useNavigate(); // 用來導向搜尋結果
 
   const isIndex = location.pathname === '/';
-  const navLogoColor = isIndex ? 'text-white' : 'text-primary';
-  const navLinkColor = isIndex ? 'text-white' : 'text-gray-900';
-  const navSearchColor = isIndex
+
+  // 當 isScrolled 時，不論 isIndex 都使用相同的色系（白色）
+  const navLogoColor = isScrolled ? 'text-white' : isIndex ? 'text-white' : 'text-primary';
+  const navLinkColor = isScrolled ? 'text-white' : isIndex ? 'text-white' : 'text-gray-900';
+  const navSearchColor = isScrolled
     ? 'bg-gray-50 text-gray-200 placeholder-gray-200'
-    : 'bg-gray-400 text-gray-800 placeholder-gray-800';
+    : isIndex
+      ? 'bg-gray-50 text-gray-200 placeholder-gray-200'
+      : 'bg-gray-400 text-gray-800 placeholder-gray-800';
 
   useEffect(() => {
     const handleScroll = () => {
-      isIndex ? setIsScrolled(window.scrollY > 200) : setIsScrolled(window.scrollY > 50);
+      isIndex ? setIsScrolled(window.scrollY > 200) : setIsScrolled(window.scrollY > 15);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -94,18 +98,12 @@ export default function Navbar() {
 
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
             <li className="nav-item d-flex flex-column justify-content-center align-items-center">
-              <NavLink
-                className={`nav-link  py-10 px-16 ${navLinkColor} ${isScrolled ? 'text-white' : ''}`}
-                to="/mystocklist"
-              >
+              <NavLink className={`nav-link py-10 px-16 ${navLinkColor}`} to="/mystocklist">
                 我的選股清單
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink
-                className={`nav-link py-10 px-16 ${navLinkColor} ${isScrolled ? 'text-white' : ''}`}
-                to="/topics"
-              >
+              <NavLink className={`nav-link py-10 px-16 ${navLinkColor}`} to="/topics">
                 熱門話題
               </NavLink>
             </li>
