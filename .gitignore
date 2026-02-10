@@ -32,3 +32,4 @@ test_fin01.js
 test.js
 *.env
 .agent/
+docs/
