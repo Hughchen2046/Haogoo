@@ -1,35 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  Minus,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import axios from 'axios';
 import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Grid, Navigation } from 'swiper/modules';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/grid';
 import 'swiper/css/navigation';
 
-import { useAuth } from '../contexts/AuthContext';
-
 export default function StockCard() {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
   const { isAuth } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const baseURL = import.meta.env.VITE_API_BASE;
 
-        const res = await axios.get(`${baseURL}/symbols?_embed=prices&_limit=1000`);
+        const res = await axios.get(
+          `${baseURL}/symbols?_embed=prices&_limit=1000`
+        );
 
         const symbolsWithPrices = res.data.data
           .filter((s) => s.prices?.length)
           .map((s) => {
-            const sorted = [...s.prices].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sorted = [...s.prices].sort(
+              (a, b) => new Date(b.date) - new Date(a.date)
+            );
             return { ...s, latestPrice: sorted[0] };
           });
 
@@ -72,32 +83,33 @@ export default function StockCard() {
   return (
     <section className="bg-gray-400">
       <div className="container py-64 py-md-96 font-zh-tw">
-        <h3 className="h2-md mb-8 ">熱門個股</h3>
-        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">Popular Stocks</h2>
+        <h3 className="h2-md mb-8">熱門個股</h3>
+        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">
+          Popular Stocks
+        </h2>
 
         <Swiper
           modules={[Pagination, Grid, Navigation]}
           pagination={{
             el: '.stock-pagination',
             clickable: true,
-            renderBullet: (index, className) => {
-              return `<span class="${className}">${index + 1}</span>`;
-            },
+            renderBullet: (index, className) =>
+              `<span class="${className}">${index + 1}</span>`,
           }}
           navigation={{
             prevEl: '.stock-prev',
             nextEl: '.stock-next',
           }}
-          spaceBetween={10} // 手機卡片間距
-          slidesPerView={1} // 每列一張
-          slidesPerGroup={3} // 一次滑動一頁（3張）
-          grid={{ rows: 4, fill: 'row' }} // 手機三列
+          spaceBetween={10}
+          slidesPerView={1}
+          slidesPerGroup={3}
+          grid={{ rows: 4, fill: 'row' }}
           breakpoints={{
             1024: {
-              slidesPerView: 2, // 桌機每列兩張
-              slidesPerGroup: 4, // 每次滑動換一頁（4張）
-              spaceBetween: 20, // 桌機左右間距
-              grid: { rows: 2, fill: 'row' }, // 桌機兩列
+              slidesPerView: 2,
+              slidesPerGroup: 4,
+              spaceBetween: 20,
+              grid: { rows: 2, fill: 'row' },
             },
           }}
           className="stockSwiper"
@@ -107,32 +119,59 @@ export default function StockCard() {
             const changePct = price?.dailyChangePct ?? 0;
             const totalPct = price?.totalChangePct ?? 0;
 
-            const trend = changePct > 0 ? 'up' : changePct < 0 ? 'down' : 'flat';
+            const trend =
+              changePct > 0 ? 'up' : changePct < 0 ? 'down' : 'flat';
 
             const trendColor =
-              trend === 'up' ? 'text-danger' : trend === 'down' ? 'text-success' : 'text-secondary';
-            const trendBgColor =
-              trend === 'up' ? 'bg-pink' : trend === 'down' ? 'bg-pinkgreen' : 'border bg-light';
+              trend === 'up'
+                ? 'text-danger'
+                : trend === 'down'
+                ? 'text-success'
+                : 'text-secondary';
 
-            // 判斷是否需要模糊：第三頁以後（index >= 12）且未登入
-            // 手機版：每頁 3 張（rows: 4 但實際顯示3張），第三頁從 index 6 開始
-            // 桌機版：每頁 4 張（2x2），第三頁從 index 8 開始
+            const trendBgColor =
+              trend === 'up'
+                ? 'bg-pink'
+                : trend === 'down'
+                ? 'bg-pinkgreen'
+                : 'border bg-light';
+
+            // 前4張可看，其餘未登入模糊
             const shouldBlur = !isAuth && index >= 4;
 
             return (
-              <SwiperSlide key={stock.id} className={shouldBlur ? 'position-relative' : ''}>
+              <SwiperSlide
+                key={stock.id}
+                className={shouldBlur ? 'position-relative' : ''}
+              >
                 <div
                   className="stockCard border round-24 p-16 d-md-flex justify-content-md-between py-md-48 px-md-24"
-                  style={shouldBlur ? { filter: 'blur(8px)', pointerEvents: 'none' } : {}}
+                  style={
+                    shouldBlur
+                      ? { filter: 'blur(8px)', pointerEvents: 'none' }
+                      : { cursor: 'pointer' }
+                  }
+                  onClick={() => {
+                    if (!shouldBlur) {
+                      navigate(`/stockInfo/${stock.id}`);
+                    }
+                  }}
                 >
+                  {/* 上半部 */}
                   <div className="d-flex justify-content-between align-items-center border-bottom pb-8 mb-8 pb-md-0 mb-md-0 border-md-0">
                     <div className="d-flex gap-16 align-items-center me-md-16">
                       <div
-                        className={`d-flex justify-content-center align-items-center icon-48 round-8 bg-pink ${trend} ${trendBgColor}`}
+                        className={`d-flex justify-content-center align-items-center icon-48 round-8 ${trendBgColor}`}
                       >
-                        {trend === 'up' && <ArrowUp className={`icon-24 ${trendColor}`} />}
-                        {trend === 'down' && <ArrowDown className={`icon-24 ${trendColor}`} />}
-                        {trend === 'flat' && <Minus className={`icon-24 ${trendColor}`} />}
+                        {trend === 'up' && (
+                          <ArrowUp className={`icon-24 ${trendColor}`} />
+                        )}
+                        {trend === 'down' && (
+                          <ArrowDown className={`icon-24 ${trendColor}`} />
+                        )}
+                        {trend === 'flat' && (
+                          <Minus className={`icon-24 ${trendColor}`} />
+                        )}
                       </div>
                       <h3>{stock.name}</h3>
                     </div>
@@ -141,6 +180,7 @@ export default function StockCard() {
                     </div>
                   </div>
 
+                  {/* 價格區 */}
                   <div className="d-flex justify-content-between align-items-center flex-md-column gap-md-8">
                     <div className={`h1 ${trendColor}`}>
                       {(price?.close ?? 0).toLocaleString(undefined, {
@@ -155,7 +195,7 @@ export default function StockCard() {
                   </div>
                 </div>
 
-                {/* 未登入時顯示登入提示遮罩 */}
+                {/* 未登入遮罩 */}
                 {shouldBlur && (
                   <div
                     className="position-absolute top-50 start-50 translate-middle text-center"
@@ -174,12 +214,14 @@ export default function StockCard() {
             );
           })}
         </Swiper>
-        <div className="stock-pagination-container justify-content-md-start">
-          <div className="stock-prev">
+
+        {/* 分頁控制 */}
+        <div className="stock-pagination-container justify-content-md-start d-flex align-items-center gap-16 mt-24">
+          <div className="stock-prev cursor-pointer">
             <ChevronLeft size={24} />
           </div>
           <div className="stock-pagination"></div>
-          <div className="stock-next">
+          <div className="stock-next cursor-pointer">
             <ChevronRight size={24} />
           </div>
         </div>
