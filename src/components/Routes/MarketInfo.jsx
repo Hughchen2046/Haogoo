@@ -236,6 +236,12 @@ export default function MarketInfo() {
               <button
                 className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${marketTab === topic.label ? 'active' : ''}`}
                 type="button"
+                id={`pills-${topic.indicator}-tab`}
+                data-bs-toggle="pill"
+                data-bs-target={`#pills-${topic.indicator}`}
+                role="tab"
+                aria-controls={`pills-${topic.indicator}`}
+                aria-selected={marketTab === topic.label}
                 onClick={() => setMarketTab(topic.label)}
               >
                 {topic.label}
@@ -243,6 +249,19 @@ export default function MarketInfo() {
             </li>
           ))}
         </ul>
+        <div class="tab-content" id="pills-tabContent">
+          {taiwanVariousIndicators.map((topic) => (
+            <div
+              class="tab-pane fade show active"
+              id={`pills-${topic.indicator}`}
+              role="tabpanel"
+              aria-labelledby={`pills-${topic.indicator}-tab`}
+              tabindex="0"
+            >
+              ...
+            </div>
+          ))}
+        </div>
 
         {/* TradingViewChart */}
         <div

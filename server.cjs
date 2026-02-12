@@ -264,8 +264,41 @@ app.get('/api/finmind/taiwan-index', async (req, res) => {
         });
     }
 });
+app.get('/api/finmind/:dataset', async (req, res) => {
+    try {
+        const { dataset } = req.params;
+        const queryParams = req.query; // 接收所有 query 參數
+        const axios = require('axios');
+        // 構建 API URL - 只加入有值的參數
+        let apiUrl = `https://api.finmindtrade.com/api/v4/data?dataset=${dataset}`;
 
+        // 動態加入所有 query 參數 (自動過濾掉 undefined/null)
+        Object.keys(queryParams).forEach(key => {
+            if (queryParams[key]) {
+                apiUrl += `&${key}=${queryParams[key]}`;
+            }
+        });
+        console.log(`📊 Fetching ${dataset} from FinMind: ${apiUrl}`);
+        const response = await axios.get(apiUrl);
+        res.json({
+            success: true,
+            code: 200,
+            message: 'OK',
+            data: response.data.data || []
+        });
+    } catch (error) {
+        console.error('❌ FinMind API Error:', error.message);
+        res.status(500).json({
+            success: false,
+            code: 500,
+            message: `FinMind API 錯誤: ${error.message}`,
+            data: null
+        });
+    }
+});
 app.use(router);
+
+
 
 const PORT = process.env.PORT || 3000;
 

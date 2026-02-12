@@ -1,5 +1,5 @@
 import Guideline from '../Tools/Guideline';
-import StockInfo from '../../pages/StockInfo';
+import ForStockUse from '../Tools/ForStockUse';
 
 export default function Test() {
   return (
@@ -8,7 +8,7 @@ export default function Test() {
         <h2 className="mb-32">測試頁面</h2>
       </div>
 
-      <StockInfo />
+      <ForStockUse />
       <Guideline />
     </>
   );
