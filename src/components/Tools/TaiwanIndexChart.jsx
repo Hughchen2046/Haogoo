@@ -15,7 +15,7 @@ const TaiwanIndexChart = () => {
         const response = await axios.get(
           'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json&_=1770530872584'
         );
-        console.log(response.data);
+        // console.log(response.data);
         const taiex = [
           {
             title: response.data.title,

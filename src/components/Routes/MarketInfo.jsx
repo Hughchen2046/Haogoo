@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import TaiwanIndexChart from '../Tools/TaiwanIndexChart';
-import FoodIndexChart from '../Tools/FoodIndexChart';
 import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
 import axios from 'axios';
 import AllIndexChart from '../Tools/AllIndexChart';
+import StockTable from '../Tools/StockTable';
+import { BeatLoader } from 'react-spinners';
+
 const API_URL = import.meta.env.VITE_stocksUrl;
+const symbol_URL = import.meta.env.VITE_symbolsUrl;
 
 export default function MarketInfo() {
+  const [primaryColor, setPrimaryColor] = useState('#0d6efd');
+
   // 各個 dropdown 的開關狀態
   const [isMarketOpen, setIsMarketOpen] = useState(false);
   const [isIndustryOpen, setIsIndustryOpen] = useState(false);
@@ -76,6 +81,9 @@ export default function MarketInfo() {
       slug: '',
     },
   ]);
+  const [industryData, setIndustryData] = useState([]);
+  const [industryLoading, setIndustryLoading] = useState(false);
+  const [industryError, setIndustryError] = useState(null);
   //精選選股 的設定
   const collectionStocks = [
     {
@@ -109,6 +117,9 @@ export default function MarketInfo() {
       slug: '好股推薦',
     },
   ];
+  const [collectionsData, setCollectionsData] = useState([]);
+  const [collectionLoading, setCollectionLoading] = useState(false);
+  const [collectionError, setCollectionError] = useState(null);
   //熱門ETF 的設定
   const collectionETF = [
     {
@@ -136,6 +147,14 @@ export default function MarketInfo() {
       slug: '好股推薦',
     },
   ];
+
+  //Loading的顏色設定
+  useEffect(() => {
+    const color = getComputedStyle(document.documentElement)
+      .getPropertyValue('--bs-primary')
+      .trim();
+    if (color) setPrimaryColor(color);
+  }, []);
 
   //取得精選產業的資料
   useEffect(() => {
@@ -185,6 +204,179 @@ export default function MarketInfo() {
     getIndustry();
   }, []);
 
+  //取得精選產業的股票資料給Stocktable
+  useEffect(() => {
+    const getIndustryStocks = async () => {
+      setIndustryLoading(true);
+      setIndustryError(null);
+
+      try {
+        const response = await axios.get(`${symbol_URL}?industryTW=${industryTab}&_embed=prices`);
+
+        // 取出有 prices 的資料
+        const filterData = response.data.data.filter((item) => item.prices.length >= 2);
+        // console.log('filterData', filterData);
+
+        setIndustryData(filterData);
+      } catch (error) {
+        console.error('抓取產業股票資料失敗:', error);
+        setIndustryError(error.message);
+        setIndustryData([]); // 發生錯誤時清空資料
+      } finally {
+        setIndustryLoading(false);
+      }
+    };
+
+    getIndustryStocks();
+  }, [industryTab]);
+
+  //取得精選選股的股票資料給Stocktable
+  useEffect(() => {
+    const getCollectionStocks = async () => {
+      setCollectionLoading(true);
+      setCollectionError(null);
+
+      try {
+        const response = await axios.get(`${symbol_URL}?securityType=01&_embed=prices`);
+
+        // 取出有 prices 的資料
+        const filterData = response.data.data.filter((item) => item.prices.length >= 2);
+        console.log('filterData', filterData);
+        // console.log('collectionTab', collectionTab);
+        // console.log('test', filterData[0].prices[filterData[0].prices.length - 1].dailyChangePct);
+        let sortData;
+        switch (collectionTab) {
+          // 即時排行計算
+          case '即時排行':
+            sortData = [...filterData].sort((a, b) => {
+              return (
+                b.prices[b.prices.length - 1].dailyChangePct -
+                a.prices[a.prices.length - 1].dailyChangePct
+              );
+            });
+            // console.log('sortData', sortData);
+            break;
+          case '技術面':
+            sortData = [...filterData]
+              .filter((item) => {
+                const prices = item.prices;
+
+                // 確保至少有20 天的資料來計算月線)
+                if (prices.length < 20) return false;
+
+                // 計算移動平均線 (MA)
+                const calculateMA = (data, period) => {
+                  if (data.length < period) return null;
+                  const sum = data.slice(-period).reduce((acc, price) => acc + price.close, 0);
+                  return sum / period;
+                };
+
+                // 計算各週期的移動平均線
+                const ma5 = calculateMA(prices, 5); // 日線
+                const ma10 = calculateMA(prices, 10); // 周線
+                const ma20 = calculateMA(prices, 20); // 月線
+
+                // 檢查所有均線
+                if (ma5 === null || ma10 === null || ma20 === null) {
+                  return false;
+                }
+
+                // 黃金交叉條件:日線 > 周線 > 月線
+                const isGoldenCross = ma5 > ma10 && ma10 > ma20;
+
+                // 檢查程式
+                // if (isGoldenCross) {
+                //   console.log(`${item.name} (${item.id}):`, {
+                //     ma5: ma5.toFixed(2),
+                //     ma10: ma10.toFixed(2),
+                //     ma20: ma20.toFixed(2),
+                //     isGoldenCross,
+                //     crossStrength: ma5 - ma20,
+                //   });
+                // }
+
+                // 計算前一天的均線
+                const prevMA5 = calculateMA(prices.slice(0, -1), 5);
+                const prevMA10 = calculateMA(prices.slice(0, -1), 10);
+
+                // 是否剛發生日線突破周線
+                const justCrossed = prevMA5 <= prevMA10 && ma5 > ma10;
+
+                // 儲存到 item
+                item.technicalData = {
+                  ma5,
+                  ma10,
+                  ma20,
+                  isGoldenCross,
+                  justCrossed,
+                  crossStrength: ma5 - ma20, // 交叉強度用來排序強弱
+                };
+
+                return isGoldenCross;
+              })
+              .sort((a, b) => {
+                // 按交叉強度排序 (差距越大,排越前面)
+                return b.technicalData.crossStrength - a.technicalData.crossStrength;
+              });
+            break;
+          case '基本面':
+            break;
+          case '籌碼面':
+            break;
+          case '好股推薦':
+            sortData = [...filterData]
+              .filter((item) => {
+                const prices = item.prices;
+                if (prices.length < 60) return false; // 需要更多資料
+
+                // 計算移動平均線
+                const calculateMA = (period) => {
+                  const sum = prices.slice(-period).reduce((acc, p) => acc + p.close, 0);
+                  return sum / period;
+                };
+
+                const ma5 = calculateMA(5);
+                const ma10 = calculateMA(10);
+                const ma20 = calculateMA(20);
+                const ma60 = calculateMA(60); // 季線
+
+                // 多重黃金交叉條件
+                const goldenCross = ma5 > ma10 && ma10 > ma20 && ma20 > ma60;
+
+                // 成交量放大 (今日成交量 > 5日平均成交量)
+                const avgVolume = prices.slice(-5).reduce((acc, p) => acc + p.volume, 0) / 5;
+                const volumeIncrease = prices[prices.length - 1].volume > avgVolume * 1.2;
+
+                // 價格在上升趨勢 (最新價 > 20日均線)
+                const priceAboveMA20 = prices[prices.length - 1].close > ma20;
+
+                // 儲存技術分數
+                item.technicalScore =
+                  (goldenCross ? 40 : 0) + (volumeIncrease ? 30 : 0) + (priceAboveMA20 ? 30 : 0);
+
+                // 至少要符合黃金交叉
+                return goldenCross;
+              })
+              .sort((a, b) => {
+                // 按技術分數排序
+                return b.technicalScore - a.technicalScore;
+              });
+            break;
+        }
+        setCollectionsData(sortData);
+      } catch (error) {
+        console.error('抓取產業股票資料失敗:', error);
+        setCollectionError(error.message);
+        setCollectionsData([]); // 發生錯誤時清空資料
+      } finally {
+        setCollectionLoading(false);
+      }
+    };
+
+    getCollectionStocks();
+  }, [collectionTab]);
+
+  // console.log('industrySelectTab', industryTab);
   return (
     <div className="d-flex flex-column gap-32">
       {/* 市場行情 */}
@@ -249,19 +441,6 @@ export default function MarketInfo() {
             </li>
           ))}
         </ul>
-        <div class="tab-content" id="pills-tabContent">
-          {taiwanVariousIndicators.map((topic) => (
-            <div
-              class="tab-pane fade show active"
-              id={`pills-${topic.indicator}`}
-              role="tabpanel"
-              aria-labelledby={`pills-${topic.indicator}-tab`}
-              tabindex="0"
-            >
-              ...
-            </div>
-          ))}
-        </div>
 
         {/* TradingViewChart */}
         <div
@@ -342,144 +521,26 @@ export default function MarketInfo() {
             </li>
           ))}
         </ul>
-
-        {/* TradingViewChart */}
-        <div className="text-center">
+        {/* 股票列表 */}
+        {industryLoading ? (
           <div
-            className="round-8 shadow-sm mb-24 text-start"
-            style={{
-              borderRadius: '16px',
-              overflow: 'hidden',
-              border: '1px solid white',
-            }}
+            className="d-flex align-items-center justify-content-center"
+            style={{ height: '340px' }}
           >
-            <div className="table-responsive">
-              <table className="table table-hover table-bordered round-8 border-gray-400 bg-white">
-                <thead>
-                  <tr className="h6 fw-bold">
-                    <th scope="col" style={{ width: '150px', minWidth: '150px' }}>
-                      名稱
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      價格
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      開盤價
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      最低
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      最高
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      漲跌福(%)
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      成交量
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      收藏
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="h6">
-                    <th scope="row">台積電 2330</th>
-                    <td className="text-danger">
-                      1460.00{' '}
-                      <span className="p-4">
-                        <TrendingUp color="#f2735b" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>1445.00</td>
-                    <td>1443.50</td>
-                    <td>1461.30</td>
-                    <td className="text-danger">+1.04</td>
-                    <td>15,432</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <td>光罩 2338 </td>
-                    <td className="text-warning">
-                      34.25{' '}
-                      <span className="p-4">
-                        <TrendingDown color="#56b77e" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>35.60</td>
-                    <td>32.25</td>
-                    <td>35.35</td>
-                    <td>+0.00%</td>
-                    <td>3,458</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <th scope="row">茂矽 2342</th>
-                    <td className="text-danger">
-                      29.30{' '}
-                      <span className="p-4">
-                        <TrendingUp color="#f2735b" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>29.00</td>
-                    <td>28.90</td>
-                    <td>29.50</td>
-                    <td className="text-danger">+1.74%</td>
-                    <td>37,136</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <th scope="row">南亞科 2408</th>
-                    <td className="bg-danger text-white">
-                      140.50{' '}
-                      <span className="p-4">
-                        <TrendingUp color="white" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>122.00</td>
-                    <td>122.00</td>
-                    <td className="bg-danger text-white">140.50</td>
-                    <td className="bg-danger text-white">+9.99%</td>
-                    <td>287,387</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <BeatLoader color={primaryColor} size={20} />
           </div>
-          <button type="button" className=" btn btn-outline-primary">
-            查看更多
-          </button>
-        </div>
+        ) : industryError ? (
+          <div className="alert alert-danger" role="alert">
+            載入失敗: {industryError}
+          </div>
+        ) : (
+          <StockTable
+            data={industryData}
+            category="industry"
+            filterKey={industryTab}
+            initialNumberCount={5}
+          />
+        )}
       </section>
       {/* 精選選股 */}
       <section className="py-24 py-lg-40">
@@ -539,143 +600,26 @@ export default function MarketInfo() {
           ))}
         </ul>
 
-        {/* TradingViewChart */}
-        <div className="text-center">
+        {/* 股票列表 */}
+        {collectionLoading ? (
           <div
-            className="round-8 shadow-sm mb-24 text-start"
-            style={{
-              borderRadius: '16px',
-              overflow: 'hidden',
-              border: '1px solid white',
-            }}
+            className="d-flex align-items-center justify-content-center"
+            style={{ height: '340px' }}
           >
-            <div className="table-responsive">
-              <table className="table table-hover table-bordered round-8 border-gray-400 bg-white">
-                <thead>
-                  <tr className="h6 fw-bold">
-                    <th scope="col" style={{ width: '150px', minWidth: '150px' }}>
-                      名稱
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      價格
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      開盤價
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      最低
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      最高
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      漲跌福(%)
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      成交量
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      收藏
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="h6">
-                    <th scope="row">台積電 2330</th>
-                    <td className="text-danger">
-                      1460.00{' '}
-                      <span className="p-4">
-                        <TrendingUp color="#f2735b" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>1445.00</td>
-                    <td>1443.50</td>
-                    <td>1461.30</td>
-                    <td className="text-danger">+1.04</td>
-                    <td>15,432</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <td>光罩 2338 </td>
-                    <td className="text-warning">
-                      34.25{' '}
-                      <span className="p-4">
-                        <TrendingDown color="#56b77e" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>35.60</td>
-                    <td>32.25</td>
-                    <td>35.35</td>
-                    <td>+0.00%</td>
-                    <td>3,458</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <th scope="row">茂矽 2342</th>
-                    <td className="text-danger">
-                      29.30{' '}
-                      <span className="p-4">
-                        <TrendingUp color="#f2735b" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>29.00</td>
-                    <td>28.90</td>
-                    <td>29.50</td>
-                    <td className="text-danger">+1.74%</td>
-                    <td>37,136</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <th scope="row">南亞科 2408</th>
-                    <td className="bg-danger text-white">
-                      140.50{' '}
-                      <span className="p-4">
-                        <TrendingUp color="white" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>122.00</td>
-                    <td>122.00</td>
-                    <td className="bg-danger text-white">140.50</td>
-                    <td className="bg-danger text-white">+9.99%</td>
-                    <td>287,387</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <BeatLoader color={primaryColor} size={20} />
           </div>
-          <button type="button" className=" btn btn-outline-primary">
-            查看更多
-          </button>
-        </div>
+        ) : collectionError ? (
+          <div className="alert alert-danger" role="alert">
+            載入失敗: {collectionError}
+          </div>
+        ) : (
+          <StockTable
+            data={collectionsData}
+            category="collection"
+            filterKey={collectionTab}
+            initialNumberCount={5}
+          />
+        )}
       </section>
       {/* 熱門 ETF */}
       <section className="py-24 py-lg-40">

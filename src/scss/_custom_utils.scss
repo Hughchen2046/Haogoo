@@ -400,6 +400,28 @@ $utilities: map-merge(
   }
 }
 
+// table 水平滾動條開始
+.table-responsive {
+  overflow-x: auto;
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #999 #eee;
+}
+/* Chrome / Edge */
+.table-responsive::-webkit-scrollbar {
+  height: 10px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #eee;
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #999;
+  border-radius: 10px;
+}
+// table 水平滾動條結束
+
 .icon-24 {
   width: 24px !important;
   height: 24px !important;
@@ -561,32 +583,15 @@ $utilities: map-merge(
   }
 }
 
-// /* 自訂 tab 樣式 */
-// .custom-tabs {
-//   border-bottom: 1px solid #eee;
-//   gap: 40px;
-// }
-
-// .custom-tabs .nav-link {
-//   border: none !important;
-//   color: $gray-800;
-//   padding: 16px 0;
-//   position: relative;
-//   background: transparent !important;
-// }
-
-// .custom-tabs .nav-link.active {
-//   color: $primary !important;
-// }
-
-// /* 選中狀態下方的粗底線 (指示器) */
-// .custom-tabs .nav-link.active::after {
-//   content: '';
-//   position: absolute;
-//   bottom: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 6px; /* 底線粗度 */
-//   background-color: $primary;
-//   border-radius: 10px 10px 0 0;
-// }
+.btn-like {
+  padding: 0 !important;
+  margin: 0 !important;
+  color: $primary !important;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+.table-hover {
+  --bs-table-hover-bg: rgba(var(--bs-secondary-rgb), 0.05);
+}
