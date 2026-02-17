@@ -336,6 +336,88 @@ app.post('/api/save-json', async (req, res) => {
     }
 });
 
+// ============================================
+// 整合 stockbenifit.json 到主 server
+// 此檔案包含兩種資料: stockbenifit 和 monthRevenue
+// ============================================
+
+// 讀取 stockbenifit.json
+const fs = require('fs');
+const stockbenifitPath = path.join(__dirname, 'stockbenifit.json');
+let stockbenifitData = { stockbenifit: [], monthRevenue: [] };
+
+try {
+    const rawData = fs.readFileSync(stockbenifitPath, 'utf8');
+    stockbenifitData = JSON.parse(rawData);
+    console.log(`✅ 已載入 stockbenifit.json:`);
+    console.log(`   - 股利資料: ${stockbenifitData.stockbenifit?.length || 0} 筆`);
+    console.log(`   - 月營收資料: ${stockbenifitData.monthRevenue?.length || 0} 筆`);
+} catch (error) {
+    console.warn(`⚠️  無法載入 stockbenifit.json: ${error.message}`);
+}
+
+// 股利資料路由
+app.get('/stockbenifit', (req, res) => {
+    const { id } = req.query;
+
+    if (id) {
+        const stock = stockbenifitData.stockbenifit?.find(item => item.id === id);
+        if (stock) {
+            res.json({
+                success: true,
+                code: 200,
+                message: '成功',
+                data: [stock]
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                code: 404,
+                message: '找不到該股票',
+                data: null
+            });
+        }
+    } else {
+        res.json({
+            success: true,
+            code: 200,
+            message: '成功',
+            data: stockbenifitData.stockbenifit || []
+        });
+    }
+});
+
+// 月營收資料路由 (從 stockbenifitData 讀取)
+app.get('/monthRevenue', (req, res) => {
+    const { id } = req.query;
+
+    if (id) {
+        const stock = stockbenifitData.monthRevenue?.find(item => item.id === id);
+        if (stock) {
+            res.json({
+                success: true,
+                code: 200,
+                message: '成功',
+                data: [stock]
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                code: 404,
+                message: '找不到該股票',
+                data: null
+            });
+        }
+    } else {
+        res.json({
+            success: true,
+            code: 200,
+            message: '成功',
+            data: stockbenifitData.monthRevenue || []
+        });
+    }
+});
+
 app.use(router);
 
 
@@ -343,83 +425,18 @@ app.use(router);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`\n🚀 Server running on port ${PORT}`);
     console.log('權限：Admin > VIP > Member > Guest');
-});
-
-// ============================================
-// 第二個 Server (Port 3001)
-// ============================================
-
-const app1 = jsonServer.create();
-const router1 = jsonServer.router(path.join(__dirname, 'stockbenifit.json')); // 使用 stockbenifit.json
-const middlewares1 = jsonServer.defaults();
-
-app1.db = router1.db;
-
-// 基本中間件
-app1.use(middlewares1);
-app1.use(jsonServer.bodyParser);
-
-// 簡單的 CORS 設定（如果需要）
-app1.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-});
-
-// 自訂路由範例
-app1.get('/api/test', (req, res) => {
-    res.json({
-        success: true,
-        code: 200,
-        message: '這是第二個 Server (Port 3001) - 股利資料專用',
-        data: {
-            server: 'Stock Dividend Server',
-            port: 3001,
-            database: 'stockbenifit.json',
-            totalStocks: app1.db.get('stockbenifit').value()?.length || 0
-        }
-    });
-});
-
-// 自訂 render 格式（與主 server 相同）
-router1.render = (req, res) => {
-    const path = req.path;
-    const statusCode = res.statusCode;
-    const data = res.locals.data;
-    const isError = statusCode >= 400;
-
-    let response = {
-        success: !isError,
-        code: statusCode,
-        message: isError ? (data?.error || data?.message || 'Request failed') : '成功',
-        data: data || null
-    };
-
-    if (isError) {
-        if (statusCode === 404 && (!data || Object.keys(data).length === 0)) {
-            response.message = '找不到該資源 (Resource Not Found)';
-        }
-        if (statusCode === 401) response.message = '尚未登入或 Token 過期';
-        if (statusCode === 403) response.message = '權限不足，拒絕存取';
-
-        response.data = null;
-        response.errors = data;
+    console.log(`\n📊 可用資料:`);
+    console.log(`   - 主資料庫: db.json`);
+    console.log(`   - 股利資料: /stockbenifit (${stockbenifitData.stockbenifit?.length || 0} 筆)`);
+    if (stockbenifitData.monthRevenue?.length > 0) {
+        console.log(`   - 月營收資料: /monthRevenue (${stockbenifitData.monthRevenue.length} 筆)`);
     }
-
-    res.jsonp(response);
-};
-
-app1.use(router1);
-
-const PORT1 = 3001;
-
-app1.listen(PORT1, () => {
-    console.log(`\n🚀 Stock Dividend Server running on port ${PORT1}`);
-    console.log(`   使用資料庫: stockbenifit.json`);
-    console.log(`   測試路由: http://localhost:${PORT1}/api/test`);
-    console.log(`   股利資料: http://localhost:${PORT1}/stockbenifit`);
-    console.log(`   查詢單支股票: http://localhost:${PORT1}/stockbenifit?id=0056`);
+    console.log(`\n🔗 測試路由:`);
+    console.log(`   - http://localhost:${PORT}/stockbenifit`);
+    console.log(`   - http://localhost:${PORT}/stockbenifit?id=0056`);
+    if (stockbenifitData.monthRevenue?.length > 0) {
+        console.log(`   - http://localhost:${PORT}/monthRevenue`);
+    }
 });

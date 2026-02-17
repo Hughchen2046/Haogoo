@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 
 const API_URL = import.meta.env.VITE_stocksUrl;
 const symbol_URL = import.meta.env.VITE_symbolsUrl;
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function MarketInfo() {
   const location = useLocation();
@@ -259,7 +260,7 @@ export default function MarketInfo() {
 
       try {
         const response = await axios.get(`${symbol_URL}?securityType=01&_embed=prices`); //及時排行,技術面,好股推薦
-        const resStock = await axios.get(`http://localhost:3001/monthRevenue`); //基本面
+        const resStock = await axios.get(`${API_BASE}/monthRevenue`); //基本面
 
         // 取出有 prices 的資料
         const filterData = response.data.data.filter((item) => item.prices.length >= 2);
@@ -542,12 +543,12 @@ export default function MarketInfo() {
   //取得精選ETF的股票給Stocktable
   useEffect(() => {
     const getCollectionETFStocks = async () => {
-      setCollectionLoading(true);
-      setCollectionError(null);
+      setCollectionETFLoading(true);
+      setCollectionETFError(null);
 
       try {
         const response = await axios.get(`${symbol_URL}?SECURITY_TW=ETF&_embed=prices`); //及時排行,獲利王,好股推薦
-        const resStock = await axios.get(`http://localhost:3001/stockbenifit`); //高殖利率
+        const resStock = await axios.get(`${API_BASE}/stockbenifit`); //高殖利率
         // console.log('allData', response.data.data);
         // 取出有 prices 的資料
         const filterData = response.data.data.filter((item) => item.prices.length >= 2);
