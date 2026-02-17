@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
@@ -19,6 +20,7 @@ export default function IndustryList() {
   const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
   const { isAuth } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const baseURL = import.meta.env.VITE_API_BASE;
@@ -108,13 +110,14 @@ export default function IndustryList() {
             return (
               <SwiperSlide key={index} className={shouldBlur ? 'position-relative' : ''}>
                 <div
-                  className="card industryCard h-100"
+                  className="card card-shadow-hover industryCard h-100"
                   style={shouldBlur ? { filter: 'blur(8px)', pointerEvents: 'none' } : {}}
+                  onClick={() => navigate('/mystocklist#popular-industry')}
                 >
                   <div className="p-24">
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-center mb-16">
-                      <h3 className="">{group[0]?.industryTW ?? '產業'}</h3>
+                      <h3 className="card-shadow-title">{group[0]?.industryTW ?? '產業'}</h3>
                       {avgDailyChangePct !== '--' &&
                         (Number(avgDailyChangePct) > 0 ? (
                           <TrendingUp size={36} className="text-danger" />

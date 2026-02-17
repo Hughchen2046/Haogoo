@@ -84,13 +84,15 @@ const StockTable = ({ data, category, filterKey, initialNumberCount = 5 }) => {
                   </th>
                   <td
                     className={
-                      item.prices[item.prices.length - 1].dailyChangePct === -10
-                        ? 'bg-success text-white'
-                        : item.prices[item.prices.length - 1].dailyChangePct <= 0
-                          ? 'text-success'
+                      item.prices[item.prices.length - 1].dailyChangePct <= -9.9
+                        ? 'bg-success text-white' // 跌停
+                        : item.prices[item.prices.length - 1].dailyChangePct >= 9.9
+                          ? 'bg-danger text-white' // 漲停或接近漲停
                           : item.prices[item.prices.length - 1].dailyChangePct > 0
-                            ? 'text-danger'
-                            : 'bg-danger text-white'
+                            ? 'text-danger' // 上漲
+                            : item.prices[item.prices.length - 1].dailyChangePct < 0
+                              ? 'text-success' // 下跌
+                              : '' // 平盤
                     }
                   >
                     {item.prices[item.prices.length - 1].close.toFixed(2)}
@@ -113,13 +115,15 @@ const StockTable = ({ data, category, filterKey, initialNumberCount = 5 }) => {
                   </td>
                   <td
                     className={
-                      item.prices[item.prices.length - 1].dailyChangePct === -10
-                        ? 'bg-success text-white'
-                        : item.prices[item.prices.length - 1].dailyChangePct <= 0
-                          ? 'text-success'
+                      item.prices[item.prices.length - 1].dailyChangePct <= -9.9
+                        ? 'bg-success text-white' // 跌停
+                        : item.prices[item.prices.length - 1].dailyChangePct >= 9.9
+                          ? 'bg-danger text-white' // 漲停或接近漲停
                           : item.prices[item.prices.length - 1].dailyChangePct > 0
-                            ? 'text-danger'
-                            : 'bg-danger text-white'
+                            ? 'text-danger' // 上漲
+                            : item.prices[item.prices.length - 1].dailyChangePct < 0
+                              ? 'text-success' // 下跌
+                              : '' // 平盤
                     }
                   >
                     {item.prices[item.prices.length - 1].dailyChangePct > 0 ? '+' : ''}

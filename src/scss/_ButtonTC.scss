@@ -1,0 +1,64 @@
+/* 基本按鈕外觀：用 bootstrap btn 當底，btc-btn 當皮 */
+.btc-btn {
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 9999px;
+  border: 2px solid var(--bs-primary);
+  color: var(--bs-primary);
+  position: relative;
+  overflow: hidden;
+
+  /* 漸層背景（light） */
+  background: linear-gradient(to right, #f7f8ff, #ffffff);
+}
+
+.btc-text-wrap {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 1;
+}
+
+/* 兩層文字共用：transition 500ms */
+.btc-text {
+  display: inline-block;
+  transition: transform 500ms;
+  will-change: transform;
+}
+
+.btc-text--top {
+  transform: translateY(0) skewY(0);
+}
+
+.btc-text--bottom {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(150%) skewY(10deg);
+}
+
+.btc-btn:hover .btc-text--top {
+  transform: translateY(-150%) skewY(10deg);
+}
+.btc-btn:hover .btc-text--bottom {
+  transform: translateY(0) skewY(0);
+}
+
+.btc-btn.active {
+  background: var(--bs-primary);
+  color: white !important;
+  border-color: var(--bs-primary);
+}
+
+.btc-btn.active .btc-text {
+  color: white !important;
+}
+
+.btc-btn.active:hover {
+  background: var(--bs-primary);
+  color: white !important;
+}
+
+.btc-btn.active:hover .btc-text {
+  color: white !important;
+}

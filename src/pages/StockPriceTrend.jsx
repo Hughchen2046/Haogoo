@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import {
   Chart,
   Pane,
@@ -15,6 +15,23 @@ const generateLineData = (stockData) =>
 
 export default function StockPriceTrend({ stockData }) {
   const lineData = useMemo(() => generateLineData(stockData), [stockData]);
+  const [shouldRender, setShouldRender] = useState(false);
+  const [chartKey, setChartKey] = useState(0);
+
+  // 延遲渲染,確保舊圖表完全清理
+  useEffect(() => {
+    setShouldRender(false);
+    setChartKey((prev) => prev + 1);
+
+    const timer = setTimeout(() => {
+      setShouldRender(true);
+    }, 100); // 延遲 100ms 渲染
+
+    return () => {
+      clearTimeout(timer);
+      setShouldRender(false);
+    };
+  }, [stockData?.id]);
 
   if (!lineData.length) {
     return (
@@ -33,9 +50,27 @@ export default function StockPriceTrend({ stockData }) {
     );
   }
 
+  // 延遲渲染期間顯示 loading
+  if (!shouldRender) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '500px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#999',
+        }}
+      >
+        載入圖表中...
+      </div>
+    );
+  }
+
   return (
     <Chart
-      key={stockData.id} // 防止舊 chart 殘留
+      key={`chart-${stockData?.id}-${chartKey}`}
       options={{
         layout: { background: { color: '#fff' }, textColor: '#333' },
         grid: { vertLines: { color: colors.gray100 }, horzLines: { color: colors.gray100 } },

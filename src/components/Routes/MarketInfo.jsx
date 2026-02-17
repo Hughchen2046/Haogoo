@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import TaiwanIndexChart from '../Tools/TaiwanIndexChart';
 import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
 import axios from 'axios';
 import AllIndexChart from '../Tools/AllIndexChart';
 import StockTable from '../Tools/StockTable';
 import { BeatLoader } from 'react-spinners';
+import ButtonTC from '../Tools/ButtonTC';
+import dayjs from 'dayjs';
 
 const API_URL = import.meta.env.VITE_stocksUrl;
 const symbol_URL = import.meta.env.VITE_symbolsUrl;
 
 export default function MarketInfo() {
+  const location = useLocation();
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
 
   // 各個 dropdown 的開關狀態
@@ -17,6 +21,20 @@ export default function MarketInfo() {
   const [isIndustryOpen, setIsIndustryOpen] = useState(false);
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
   const [isETFOpen, setIsETFOpen] = useState(false);
+
+  // 處理 hash 滾動
+  useEffect(() => {
+    if (location.hash) {
+      // 延遲執行,確保 DOM 已渲染
+      setTimeout(() => {
+        const id = location.hash.replace('#', '');
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+    }
+  }, [location]);
 
   // 建立一個狀態來記錄愛心是否為實心
   const [liked, setLiked] = useState(false);
@@ -147,6 +165,9 @@ export default function MarketInfo() {
       slug: '好股推薦',
     },
   ];
+  const [collectionsETFData, setCollectionsETFData] = useState([]);
+  const [collectionETFLoading, setCollectionETFLoading] = useState(false);
+  const [collectionETFError, setCollectionETFError] = useState(null);
 
   //Loading的顏色設定
   useEffect(() => {
@@ -237,16 +258,28 @@ export default function MarketInfo() {
       setCollectionError(null);
 
       try {
-        const response = await axios.get(`${symbol_URL}?securityType=01&_embed=prices`);
+        const response = await axios.get(`${symbol_URL}?securityType=01&_embed=prices`); //及時排行,技術面,好股推薦
+        const resStock = await axios.get(`http://localhost:3001/monthRevenue`); //基本面
 
         // 取出有 prices 的資料
         const filterData = response.data.data.filter((item) => item.prices.length >= 2);
-        console.log('filterData', filterData);
+        // console.log('filterData', filterData);
         // console.log('collectionTab', collectionTab);
         // console.log('test', filterData[0].prices[filterData[0].prices.length - 1].dailyChangePct);
+
+        //月營收資料
+        // console.log('resStock', resStock.data.data);
+        const monthRevenueData = resStock.data.data
+          .map((item) => ({
+            id: item.id,
+            data: item.data,
+          }))
+          .filter((item) => item.data.length > 0);
+        // console.log('monthRevenueData', monthRevenueData);
+
         let sortData;
         switch (collectionTab) {
-          // 即時排行計算
+          // 即時排行計算:依據帳跌幅百分比
           case '即時排行':
             sortData = [...filterData].sort((a, b) => {
               return (
@@ -256,6 +289,7 @@ export default function MarketInfo() {
             });
             // console.log('sortData', sortData);
             break;
+          // 依據日線 ma5 > 周線 ma10 > 月線 ma20 的條件來做搜尋; 並且依據 ma5 - ma10的差距來做強弱判定
           case '技術面':
             sortData = [...filterData]
               .filter((item) => {
@@ -309,7 +343,7 @@ export default function MarketInfo() {
                   ma20,
                   isGoldenCross,
                   justCrossed,
-                  crossStrength: ma5 - ma20, // 交叉強度用來排序強弱
+                  crossStrength: (ma5 - ma20) / ma20, // 交叉強度用來排序強弱
                 };
 
                 return isGoldenCross;
@@ -319,9 +353,138 @@ export default function MarketInfo() {
                 return b.technicalData.crossStrength - a.technicalData.crossStrength;
               });
             break;
+          // 依據 MoM 連續3個月成長, YoY年度成長, 股價在全年度平均以上, 以跟全年度的平均相差百分比作為排序強弱
           case '基本面':
+            sortData = filterData
+              .map((stock) => {
+                // 找到對應的月營收資料
+                const revenueData = monthRevenueData.find((item) => item.id === stock.id);
+
+                if (!revenueData || revenueData.data.length < 25) {
+                  return null;
+                }
+
+                const revenues = revenueData.data;
+                const latestRevenue = revenues[revenues.length - 1];
+                const prevRevenue1 = revenues[revenues.length - 2];
+                const prevRevenue2 = revenues[revenues.length - 3];
+
+                // 找去年同月的營收 (假設資料是月度,12 個月前)
+                const yoyRevenue = revenues[revenues.length - 13];
+
+                // 1. 檢查 MoM 連續 3 個月成長
+                const momGrowth =
+                  latestRevenue.revenue > prevRevenue1.revenue &&
+                  prevRevenue1.revenue > prevRevenue2.revenue;
+
+                // 2. 檢查 YoY 年度成長 (兩個條件都要滿足)
+                // 條件 1: 最新月營收 > 去年同月營收
+                const yoyMonthGrowth = yoyRevenue && latestRevenue.revenue > yoyRevenue.revenue;
+
+                // 條件 2: 近 12 個月營收平均 > 去年同期 12 個月營收平均
+                // 近 12 個月: revenues[length-12] ~ revenues[length-1]
+                // 去年同期 12 個月: revenues[length-24] ~ revenues[length-13]
+                let yoyYearAvgGrowth = false;
+                if (revenues.length >= 25) {
+                  const recent12Months = revenues.slice(-12);
+                  const lastYear12Months = revenues.slice(-25, -13);
+
+                  const recent12Avg =
+                    recent12Months.reduce((sum, cur) => sum + cur.revenue, 0) /
+                    recent12Months.length;
+                  const lastYear12Avg =
+                    lastYear12Months.reduce((sum, cur) => sum + cur.revenue, 0) /
+                    lastYear12Months.length;
+
+                  yoyYearAvgGrowth = recent12Avg > lastYear12Avg;
+                }
+
+                const yoyGrowth = yoyMonthGrowth && yoyYearAvgGrowth;
+
+                // 3. 計算股價全年度平均
+                const prices = stock.prices;
+                const yearPrices = prices.slice(-121); // 約一年的交易日
+                const avgPrice =
+                  yearPrices.reduce((sum, p) => sum + p.close, 0) / yearPrices.length;
+                const currentPrice = prices[prices.length - 1].close;
+
+                // 4. 檢查股價在全年度平均以上
+                const priceAboveAvg = currentPrice > avgPrice;
+
+                // 5. 計算股價與平均的差異百分比
+                const priceDiffPct = ((currentPrice - avgPrice) / avgPrice) * 100;
+
+                // 只保留符合所有條件的股票
+                if (momGrowth && yoyGrowth && priceAboveAvg) {
+                  return {
+                    ...stock,
+                    fundamentalData: {
+                      momGrowth,
+                      yoyGrowth,
+                      avgPrice: avgPrice.toFixed(2),
+                      currentPrice: currentPrice.toFixed(2),
+                      priceDiffPct: priceDiffPct.toFixed(2),
+                      latestRevenue: latestRevenue.revenue,
+                      yoyRevenue: yoyRevenue?.revenue,
+                    },
+                  };
+                }
+                return null;
+              })
+              .filter((item) => item !== null)
+              .sort((a, b) => {
+                // 按股價與平均的差異百分比排序 (差距越大,排越前面)
+                return b.fundamentalData.priceDiffPct - a.fundamentalData.priceDiffPct;
+              });
             break;
+          // 依據 成交量來進行判斷, 單日成交量超過半年內成交量, 且連續3日成交量皆成長
           case '籌碼面':
+            sortData = [...filterData]
+              .filter((stock) => {
+                const prices = stock.prices;
+                if (!prices || prices.length < 3) return false;
+
+                //計算股票成交量
+                //計算去年同一時間到今年的length差
+                const thisyear = prices[prices.length - 1].date;
+                const lastyear = dayjs(`${thisyear}`, 'YYYY-MM-DD')
+                  .subtract(1, 'year')
+                  .format('YYYY-MM-DD');
+                // console.log('lastyear', lastyear);
+                //得出與去年同一日期的長度
+                const lengh =
+                  prices[prices.length - 1].id - prices.find((item) => item.date === lastyear).id;
+                const yearPrices = prices.slice(-Math.floor(Math.abs(lengh / 2))); // 約半年的交易日
+                // console.log('yearPrices', yearPrices);
+                const maxVolume = Math.max(...yearPrices.map((p) => p.volume));
+                const latestVolume = prices[prices.length - 1].volume;
+                const prevVolume = prices[prices.length - 2].volume;
+                const prevVolume2 = prices[prices.length - 3].volume;
+                return (
+                  latestVolume === maxVolume &&
+                  latestVolume > prevVolume &&
+                  prevVolume > prevVolume2
+                );
+              })
+              .map((stock) => {
+                const prices = stock.prices;
+                //計算去年同一時間到今年的length差
+                const thisyear = prices[prices.length - 1].date;
+                const lastyear = dayjs(`${thisyear}`, 'YYYY-MM-DD')
+                  .subtract(1, 'year')
+                  .format('YYYY-MM-DD');
+                // console.log('lastyear', lastyear);
+                //得出與去年同一日期的長度
+                const lengh =
+                  prices[prices.length - 1].id - prices.find((item) => item.date === lastyear).id;
+                // console.log('length', lengh);
+                const yearPrices = prices.slice(-Math.floor(Math.abs(lengh / 2))); // 約半年的交易日
+                const maxVolume = Math.max(...yearPrices.map((p) => p.volume));
+
+                return {
+                  ...stock,
+                };
+              });
             break;
           case '好股推薦':
             sortData = [...filterData]
@@ -376,6 +539,149 @@ export default function MarketInfo() {
     getCollectionStocks();
   }, [collectionTab]);
 
+  //取得精選ETF的股票給Stocktable
+  useEffect(() => {
+    const getCollectionETFStocks = async () => {
+      setCollectionLoading(true);
+      setCollectionError(null);
+
+      try {
+        const response = await axios.get(`${symbol_URL}?SECURITY_TW=ETF&_embed=prices`); //及時排行,獲利王,好股推薦
+        const resStock = await axios.get(`http://localhost:3001/stockbenifit`); //高殖利率
+        // console.log('allData', response.data.data);
+        // 取出有 prices 的資料
+        const filterData = response.data.data.filter((item) => item.prices.length >= 2);
+        console.log('filterData', filterData);
+
+        let sortData;
+        switch (collectionETFTab) {
+          // 即時排行計算:依據帳跌幅百分比
+          case '即時排行':
+            sortData = [...filterData].sort((a, b) => {
+              return (
+                b.prices[b.prices.length - 1].dailyChangePct -
+                a.prices[a.prices.length - 1].dailyChangePct
+              );
+            });
+            // console.log('sortData', sortData);
+            break;
+          // 依據去年同一時間投入價格與現在價格的差距來做強弱判定
+          case '獲利王':
+            sortData = [...filterData]
+              .map((item) => {
+                const prices = item.prices;
+
+                // 檢查資料是否足夠
+                if (!prices || prices.length < 252) return null;
+
+                // 計算去年同一時間
+                const thisyear = prices[prices.length - 1].date;
+                const lastyear = dayjs(thisyear, 'YYYY-MM-DD')
+                  .subtract(1, 'year')
+                  .format('YYYY-MM-DD');
+
+                const lastyearData = prices.find((p) => p.date === lastyear);
+
+                if (!lastyearData) return null;
+
+                // 計算獲利率
+                const currentPrice = prices[prices.length - 1].close;
+                const lastyearPrice = lastyearData.close;
+                const profitRate = ((currentPrice - lastyearPrice) / lastyearPrice) * 100;
+
+                return {
+                  ...item,
+                  profitData: {
+                    currentPrice,
+                    lastyearPrice,
+                    profitRate: profitRate.toFixed(2),
+                  },
+                };
+              })
+              .filter((item) => item !== null && item.profitData.profitRate > 0) // 過濾掉 null 和獲利率 <= 0
+              .sort((a, b) => b.profitData.profitRate - a.profitData.profitRate); // 按獲利率排序
+            break;
+          // 依據 股票的現金股利/目前股價來看殖利率的排序
+          case '高殖利率':
+            const benifitData = resStock.data.data;
+            sortData = [...filterData]
+              .map((stock) => {
+                // console.log('benifit', benifitData);
+                const stockbenifitData = benifitData.find((item) => item.id === stock.id);
+                if (!stockbenifitData) return null;
+                const totalBenifit = stockbenifitData.data
+                  .filter((item) => dayjs(item.date).get('year') === 2025)
+                  .reduce((sum, cur) => sum + (cur.CashEarningsDistribution || 0), 0);
+                if (totalBenifit === 0) return null;
+                const currentPrice = stock.prices[stock.prices.length - 1].close;
+                const yieldRate = (totalBenifit / currentPrice) * 100;
+                return {
+                  ...stock,
+                  yieldData: {
+                    totalDividend: totalBenifit.toFixed(2),
+                    currentPrice: currentPrice.toFixed(2),
+                    yieldRate: yieldRate.toFixed(2),
+                  },
+                };
+              })
+              .filter((item) => item !== null)
+              .sort((a, b) => b.yieldData.yieldRate - a.yieldData.yieldRate);
+            // console.log('sortData', sortData);
+            break;
+          case '好股推薦':
+            sortData = [...filterData]
+              .filter((item) => {
+                const prices = item.prices;
+                if (prices.length < 60) return false; // 需要更多資料
+
+                // 計算移動平均線
+                const calculateMA = (period) => {
+                  const sum = prices.slice(-period).reduce((acc, p) => acc + p.close, 0);
+                  return sum / period;
+                };
+
+                const ma5 = calculateMA(5);
+                const ma10 = calculateMA(10);
+                const ma20 = calculateMA(20);
+                const ma60 = calculateMA(60); // 季線
+
+                // 多重黃金交叉條件
+                const goldenCross = ma5 > ma10 && ma10 > ma20 && ma20 > ma60;
+
+                // 成交量放大 (今日成交量 > 5日平均成交量)
+                const avgVolume = prices.slice(-5).reduce((acc, p) => acc + p.volume, 0) / 5;
+                const volumeIncrease = prices[prices.length - 1].volume > avgVolume * 1.2;
+
+                // 價格在上升趨勢 (最新價 > 20日均線)
+                const priceAboveMA20 = prices[prices.length - 1].close > ma20;
+
+                // 儲存技術分數
+                item.technicalScore =
+                  (goldenCross ? 40 : 0) + (volumeIncrease ? 30 : 0) + (priceAboveMA20 ? 30 : 0);
+
+                // 至少要符合黃金交叉
+                return goldenCross;
+              })
+              .sort((a, b) => {
+                // 按技術分數排序
+                return b.technicalScore - a.technicalScore;
+              });
+            break;
+        }
+        console.log('sortData', sortData);
+        setCollectionsETFData(sortData);
+      } catch (error) {
+        console.error('抓取產業股票資料失敗:', error);
+        setCollectionETFError(error.message);
+        setCollectionsETFData([]); // 發生錯誤時清空資料
+      } finally {
+        setCollectionETFLoading(false);
+      }
+    };
+
+    getCollectionETFStocks();
+  }, [collectionETFTab]);
+
   // console.log('industrySelectTab', industryTab);
   return (
     <div className="d-flex flex-column gap-32">
@@ -425,7 +731,8 @@ export default function MarketInfo() {
         <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
           {taiwanVariousIndicators.map((topic) => (
             <li key={topic.indicator} className="nav-item" role="presentation">
-              <button
+              <ButtonTC
+                label={topic.label}
                 className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${marketTab === topic.label ? 'active' : ''}`}
                 type="button"
                 id={`pills-${topic.indicator}-tab`}
@@ -435,9 +742,7 @@ export default function MarketInfo() {
                 aria-controls={`pills-${topic.indicator}`}
                 aria-selected={marketTab === topic.label}
                 onClick={() => setMarketTab(topic.label)}
-              >
-                {topic.label}
-              </button>
+              />
             </li>
           ))}
         </ul>
@@ -464,8 +769,9 @@ export default function MarketInfo() {
           </div>
         </div>
       </section>
+
       {/* 精選產業 */}
-      <section className="py-24 py-lg-40">
+      <section className="py-24 py-lg-40" id="popular-industry">
         <h2 className="fs-bold mb-24 font-zh-tw h1-lg">精選產業</h2>
         {/* 小螢幕用dropdown */}
         <div className={`dropdown mb-24 font-zh-tw d-md-none ${isIndustryOpen ? 'show' : ''}`}>
@@ -510,14 +816,13 @@ export default function MarketInfo() {
         {/* 大螢幕用nav-pill */}
         <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
           {industrySelect.map((topic) => (
-            <li key={topic.indicator} className="nav-item" role="presentation">
-              <button
+            <li key={topic.indicator} className="nav-item " role="presentation">
+              <ButtonTC
+                label={topic.label}
                 className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${industryTab === topic.label ? 'active' : ''}`}
                 type="button"
                 onClick={() => setIndustryTab(topic.label)}
-              >
-                {topic.label}
-              </button>
+              />
             </li>
           ))}
         </ul>
@@ -542,6 +847,7 @@ export default function MarketInfo() {
           />
         )}
       </section>
+
       {/* 精選選股 */}
       <section className="py-24 py-lg-40">
         <h2 className="fs-bold mb-24 font-zh-tw h1-lg">精選選股</h2>
@@ -589,13 +895,12 @@ export default function MarketInfo() {
         <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
           {collectionStocks.map((topic) => (
             <li key={topic.indicator} className="nav-item" role="presentation">
-              <button
+              <ButtonTC
+                label={topic.label}
                 className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${collectionTab === topic.label ? 'active' : ''}`}
                 type="button"
                 onClick={() => setCollectionTab(topic.label)}
-              >
-                {topic.label}
-              </button>
+              />
             </li>
           ))}
         </ul>
@@ -621,8 +926,9 @@ export default function MarketInfo() {
           />
         )}
       </section>
+
       {/* 熱門 ETF */}
-      <section className="py-24 py-lg-40">
+      <section className="py-24 py-lg-40" id="ETF">
         <h2 className="fs-bold mb-24 font-zh-tw h1-lg">熱門 ETF</h2>
         {/* 小螢幕用dropdown */}
         <div className={`dropdown mb-24 font-zh-tw d-md-none ${isETFOpen ? 'show' : ''}`}>
@@ -668,154 +974,36 @@ export default function MarketInfo() {
         <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
           {collectionETF.map((topic) => (
             <li key={topic.indicator} className="nav-item" role="presentation">
-              <button
+              <ButtonTC
+                label={topic.label}
                 className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${collectionETFTab === topic.label ? 'active' : ''}`}
                 type="button"
                 onClick={() => setCollectionETFTab(topic.label)}
-              >
-                {topic.label}
-              </button>
+              />
             </li>
           ))}
         </ul>
 
-        {/* TradingViewChart */}
-        <div className="text-center">
+        {/* 股票列表 */}
+        {collectionETFLoading ? (
           <div
-            className="round-8 shadow-sm mb-24 text-start"
-            style={{
-              borderRadius: '16px',
-              overflow: 'hidden',
-              border: '1px solid white',
-            }}
+            className="d-flex align-items-center justify-content-center"
+            style={{ height: '340px' }}
           >
-            <div className="table-responsive">
-              <table className="table table-hover table-bordered round-8 border-gray-400 bg-white">
-                <thead>
-                  <tr className="h6 fw-bold">
-                    <th scope="col" style={{ width: '150px', minWidth: '150px' }}>
-                      名稱
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      價格
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      開盤價
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      最低
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      最高
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      漲跌福(%)
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      成交量
-                    </th>
-                    <th scope="col" style={{ width: '120px', minWidth: '120px' }}>
-                      收藏
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="h6">
-                    <th scope="row">台積電 2330</th>
-                    <td className="text-danger">
-                      1460.00{' '}
-                      <span className="p-4">
-                        <TrendingUp color="#f2735b" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>1445.00</td>
-                    <td>1443.50</td>
-                    <td>1461.30</td>
-                    <td className="text-danger">+1.04</td>
-                    <td>15,432</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <td>光罩 2338 </td>
-                    <td className="text-warning">
-                      34.25{' '}
-                      <span className="p-4">
-                        <TrendingDown color="#56b77e" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>35.60</td>
-                    <td>32.25</td>
-                    <td>35.35</td>
-                    <td>+0.00%</td>
-                    <td>3,458</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <th scope="row">茂矽 2342</th>
-                    <td className="text-danger">
-                      29.30{' '}
-                      <span className="p-4">
-                        <TrendingUp color="#f2735b" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>29.00</td>
-                    <td>28.90</td>
-                    <td>29.50</td>
-                    <td className="text-danger">+1.74%</td>
-                    <td>37,136</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                  <tr className="h6">
-                    <th scope="row">南亞科 2408</th>
-                    <td className="bg-danger text-white">
-                      140.50{' '}
-                      <span className="p-4">
-                        <TrendingUp color="white" size={16} />
-                      </span>{' '}
-                    </td>
-                    <td>122.00</td>
-                    <td>122.00</td>
-                    <td className="bg-danger text-white">140.50</td>
-                    <td className="bg-danger text-white">+9.99%</td>
-                    <td>287,387</td>
-                    {/* 收藏按鈕 */}
-                    <td>
-                      <i
-                        className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                        onClick={() => setLiked(!liked)}
-                        style={{ cursor: 'pointer' }}
-                      ></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <BeatLoader color={primaryColor} size={20} />
           </div>
-          <button type="button" className=" btn btn-outline-primary">
-            查看更多
-          </button>
-        </div>
+        ) : collectionETFError ? (
+          <div className="alert alert-danger" role="alert">
+            載入失敗: {collectionETFError}
+          </div>
+        ) : (
+          <StockTable
+            data={collectionsETFData}
+            category="collectionETF"
+            filterKey={collectionETFTab}
+            initialNumberCount={5}
+          />
+        )}
       </section>
     </div>
   );

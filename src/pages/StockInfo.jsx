@@ -12,6 +12,7 @@ export default function StockInfo() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('股價走勢');
+  const [renderTab, setRenderTab] = useState('股價走勢'); // 實際渲染的 tab
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const [stockData, setStockData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,6 +21,15 @@ export default function StockInfo() {
 
   const stockUrl = import.meta.env.VITE_symbolsUrl;
   const tabs = ['股價走勢', '股利政策', '股價 K 線'];
+
+  // 延遲切換 tab,確保圖表完全卸載
+  useEffect(() => {
+    setRenderTab(''); // 先清空
+    const timer = setTimeout(() => {
+      setRenderTab(activeTab); // 延遲 50ms 後渲染新 tab
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -189,13 +199,13 @@ export default function StockInfo() {
 
       {/* 內容 */}
       <div className="custom-container mb-5">
-        {activeTab === '股價走勢' && stockData?.prices?.length > 0 && (
+        {renderTab === '股價走勢' && stockData?.prices?.length > 0 && (
           <StockPriceTrend key={stockData.id + '-line'} stockData={stockData} />
         )}
 
-        {activeTab === '股利政策' && stockData && <DividendPolicy stockId={id} />}
+        {renderTab === '股利政策' && stockData && <DividendPolicy stockId={id} />}
 
-        {activeTab === '股價 K 線' && stockData?.prices?.length > 0 && (
+        {renderTab === '股價 K 線' && stockData?.prices?.length > 0 && (
           <StockKLine
             key={stockData.id + '-kline'}
             stockSelect={stockData.id}

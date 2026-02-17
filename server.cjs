@@ -296,6 +296,46 @@ app.get('/api/finmind/:dataset', async (req, res) => {
         });
     }
 });
+
+// 新增: 儲存 JSON 檔案到專案根目錄
+app.post('/api/save-json', async (req, res) => {
+    try {
+        const { filename, data } = req.body;
+
+        if (!filename || !data) {
+            return res.status(400).json({
+                success: false,
+                code: 400,
+                message: '缺少必要參數: filename 或 data',
+                data: null
+            });
+        }
+
+        const fs = require('fs');
+        const filePath = path.join(__dirname, filename);
+
+        // 將資料寫入檔案
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+
+        console.log(`✅ 已儲存檔案: ${filename}`);
+
+        res.json({
+            success: true,
+            code: 200,
+            message: `檔案已成功儲存: ${filename}`,
+            data: { filename, path: filePath }
+        });
+    } catch (error) {
+        console.error('❌ 儲存檔案錯誤:', error.message);
+        res.status(500).json({
+            success: false,
+            code: 500,
+            message: `儲存檔案錯誤: ${error.message}`,
+            data: null
+        });
+    }
+});
+
 app.use(router);
 
 

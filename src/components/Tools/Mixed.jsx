@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 
-const Mixed = ({ tags = [], start = false }) => {
+const Mixed = ({ etfData = [], start = false, onClick }) => {
   const containerRef = useRef(null);
   const tagsRef = useRef([]);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [isDragging, setIsDragging] = useState(false);
 
   // 使用 ResizeObserver 監聽父容器尺寸變化
   useEffect(() => {
@@ -13,7 +14,6 @@ const Mixed = ({ tags = [], start = false }) => {
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const { width, height } = entry.contentRect;
-        // 如果高度太小（例如 min-height 尚未作用），給予保底高度
         setDimensions({
           width: width,
           height: height > 350 ? height : 350,
@@ -26,21 +26,19 @@ const Mixed = ({ tags = [], start = false }) => {
   }, []);
 
   useEffect(() => {
-    if (!tags || tags.length === 0 || dimensions.width === 0 || !start) return;
+    if (!etfData || etfData.length === 0 || dimensions.width === 0 || !start) return;
 
     const { Engine, Runner, MouseConstraint, Mouse, Composite, Bodies, Events } = Matter;
     const { width, height } = dimensions;
 
-    // 建立引擎
     const engine = Engine.create();
     const { world } = engine;
 
-    // 建立掉落物體 (對應每個標籤)
-    const tagBodies = tags.map((text, i) => {
+    const tagBodies = etfData.map((etf, i) => {
+      const text = etf.name || etf.id;
       const bodyWidth = text.length * 18 + 30;
       const bodyHeight = 40;
 
-      // 隨機在水平範圍內掉落
       const x = 50 + Math.random() * (width - 100);
       const y = -50 - i * 40;
 
@@ -50,31 +48,29 @@ const Mixed = ({ tags = [], start = false }) => {
         friction: 0.1,
       });
 
-      body.label = text;
+      body.label = etf.id;
+      body.displayText = text;
       return body;
     });
 
     Composite.add(world, tagBodies);
 
-    // 建立邊界 (動態對齊寬高)
     const wallThickness = 100;
     Composite.add(world, [
       Bodies.rectangle(width / 2, height + wallThickness / 2, width, wallThickness, {
         isStatic: true,
-      }), // 地板
+      }),
       Bodies.rectangle(-wallThickness / 2, height / 2, wallThickness, height * 2, {
         isStatic: true,
-      }), // 左牆
+      }),
       Bodies.rectangle(width + wallThickness / 2, height / 2, wallThickness, height * 2, {
         isStatic: true,
-      }), // 右牆
+      }),
     ]);
 
-    // 建立運行器
     const runner = Runner.create();
     Runner.run(runner, engine);
 
-    // 建立透明 Canvas 捕捉拖拽
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -82,6 +78,7 @@ const Mixed = ({ tags = [], start = false }) => {
     canvas.style.top = '0';
     canvas.style.left = '0';
     canvas.style.zIndex = '10';
+    canvas.style.pointerEvents = 'none';
     canvas.style.cursor = 'default';
     containerRef.current.appendChild(canvas);
 
@@ -99,16 +96,21 @@ const Mixed = ({ tags = [], start = false }) => {
     let startTime = 0;
     Events.on(mouseConstraint, 'mousedown', () => {
       startTime = Date.now();
+      setIsDragging(true);
     });
 
     Events.on(mouseConstraint, 'mouseup', () => {
       const duration = Date.now() - startTime;
+      setIsDragging(false);
+
       if (duration < 200 && mouseConstraint.body && mouseConstraint.body.label) {
-        window.location.hash = `#${mouseConstraint.body.label}`;
+        const stockId = mouseConstraint.body.label;
+        if (onClick) {
+          onClick(stockId);
+        }
       }
     });
 
-    // 每一幀更新 DOM 位置
     Events.on(engine, 'afterUpdate', () => {
       tagBodies.forEach((body, i) => {
         const el = tagsRef.current[i];
@@ -118,22 +120,34 @@ const Mixed = ({ tags = [], start = false }) => {
         }
       });
 
+      const hoveredBody = Matter.Query.point(tagBodies, mouse.position)[0];
+
       if (mouseConstraint.body) {
         canvas.style.cursor = 'grabbing';
+        canvas.style.pointerEvents = 'auto';
+      } else if (hoveredBody) {
+        canvas.style.cursor = 'grab';
+        canvas.style.pointerEvents = 'auto';
       } else {
-        const hoveredBody = Matter.Query.point(tagBodies, mouse.position)[0];
-        canvas.style.cursor = hoveredBody ? 'pointer' : 'default';
+        canvas.style.cursor = 'default';
+        canvas.style.pointerEvents = 'none';
       }
     });
 
-    // 清理
     return () => {
       Runner.stop(runner);
       Engine.clear(engine);
       Composite.clear(world);
       if (canvas) canvas.remove();
     };
-  }, [tags, dimensions, start]);
+  }, [etfData, dimensions, start, onClick]);
+
+  const handleTagClick = (etf, e) => {
+    e.preventDefault();
+    if (onClick) {
+      onClick(etf.id);
+    }
+  };
 
   return (
     <div
@@ -141,25 +155,26 @@ const Mixed = ({ tags = [], start = false }) => {
       className="w-100 h-100 position-absolute top-0 start-0 overflow-hidden"
       style={{ minHeight: '350px' }}
     >
-      {tags.map((tag, i) => (
+      {etfData.map((etf, i) => (
         <a
-          key={i}
+          key={etf.id || i}
           ref={(el) => (tagsRef.current[i] = el)}
-          href={`#${tag}`}
+          href={`#${etf.id}`}
           className="text-decoration-none round-pill btn btn-light py-8 h5 px-16 etfsTag border-gray-800 position-absolute"
           style={{
             left: '0',
             top: '0',
             whiteSpace: 'nowrap',
-            pointerEvents: 'none',
+            pointerEvents: isDragging ? 'none' : 'auto',
             zIndex: 5,
             transformOrigin: 'center center',
             fontSize: dimensions.width < 400 ? '14px' : '16px',
             visibility: dimensions.width === 0 ? 'hidden' : 'visible',
+            cursor: 'pointer',
           }}
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => handleTagClick(etf, e)}
         >
-          {tag}
+          {etf.name || etf.id}
         </a>
       ))}
     </div>
