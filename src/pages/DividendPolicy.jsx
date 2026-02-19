@@ -13,6 +13,7 @@ import {
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 import dayjs from 'dayjs';
 
+const api_Url = import.meta.env.VITE_API_BASE;
 // 指標資料
 const dividendSummary = {
   fillRate: '89.96%',
@@ -51,7 +52,7 @@ export default function DividendPolicy({ stockId }) {
     const getBenifitData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:3001/stockbenifit?id=${stockId}`);
+        const response = await axios.get(`${api_Url}/stockbenifit?id=${stockId}`);
         console.log('完整回應:', response.data);
 
         // 正確的資料結構：response.data.data[0].data
