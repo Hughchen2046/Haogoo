@@ -30,15 +30,15 @@ export default function DividendPolicy({ stockId }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
 
-  // ============================
+  // ==============================
   // 抓資料
-  // ============================
+  // ==============================
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // 1️⃣ 抓股利資料
+        // 股利資料
         const dividendRes = await axios.get(
           `${api_Url}/stockbenifit?id=${stockId}`
         );
@@ -50,21 +50,16 @@ export default function DividendPolicy({ stockId }) {
           Array.isArray(dividendRaw) ? dividendRaw : []
         );
 
-        // 2️⃣ 抓股價資料
+        // 股價資料
         const priceRes = await axios.get(
           `${api_Url}/prices?symbolId=${stockId}`
         );
 
-        console.log("股價API:", priceRes.data);
-
         let priceArray = [];
-
         if (Array.isArray(priceRes.data)) {
           priceArray = priceRes.data;
         } else if (Array.isArray(priceRes.data?.data)) {
           priceArray = priceRes.data.data;
-        } else if (Array.isArray(priceRes.data?.prices)) {
-          priceArray = priceRes.data.prices;
         }
 
         setPriceData(priceArray);
@@ -79,9 +74,9 @@ export default function DividendPolicy({ stockId }) {
     fetchData();
   }, [stockId]);
 
-  // ============================
+  // ==============================
   // 排序股價
-  // ============================
+  // ==============================
   const sortedPriceData = useMemo(() => {
     if (!Array.isArray(priceData)) return [];
     return [...priceData].sort(
@@ -89,87 +84,77 @@ export default function DividendPolicy({ stockId }) {
     );
   }, [priceData]);
 
-  // ============================
+  // ==============================
   // 計算填息與股利
-  // ============================
+  // ==============================
   const dividendSummary = useMemo(() => {
-    if (!benifitData.length || !sortedPriceData.length)
-      return null;
+    if (!benifitData.length) return null;
 
-    const validDividend = benifitData.filter(
-      (d) =>
-        Number(d.CashEarningsDistribution) > 0 &&
-        d.CashExDividendTradingDate
-    );
+    const validDividend = benifitData.filter((d) => {
+      const cash =
+        Number(d.CashEarningsDistribution) ||
+        Number(d.cashDividend) ||
+        Number(d.cash) ||
+        0;
+      return cash > 0 && d.CashExDividendTradingDate;
+    });
 
+    // ===== 填息計算 =====
     let successCount = 0;
     let totalDays = 0;
 
     validDividend.forEach((div) => {
       const exDate = div.CashExDividendTradingDate;
 
-      // 找除息日前一交易日
       const previousDay = [...sortedPriceData]
         .reverse()
-        .find((p) => p.date < exDate);
+        .find((p) => new Date(p.date) < new Date(exDate));
 
       if (!previousDay) return;
 
       const targetPrice = previousDay.close;
 
-      // 往後找填息日
       const fillDay = sortedPriceData.find(
         (p) =>
-          p.date >= exDate &&
+          new Date(p.date) >= new Date(exDate) &&
           Number(p.close) >= Number(targetPrice)
       );
 
       if (fillDay) {
         successCount++;
-
         const days =
           (new Date(fillDay.date) - new Date(exDate)) /
           (1000 * 60 * 60 * 24);
-
         totalDays += days;
       }
     });
 
     const fillRate =
       validDividend.length > 0
-        ? (
-            (successCount / validDividend.length) *
-            100
-          ).toFixed(2) + "%"
+        ? ((successCount / validDividend.length) * 100).toFixed(2) + "%"
         : "-";
 
     const avgDays =
-      successCount > 0
-        ? Math.round(totalDays / successCount)
-        : "-";
+      successCount > 0 ? Math.round(totalDays / successCount) : "-";
 
-    // 年度合併
+    // ===== 年度整理 =====
     const yearly = validDividend.reduce((acc, item) => {
-      const year = Number(item.year) + 1911;
-      const cash = Number(item.CashEarningsDistribution);
+      const rawYear = Number(item.year);
+      const year = rawYear < 1911 ? rawYear + 1911 : rawYear;
+      const cash =
+        Number(item.CashEarningsDistribution) ||
+        Number(item.cashDividend) ||
+        Number(item.cash) ||
+        0;
 
-      if (!acc[year]) {
-        acc[year] = { year, cash: 0 };
-      }
+      if (!acc[year]) acc[year] = { year, cash: 0 };
       acc[year].cash += cash;
       return acc;
     }, {});
 
-    const yearlyArr = Object.values(yearly).sort(
-      (a, b) => a.year - b.year
-    );
-
+    const yearlyArr = Object.values(yearly).sort((a, b) => a.year - b.year);
     const last10 = yearlyArr.slice(-10);
-
-    const totalDividend = last10.reduce(
-      (sum, y) => sum + y.cash,
-      0
-    );
+    const totalDividend = last10.reduce((sum, y) => sum + y.cash, 0);
 
     return {
       fillRate,
@@ -179,61 +164,49 @@ export default function DividendPolicy({ stockId }) {
     };
   }, [benifitData, sortedPriceData]);
 
-  // ============================
-  // Chart 資料
-  // ============================
+  // ==============================
+  // Chart Data
+  // ==============================
   const barData = useMemo(() => {
-    if (!dividendSummary)
+    if (!dividendSummary?.yearlyData?.length) {
       return { labels: [], datasets: [] };
+    }
 
     return {
-      labels: dividendSummary.yearlyData.map(
-        (x) => x.year
-      ),
+      labels: dividendSummary.yearlyData.map((x) => x.year),
       datasets: [
         {
           label: "現金股利(元)",
-          data: dividendSummary.yearlyData.map(
-            (x) => x.cash
-          ),
+          data: dividendSummary.yearlyData.map((x) => x.cash),
           backgroundColor: "rgba(51,67,255,0.8)",
         },
       ],
     };
   }, [dividendSummary]);
 
-  // ============================
+  // ==============================
   // 建立圖表
-  // ============================
+  // ==============================
   useEffect(() => {
     if (!canvasRef.current) return;
+    if (!barData.labels.length) return;
 
-    if (chartRef.current) {
-      chartRef.current.destroy();
-    }
+    if (chartRef.current) chartRef.current.destroy();
 
     const ctx = canvasRef.current.getContext("2d");
-
     chartRef.current = new Chart(ctx, {
       type: "bar",
       data: barData,
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
         plugins: {
-          tooltip: {
-            callbacks: {
-              label: (ctx) =>
-                `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(
-                  3
-                )} 元`,
-            },
-          },
+          legend: { display: true },
+          tooltip: { enabled: true },
+        },
+        scales: {
+          y: { beginAtZero: true },
+          x: { title: { display: true, text: "年份" } },
         },
       },
     });
@@ -241,17 +214,13 @@ export default function DividendPolicy({ stockId }) {
     return () => chartRef.current?.destroy();
   }, [barData]);
 
-  // ============================
+  // ==============================
   // UI
-  // ============================
-  if (loading)
-    return <div className="text-center py-5">載入中...</div>;
-
+  // ==============================
+  if (loading) return <div className="text-center py-5">載入中...</div>;
   if (error)
     return (
-      <div className="text-danger text-center py-5">
-        {error}
-      </div>
+      <div className="text-danger text-center py-5">{error}</div>
     );
 
   return (
@@ -260,47 +229,29 @@ export default function DividendPolicy({ stockId }) {
         <div className="col-md-4">
           <div className="card p-3 text-center">
             <div className="text-muted">填息機率</div>
-            <div className="fs-3 fw-bold">
-              {dividendSummary?.fillRate}
-            </div>
+            <div className="fs-3 fw-bold">{dividendSummary?.fillRate}</div>
           </div>
         </div>
 
         <div className="col-md-4">
           <div className="card p-3 text-center">
-            <div className="text-muted">
-              平均填息天數
-            </div>
-            <div className="fs-3 fw-bold">
-              {dividendSummary?.avgDays}
-            </div>
+            <div className="text-muted">平均填息天數</div>
+            <div className="fs-3 fw-bold">{dividendSummary?.avgDays}</div>
           </div>
         </div>
 
         <div className="col-md-4">
           <div className="card p-3 text-center">
-            <div className="text-muted">
-              近10年現金股利總額
-            </div>
+            <div className="text-muted">近10年現金股利總額</div>
             <div className="fs-3 fw-bold">
-              $
-              {dividendSummary
-                ? dividendSummary.totalDividend.toFixed(
-                    3
-                  )
-                : "-"}
+              ${dividendSummary ? dividendSummary.totalDividend.toFixed(3) : "-"}
             </div>
           </div>
         </div>
       </div>
 
-      <div
-        className="card p-3"
-        style={{ height: 350 }}
-      >
-        <div className="text-center mb-2">
-          歷年現金股利
-        </div>
+      <div className="card p-3" style={{ height: 350 }}>
+        <div className="text-center mb-2">歷年現金股利</div>
         <canvas ref={canvasRef}></canvas>
       </div>
     </div>
