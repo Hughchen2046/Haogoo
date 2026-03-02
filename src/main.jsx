@@ -21,6 +21,7 @@ import MyStockFeed from './components/Routes/MyStockFeed.jsx';
 import MarketInfo from './components/Routes/MarketInfo.jsx';
 import MyWishlist from './components/Routes/MyWishlist.jsx';
 import MystockList from './pages/MystockList.jsx';
+import News from './components/Routes/News.jsx';
 
 const routes = [
   {
@@ -62,6 +63,7 @@ const routes = [
         path: 'test',
         element: <Test />,
       },
+      { path: 'news', element: <News /> },
       {
         path: 'mystock',
         element: <MystockList />,
