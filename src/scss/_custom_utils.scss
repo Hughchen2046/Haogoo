@@ -10,6 +10,16 @@
   }
 }
 
+html::-webkit-scrollbar {
+  width: 5px;
+  background-color: #ffffff;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: #47c8b4;
+  border-radius: 8px;
+}
+
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
 @import 'bootstrap/scss/maps';
@@ -155,7 +165,9 @@ $header-sizes: (
   font-weight: 900;
   line-height: 1.2;
 }
-
+.font-weight-bold {
+  font-weight: 700 !important;
+}
 .font-weight-light {
   font-weight: 400 !important;
 }
@@ -165,6 +177,7 @@ $header-sizes: (
 }
 
 .navbar-scrolled {
+  color: $white !important;
   background-color: rgba(1, 38, 33, 0.8) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -224,6 +237,7 @@ $utilities: map-merge(
           '0': 0px,
           '4': 4px,
           '8': 8px,
+          '12': 12px,
           '24': 24px,
           '36': 36px,
           '48': 48px,
@@ -386,6 +400,28 @@ $utilities: map-merge(
   }
 }
 
+// table 水平滾動條開始
+.table-responsive {
+  overflow-x: auto;
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #999 #eee;
+}
+/* Chrome / Edge */
+.table-responsive::-webkit-scrollbar {
+  height: 10px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #eee;
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #999;
+  border-radius: 10px;
+}
+// table 水平滾動條結束
+
 .icon-24 {
   width: 24px !important;
   height: 24px !important;
@@ -407,7 +443,6 @@ $utilities: map-merge(
 .nav-logo {
   width: 153px;
   height: 40px;
-  color: #ffffff;
   display: block;
 }
 
@@ -446,4 +481,130 @@ $utilities: map-merge(
 }
 .w-initial {
   width: initial !important;
+}
+.topic-border-img {
+  box-shadow: 0px 4px 20px 0px #00000014;
+  .topic-img-frame {
+    width: 100%;
+    img {
+      width: 100%;
+    }
+  }
+  &:hover {
+    cursor: pointer;
+    img {
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.2);
+      transition: all 0.3s ease-in-out;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .topic-img-frame {
+      width: 168px;
+    }
+    border-bottom: 1px solid #12121214;
+    img {
+      height: 126px;
+    }
+  }
+}
+.nav-topic {
+  .nav-link {
+    color: var(--bs-gray-800);
+    &:hover {
+      color: var(--bs-primary) !important;
+    }
+    &.active {
+      color: var(--bs-primary) !important;
+    }
+  }
+}
+.nav-topic-underline {
+  height: 4px;
+  border-top-left-radius: 99px;
+  border-top-right-radius: 99px;
+  background-color: var(--bs-primary);
+}
+
+// LazyImage Component Styles
+.lazy-image-wrapper {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lazy-image-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #1a1a2e 0%, #2d2d44 50%, #1a1a2e 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.lazy-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+
+  &.loaded {
+    opacity: 1;
+  }
+}
+.dropdown-li-hover {
+  .dropdown-item {
+    transition: background-color 0.4s ease-in-out;
+
+    &:hover {
+      background-color: $pinkgreen !important;
+      color: $primary !important;
+    }
+    &.active {
+      font-weight: 700 !important;
+    }
+  }
+}
+.dropdown-btn-active {
+  .dropdown-item.active {
+    background-color: var(--bs-dropdown-link-active-bg) !important;
+    color: $white !important;
+  }
+}
+
+.btn-like {
+  padding: 0 !important;
+  margin: 0 !important;
+  color: $primary !important;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+.table-hover {
+  --bs-table-hover-bg: rgba(var(--bs-secondary-rgb), 0.05);
+}
+.card-shadow-hover {
+  transition: all 0.6s ease-in-out;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 2px 2px 2px 2px rgba($primary, 0.3);
+    border-color: rgba($primary, 0.5);
+    // transition: all 1s ease-in-out;
+    .card-shadow-title {
+      color: $primary;
+    }
+    // background-color: #2fa58d;
+  }
 }
