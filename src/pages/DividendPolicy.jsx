@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import axios from 'axios';
 import {
   Chart,
   BarController,
@@ -8,16 +8,9 @@ import {
   LinearScale,
   Tooltip,
   Legend,
-} from "chart.js";
-
-Chart.register(
-  BarController,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend
-);
+} from 'chart.js';
+import dayJS from 'dayjs';
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const api_Url = import.meta.env.VITE_API_BASE;
 
@@ -39,21 +32,16 @@ export default function DividendPolicy({ stockId }) {
         setLoading(true);
 
         // 股利資料
-        const dividendRes = await axios.get(
-          `${api_Url}/stockbenifit?id=${stockId}`
-        );
+        const dividendRes = await axios.get(`${api_Url}/stockbenifit?id=${stockId}`);
+        // console.log('股利資料原始回應', dividendRes.data);
 
-        const dividendRaw =
-          dividendRes.data?.data?.[0]?.data || [];
+        const dividendRaw = dividendRes.data?.data?.[0]?.data || [];
+        // console.log('股利資料', dividendRaw);
 
-        setBenifitData(
-          Array.isArray(dividendRaw) ? dividendRaw : []
-        );
+        setBenifitData(Array.isArray(dividendRaw) ? dividendRaw : []);
 
         // 股價資料
-        const priceRes = await axios.get(
-          `${api_Url}/prices?symbolId=${stockId}`
-        );
+        const priceRes = await axios.get(`${api_Url}/prices?symbolId=${stockId}`);
 
         let priceArray = [];
         if (Array.isArray(priceRes.data)) {
@@ -65,7 +53,7 @@ export default function DividendPolicy({ stockId }) {
         setPriceData(priceArray);
       } catch (err) {
         console.error(err);
-        setError("資料載入失敗");
+        setError('資料載入失敗');
       } finally {
         setLoading(false);
       }
@@ -79,9 +67,7 @@ export default function DividendPolicy({ stockId }) {
   // ==============================
   const sortedPriceData = useMemo(() => {
     if (!Array.isArray(priceData)) return [];
-    return [...priceData].sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
+    return [...priceData].sort((a, b) => new Date(a.date) - new Date(b.date));
   }, [priceData]);
 
   // ==============================
@@ -92,18 +78,15 @@ export default function DividendPolicy({ stockId }) {
 
     const validDividend = benifitData.filter((d) => {
       const cash =
-        Number(d.CashEarningsDistribution) ||
-        Number(d.cashDividend) ||
-        Number(d.cash) ||
-        0;
+        Number(d.CashEarningsDistribution) || Number(d.cashDividend) || Number(d.cash) || 0;
       return cash > 0 && d.CashExDividendTradingDate;
     });
+    // console.log('有效股利資料', validDividend);
 
     // ===== 填息計算 =====
     let successCount = 0;
     let totalDays = 0;
-
-    validDividend.forEach((div) => {
+    const fillValid = validDividend.forEach((div) => {
       const exDate = div.CashExDividendTradingDate;
 
       const previousDay = [...sortedPriceData]
@@ -115,31 +98,28 @@ export default function DividendPolicy({ stockId }) {
       const targetPrice = previousDay.close;
 
       const fillDay = sortedPriceData.find(
-        (p) =>
-          new Date(p.date) >= new Date(exDate) &&
-          Number(p.close) >= Number(targetPrice)
+        (p) => new Date(p.date) >= new Date(exDate) && Number(p.close) >= Number(targetPrice)
       );
 
       if (fillDay) {
         successCount++;
-        const days =
-          (new Date(fillDay.date) - new Date(exDate)) /
-          (1000 * 60 * 60 * 24);
+        const days = (new Date(fillDay.date) - new Date(exDate)) / (1000 * 60 * 60 * 24);
         totalDays += days;
       }
     });
+    // console.log('填息計算', { successCount, totalDays, fillValid });
 
     const fillRate =
       validDividend.length > 0
-        ? ((successCount / validDividend.length) * 100).toFixed(2) + "%"
-        : "-";
+        ? ((successCount / validDividend.length) * 100).toFixed(2) + '%'
+        : '-';
 
-    const avgDays =
-      successCount > 0 ? Math.round(totalDays / successCount) : "-";
+    const avgDays = successCount > 0 ? Math.round(totalDays / successCount) : '-';
 
     // ===== 年度整理 =====
     const yearly = validDividend.reduce((acc, item) => {
-      const rawYear = Number(item.year);
+      const rawYear = Number(dayJS(item.date).format('YYYY'));
+      // console.log('rawYear', rawYear);
       const year = rawYear < 1911 ? rawYear + 1911 : rawYear;
       const cash =
         Number(item.CashEarningsDistribution) ||
@@ -155,6 +135,7 @@ export default function DividendPolicy({ stockId }) {
     const yearlyArr = Object.values(yearly).sort((a, b) => a.year - b.year);
     const last10 = yearlyArr.slice(-10);
     const totalDividend = last10.reduce((sum, y) => sum + y.cash, 0);
+    // console.log('年度股利整理', yearlyArr);
 
     return {
       fillRate,
@@ -176,9 +157,9 @@ export default function DividendPolicy({ stockId }) {
       labels: dividendSummary.yearlyData.map((x) => x.year),
       datasets: [
         {
-          label: "現金股利(元)",
+          label: '現金股利(元)',
           data: dividendSummary.yearlyData.map((x) => x.cash),
-          backgroundColor: "rgba(51,67,255,0.8)",
+          backgroundColor: 'rgba(51,67,255,0.8)',
         },
       ],
     };
@@ -193,9 +174,9 @@ export default function DividendPolicy({ stockId }) {
 
     if (chartRef.current) chartRef.current.destroy();
 
-    const ctx = canvasRef.current.getContext("2d");
+    const ctx = canvasRef.current.getContext('2d');
     chartRef.current = new Chart(ctx, {
-      type: "bar",
+      type: 'bar',
       data: barData,
       options: {
         responsive: true,
@@ -206,7 +187,7 @@ export default function DividendPolicy({ stockId }) {
         },
         scales: {
           y: { beginAtZero: true },
-          x: { title: { display: true, text: "年份" } },
+          x: { title: { display: true, text: '年份' } },
         },
       },
     });
@@ -218,10 +199,7 @@ export default function DividendPolicy({ stockId }) {
   // UI
   // ==============================
   if (loading) return <div className="text-center py-5">載入中...</div>;
-  if (error)
-    return (
-      <div className="text-danger text-center py-5">{error}</div>
-    );
+  if (error) return <div className="text-danger text-center py-5">{error}</div>;
 
   return (
     <div className="container my-4">
@@ -244,7 +222,7 @@ export default function DividendPolicy({ stockId }) {
           <div className="card p-3 text-center">
             <div className="text-muted">近10年現金股利總額</div>
             <div className="fs-3 fw-bold">
-              ${dividendSummary ? dividendSummary.totalDividend.toFixed(3) : "-"}
+              ${dividendSummary ? dividendSummary.totalDividend.toFixed(3) : '-'}
             </div>
           </div>
         </div>

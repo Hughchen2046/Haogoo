@@ -1,12 +1,5 @@
-import React, { useMemo, useEffect, useState } from 'react';
-import {
-  Chart,
-  Pane,
-  LineSeries,
-  TimeScale,
-  TimeScaleFitContentTrigger,
-  WatermarkText,
-} from 'lightweight-charts-react-components';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { createChart, LineSeries } from 'lightweight-charts';
 
 const colors = { blue: '#2962FF', gray100: '#E0E0E0' };
 
@@ -15,23 +8,38 @@ const generateLineData = (stockData) =>
 
 export default function StockPriceTrend({ stockData }) {
   const lineData = useMemo(() => generateLineData(stockData), [stockData]);
-  const [shouldRender, setShouldRender] = useState(false);
-  const [chartKey, setChartKey] = useState(0);
+  const containerRef = useRef(null);
 
-  // 延遲渲染,確保舊圖表完全清理
   useEffect(() => {
-    setShouldRender(false);
-    setChartKey((prev) => prev + 1);
+    const container = containerRef.current;
+    if (!container || !lineData.length) return undefined;
 
-    const timer = setTimeout(() => {
-      setShouldRender(true);
-    }, 100); // 延遲 100ms 渲染
+    const chart = createChart(container, {
+      width: container.clientWidth,
+      height: 500,
+      layout: { background: { color: '#fff' }, textColor: '#333' },
+      grid: { vertLines: { color: colors.gray100 }, horzLines: { color: colors.gray100 } },
+      rightPriceScale: { borderVisible: false },
+      timeScale: { borderVisible: false, timeVisible: true },
+    });
+
+    const series = chart.addSeries(LineSeries, {
+      color: colors.blue,
+      lineWidth: 2,
+    });
+    series.setData(lineData);
+    chart.timeScale().fitContent();
+
+    const resizeObserver = new ResizeObserver(() => {
+      chart.applyOptions({ width: container.clientWidth });
+    });
+    resizeObserver.observe(container);
 
     return () => {
-      clearTimeout(timer);
-      setShouldRender(false);
+      resizeObserver.disconnect();
+      chart.remove();
     };
-  }, [stockData?.id]);
+  }, [lineData]);
 
   if (!lineData.length) {
     return (
@@ -50,47 +58,21 @@ export default function StockPriceTrend({ stockData }) {
     );
   }
 
-  // 延遲渲染期間顯示 loading
-  if (!shouldRender) {
-    return (
+  return (
+    <div style={{ position: 'relative' }}>
+      <div ref={containerRef} style={{ width: '100%', height: '500px' }} />
       <div
         style={{
-          width: '100%',
-          height: '500px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          position: 'absolute',
+          right: 12,
+          bottom: 10,
           color: '#999',
+          fontSize: 12,
+          pointerEvents: 'none',
         }}
       >
-        載入圖表中...
+        股價走勢
       </div>
-    );
-  }
-
-  return (
-    <Chart
-      key={`chart-${stockData?.id}-${chartKey}`}
-      options={{
-        layout: { background: { color: '#fff' }, textColor: '#333' },
-        grid: { vertLines: { color: colors.gray100 }, horzLines: { color: colors.gray100 } },
-        rightPriceScale: { borderVisible: false },
-        timeScale: { borderVisible: false, timeVisible: true },
-      }}
-      containerProps={{ style: { flexGrow: 1, height: '500px' } }}
-    >
-      <TimeScale>
-        <TimeScaleFitContentTrigger deps={[lineData]} />
-      </TimeScale>
-
-      <Pane stretchFactor={1}>
-        <LineSeries data={lineData} options={{ color: colors.blue, lineWidth: 2 }} />
-        <WatermarkText
-          lines={[{ text: '股價走勢', color: '#999', fontSize: 12 }]}
-          horzAlign="right"
-          vertAlign="bottom"
-        />
-      </Pane>
-    </Chart>
+    </div>
   );
 }
