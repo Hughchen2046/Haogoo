@@ -63,7 +63,7 @@ const routes = [
         path: 'test',
         element: <Test />,
       },
-      { path: 'news', element: <News /> },
+      { path: 'news/:postId', element: <News /> },
       {
         path: 'mystock',
         element: <MystockList />,

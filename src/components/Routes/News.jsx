@@ -1,7 +1,7 @@
 import * as bootstrap from 'bootstrap';
 import CommentCard from './CommentCard';
 import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   User,
   ThumbsUp,
@@ -18,6 +18,13 @@ const commentsRaw = {
   /* 評論 JSON */
 };
 export default function News() {
+  // 目前main.jsx已經設定導航到news/:postId => 到時候網頁上要輸入 http://localhost:5173/#/news/1 才會看到news的內容.
+  // postId的資料會由上層Topics導航中的動態路由參數帶入 state={{ postId: allData.id, catagory: currentTopic.label }}
+  const location = useLocation();
+  const { postId, catagory } = location.state || {};
+  console.log('從路由參數獲取的 postId:', postId);
+  console.log('從路由參數獲取的 catagory:', catagory);
+
   // 1. 確保資料來源存在，使用 Optional Chaining (?.) 避免讀取不到 data 噴錯
   const userLookup =
     usersRaw?.data?.reduce((acc, user) => {
@@ -122,8 +129,8 @@ export default function News() {
           style={{ borderTop: '3px solid' }}
         />
         {/* 內文 */}
+        <p className="fw-light text-break">（中央社記者江明晏台北19日）</p>
         <p className="fw-light text-break">
-          <p className="fw-light text-break">（中央社記者江明晏台北19日）</p>
           電光學股大立光今天公告，董事會決議通過實施庫藏股，總金額上限高達新台幣1796億元，至明年2月11日前預定買回數量為2670張，為台股史上最高價庫藏股護盤上限金額，不過實際實施狀況仍待觀察。
         </p>
         <p className="fw-light text-break">
