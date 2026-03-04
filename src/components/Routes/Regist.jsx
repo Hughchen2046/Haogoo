@@ -2,12 +2,13 @@ import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import * as bootstrap from 'bootstrap';
+import { useDispatch } from 'react-redux';
 import Logo from '../Tools/Logo';
 import ButtonPrimary from '../Tools/ButtonPrimary';
-import { useAuth } from '../../contexts/AuthContext';
+import { registerThunk } from '../../app/features/auth/authThunks';
 
 export default function Regist() {
-  const { register: registerAuth } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const toastRef = useRef(null);
   const registToastRef = useRef(null);
@@ -25,10 +26,9 @@ export default function Regist() {
   });
 
   useEffect(() => {
-    const original = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = original;
+      document.body.style.overflow = '';
     };
   }, []);
 
@@ -52,10 +52,8 @@ export default function Regist() {
       createdAt: new Date().toLocaleString(),
     };
 
-    const { success, error, data: responseData } = await registerAuth(submitData);
-
-    if (success) {
-      console.log('註冊伺服器回應：', responseData);
+    const action = await dispatch(registerThunk(submitData));
+    if (registerThunk.fulfilled.match(action)) {
       if (toastRef.current) {
         registToastRef.current = new bootstrap.Toast(toastRef.current);
         registToastRef.current.show();
@@ -67,6 +65,7 @@ export default function Regist() {
       return;
     }
 
+    const error = action.payload || action.error?.message;
     const errText = typeof error === 'string' ? error : JSON.stringify(error);
     if (errText.toLowerCase().includes('email')) {
       setError('email', { type: 'manual', message: 'Email 已被使用或格式錯誤' });

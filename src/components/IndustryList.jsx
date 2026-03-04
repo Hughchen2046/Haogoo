@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
+import { useSelector } from 'react-redux';
+import { IsAuthed } from '../app/features/auth/authSlice';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -13,13 +15,11 @@ import 'swiper/css/pagination';
 import 'swiper/css/grid';
 import 'swiper/css/navigation';
 
-import { useAuth } from '../contexts/AuthContext';
-
 export default function IndustryList() {
   const [symbols, setSymbols] = useState([]);
   const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
-  const { isAuth } = useAuth();
+  const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
 
   // 取得產業與股票資料

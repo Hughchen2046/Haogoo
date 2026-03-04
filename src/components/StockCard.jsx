@@ -12,7 +12,8 @@ import ButtonPrimary from './Tools/ButtonPrimary';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Grid, Navigation } from 'swiper/modules';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import { IsAuthed } from '../app/features/auth/authSlice';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -23,7 +24,7 @@ export default function StockCard() {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
-  const { isAuth } = useAuth();
+  const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
 
   useEffect(() => {

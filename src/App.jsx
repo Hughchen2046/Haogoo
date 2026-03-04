@@ -14,6 +14,7 @@ function App() {
   useEffect(() => {
     if (!isAuthState) {
       setBackgroundOutlet(outlet);
+      document.body.style.overflow = '';
     }
     // console.log('當前路徑：', location.pathname);
   }, [isAuthState, outlet]);

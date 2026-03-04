@@ -6,7 +6,6 @@ import Home from './components/Routes/Home';
 import Test from './components/Routes/Test';
 import Nopages from './components/Routes/Nopages';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
 import StockInfo from './pages/StockInfo.jsx';
 import { Topics } from './contexts/Topics';
 import TopicFeedPage from './components/Routes/TopicFeedPage';
@@ -101,9 +100,7 @@ const routes = [
 const router = createHashRouter(routes);
 
 createRoot(document.getElementById('root')).render(
-  <AuthProvider>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
-  </AuthProvider>
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
 );

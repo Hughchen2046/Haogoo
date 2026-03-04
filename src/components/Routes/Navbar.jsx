@@ -4,12 +4,15 @@ import ButtonPrimary from '../Tools/ButtonPrimary';
 import ButtonOutline from '../Tools/ButtonOutline';
 import Logo from '../Tools/Logo';
 import { Search, Menu, X } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutThunk } from '../../app/features/auth/authThunks';
+import { IsAuthed } from '../../app/features/auth/authSlice';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchId, setSearchId] = useState(''); // 新增搜尋狀態
-  const { isAuth, logout } = useAuth();
+  const isAuth = useSelector(IsAuthed);
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate(); // 用來導向搜尋結果
 
@@ -38,7 +41,7 @@ export default function Navbar() {
   }, [isIndex]); // 加入 isIndex
 
   const handleLogout = () => {
-    logout();
+    dispatch(logoutThunk());
   };
 
   const openLogin = () => {

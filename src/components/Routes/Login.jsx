@@ -6,12 +6,12 @@ import Google_Icon from '../../assets/Google_Icon.png';
 import Logo from '../Tools/Logo';
 import ButtonOutline from '../Tools/ButtonOutline';
 import ButtonPrimary from '../Tools/ButtonPrimary';
-import { useAuth } from '../../contexts/AuthContext';
-
 import { useDispatch, useSelector } from 'react-redux';
+import { loginThunk, logoutThunk } from '../../app/features/auth/authThunks';
+import { IsAuthed } from '../../app/features/auth/authSlice';
 
 export default function Login() {
-  const { isAuth, login, logout } = useAuth();
+  const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
   const toastRef = useRef(null);
   const loginToastRef = useRef(null);
@@ -31,10 +31,9 @@ export default function Login() {
   });
 
   useEffect(() => {
-    const original = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = original;
+      document.body.style.overflow = '';
     };
   }, []);
 
@@ -52,7 +51,7 @@ export default function Login() {
 
   const handleLogin = async (data) => {
     if (isAuth) {
-      logout();
+      await dispatch(logoutThunk());
       return;
     }
 
@@ -62,9 +61,8 @@ export default function Login() {
       return;
     }
 
-    const { success } = await login({ email: data.email, password: data.password });
-
-    if (success) {
+    const action = await dispatch(loginThunk({ email: data.email, password: data.password }));
+    if (loginThunk.fulfilled.match(action)) {
       reset();
       if (toastRef.current) {
         loginToastRef.current = new bootstrap.Toast(toastRef.current);
