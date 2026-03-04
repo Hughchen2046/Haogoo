@@ -8,11 +8,14 @@ import ButtonOutline from '../Tools/ButtonOutline';
 import ButtonPrimary from '../Tools/ButtonPrimary';
 import { useAuth } from '../../contexts/AuthContext';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 export default function Login() {
   const { isAuth, login, logout } = useAuth();
   const navigate = useNavigate();
   const toastRef = useRef(null);
   const loginToastRef = useRef(null);
+  const dispatch = useDispatch();
 
   const {
     register,
