@@ -552,7 +552,7 @@ export default function MarketInfo() {
         // console.log('allData', response.data.data);
         // 取出有 prices 的資料
         const filterData = response.data.data.filter((item) => item.prices.length >= 2);
-        console.log('filterData', filterData);
+        // console.log('filterData', filterData);
 
         let sortData;
         switch (collectionETFTab) {
@@ -669,7 +669,7 @@ export default function MarketInfo() {
               });
             break;
         }
-        console.log('sortData', sortData);
+        // console.log('sortData', sortData);
         setCollectionsETFData(sortData);
       } catch (error) {
         console.error('抓取產業股票資料失敗:', error);

@@ -19,7 +19,7 @@ export default function EtfsList() {
         const data = response.data.data;
         // 過濾有足夠價格資料的 ETF
         const sortSymbol = data.filter((item) => item.prices.length > 3);
-        console.log('ETF 資料:', sortSymbol);
+        // console.log('ETF 資料:', sortSymbol);
         setEtfData(sortSymbol);
       } catch (error) {
         console.error(error);

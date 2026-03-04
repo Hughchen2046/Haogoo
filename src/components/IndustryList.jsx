@@ -172,8 +172,7 @@ export default function IndustryList() {
                   >
                     <ButtonPrimary
                       className="py-12 px-32 round-8"
-                      data-bs-toggle="modal"
-                      data-bs-target="#loginModal"
+                      onClick={() => navigate('/login')}
                     >
                       登入查看更多
                     </ButtonPrimary>

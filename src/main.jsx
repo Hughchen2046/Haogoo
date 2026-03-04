@@ -22,6 +22,11 @@ import MarketInfo from './components/Routes/MarketInfo.jsx';
 import MyWishlist from './components/Routes/MyWishlist.jsx';
 import MystockList from './pages/MystockList.jsx';
 import News from './components/Routes/News.jsx';
+import Login from './components/Routes/Login.jsx';
+import Regist from './components/Routes/Regist.jsx';
+
+import { Provider } from 'react-redux';
+import { store } from './app/store/store.jsx';
 
 const routes = [
   {
@@ -31,6 +36,14 @@ const routes = [
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'regist',
+        element: <Regist />,
       },
       {
         path: 'topics',
@@ -46,7 +59,7 @@ const routes = [
         ],
       },
       {
-        path: '/stockInfo/:id',
+        path: 'stockInfo/:id',
         element: <StockInfo />,
       },
       {
@@ -79,6 +92,8 @@ const router = createHashRouter(routes);
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </AuthProvider>
 );

@@ -41,6 +41,14 @@ export default function Navbar() {
     logout();
   };
 
+  const openLogin = () => {
+    navigate('/login');
+  };
+
+  const openRegist = () => {
+    navigate('/regist');
+  };
+
   const closeOffcanvas = () => {
     const offcanvasElement = document.getElementById('mobileMenu');
     if (offcanvasElement) {
@@ -65,7 +73,7 @@ export default function Navbar() {
         className={`navbar navbar-expand-lg position-fixed top-0 start-0 end-0 p-12 py-lg-16 font-zh-tw transition-all ${
           isScrolled ? 'navbar-scrolled' : ''
         }`}
-        style={{ zIndex: 9999 }}
+        style={{ zIndex: 500 }}
         data-bs-theme="dark"
       >
         <div className="container d-flex gap-md-48 justify-content-between px-0 ">
@@ -75,8 +83,7 @@ export default function Navbar() {
 
           <ButtonPrimary
             className="w-auto py-10 px-24 d-lg-none"
-            data-bs-toggle={isAuth ? '' : 'modal'}
-            data-bs-target={isAuth ? '' : '#registModal'}
+            onClick={isAuth ? undefined : openRegist}
           >
             {isAuth ? '使用者資料' : '免費註冊'}
           </ButtonPrimary>
@@ -123,8 +130,7 @@ export default function Navbar() {
               ) : (
                 <button
                   className={`nav-link btn btn-link ${navLinkColor} py-10 px-16 border-0 shadow-none`}
-                  data-bs-toggle="modal"
-                  data-bs-target="#loginModal"
+                  onClick={openLogin}
                 >
                   登入
                 </button>
@@ -132,8 +138,7 @@ export default function Navbar() {
             </li>
             <ButtonPrimary
               className="w-auto py-10 px-32"
-              data-bs-toggle={isAuth ? '' : 'modal'}
-              data-bs-target={isAuth ? '' : '#registModal'}
+              onClick={isAuth ? undefined : openRegist}
             >
               {isAuth ? '使用者資料' : '免費註冊'}
             </ButtonPrimary>
@@ -230,18 +235,20 @@ export default function Navbar() {
           ) : (
             <ButtonOutline
               className="py-10 px-32"
-              data-bs-toggle="modal"
-              data-bs-target="#loginModal"
-              onClick={closeOffcanvas}
+              onClick={() => {
+                closeOffcanvas();
+                openLogin();
+              }}
             >
               登入
             </ButtonOutline>
           )}
           <ButtonPrimary
             className="py-10 px-32 mb-24"
-            data-bs-toggle="modal"
-            data-bs-target="#registModal"
-            onClick={closeOffcanvas}
+            onClick={() => {
+              closeOffcanvas();
+              openRegist();
+            }}
           >
             免費註冊
           </ButtonPrimary>
