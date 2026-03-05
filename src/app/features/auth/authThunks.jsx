@@ -42,7 +42,6 @@ export const registerThunk = createAsyncThunk(
     try {
       const payload = await registAPI(formData);
 
-      // 看你註冊 API 是否也回 token+user（如果有＝註冊完自動登入）
       if (payload?.success && payload?.data?.accessToken) {
         const { token, user } = authResponse(payload);
         authStorage.setToken(token);
@@ -69,20 +68,22 @@ export const checkThunk = createAsyncThunk(
       const token = authStorage.getToken();
       if (!token) return { token: null, user: null };
 
-      // 如果你沒有 check endpoint，可以先直接回 {token} 當作已登入
-      // 但正式版建議一定要打 check，避免過期 token 假登入
       const payload = await checkAPI();
 
-      // check 回傳格式不一定跟 login 一樣，所以分兩種：
-      // A) 也回 {success,data:{user}} → 就取 user
-      // B) 只回 ok/user → 你自己微調
       if (payload?.success === false) throw new Error(payload?.message || 'check failed');
 
       const user = payload?.data?.user ?? payload?.user ?? null;
       return { token, user };
     } catch (err) {
-      authStorage.clearToken();
-      return rejectWithValue(err?.message || 'check failed');
+      const status = err?.response?.status;
+      const isUnauthorized = status === 401 || status === 403;
+
+      if (isUnauthorized) {
+        // 只有 token 明確失效才清
+        authStorage.clearToken();
+        return rejectWithValue('unauthorized');
+      }
+      return rejectWithValue('temporary_check_error');
     } finally {
       dispatch(loadingStopped());
     }

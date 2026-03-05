@@ -82,8 +82,10 @@ export default function DividendPolicy({ stockId }) {
       return cash > 0 && d.CashExDividendTradingDate;
     });
     // console.log('有效股利資料', validDividend);
+    // console.log('sort', sortedPriceData);
 
     // ===== 填息計算 =====
+    // 證交所在除息日前一日,按該公司當天收盤價減除息值,做為除息日之除息參考價,並據以產生開盤競價基準及計算漲跌停板價格
     let successCount = 0;
     let totalDays = 0;
     const fillValid = validDividend.forEach((div) => {
@@ -92,18 +94,22 @@ export default function DividendPolicy({ stockId }) {
       const previousDay = [...sortedPriceData]
         .reverse()
         .find((p) => new Date(p.date) < new Date(exDate));
+      // console.log('除息日前一交易日', previousDay);
 
       if (!previousDay) return;
 
-      const targetPrice = previousDay.close;
+      const targetPrice = previousDay.close - div.CashEarningsDistribution;
+      // console.log('除息參考價', targetPrice);
 
       const fillDay = sortedPriceData.find(
         (p) => new Date(p.date) >= new Date(exDate) && Number(p.close) >= Number(targetPrice)
       );
+      // console.log('填息日', fillDay);
 
       if (fillDay) {
         successCount++;
         const days = (new Date(fillDay.date) - new Date(exDate)) / (1000 * 60 * 60 * 24);
+        // console.log('成功填息', { exDate, fillDate: fillDay.date, days });
         totalDays += days;
       }
     });

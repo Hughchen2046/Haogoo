@@ -6,6 +6,9 @@ import ButtonPrimary from './Tools/ButtonPrimary';
 import { useSelector } from 'react-redux';
 import { IsAuthed } from '../app/features/auth/authSlice';
 
+import { useDispatch } from 'react-redux';
+import { loadingStarted, loadingStopped, loadingReset } from '../app/features/loading/loadingSlice';
+
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Grid, Navigation } from 'swiper/modules';
@@ -21,17 +24,19 @@ export default function IndustryList() {
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
   const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // 取得產業與股票資料
   useEffect(() => {
     const baseURL = import.meta.env.VITE_API_BASE;
+    dispatch(loadingStarted({ status: 'home.global' }));
 
     fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`)
       .then((res) => res.json())
       .then((data) => setSymbols(data.data))
       .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
+      .finally(() => dispatch(loadingStopped({ status: 'home.global' })));
+  }, [dispatch]);
 
   // 取得 CSS 主色
   useEffect(() => {
@@ -48,26 +53,11 @@ export default function IndustryList() {
     groups.push(safeSymbols.slice(i, i + 2));
   }
 
-  if (loading) {
-    return (
-      <section>
-        <div
-          className="container py-64 py-md-96 d-flex justify-content-center align-items-center"
-          style={{ minHeight: '300px' }}
-        >
-          <BeatLoader color={primaryColor} size={15} />
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section>
       <div className="container py-64 py-md-96 font-zh-tw">
         <h3 className="h2-md mb-8">精選產業</h3>
-        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">
-          Featured Industries
-        </h2>
+        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">Featured Industries</h2>
 
         <Swiper
           modules={[Pagination, Grid, Navigation]}
@@ -96,7 +86,7 @@ export default function IndustryList() {
 
               if (!latest || !past) return null;
 
-              return ((latest - past) / past * 100).toFixed(2);
+              return (((latest - past) / past) * 100).toFixed(2);
             });
 
             const shouldBlur = !isAuth && index >= 1;

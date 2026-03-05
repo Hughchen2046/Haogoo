@@ -65,7 +65,7 @@ const AllIndexChart = ({ indexId = 't24' }) => {
         return !isNaN(p.value) && p.time;
       });
 
-    console.log('有效資料數:', formattedPoints.length);
+    // console.log('有效資料數:', formattedPoints.length);
     // console.log('圖表模式:', chartMode);
 
     if (formattedPoints.length === 0) return;

@@ -9,7 +9,7 @@ export const api = axios.create({
 // 每次送 request，自動把 token 塞進 header
 api.interceptors.request.use((config) => {
     const token = authStorage.getToken();
-    if (token) config.headers.Authorization = token;
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
 });
 
