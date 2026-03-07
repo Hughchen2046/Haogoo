@@ -1,7 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import * as bootstrap from 'bootstrap';
 import Google_Icon from '../../assets/Google_Icon.png';
 import Logo from '../Tools/Logo';
 import ButtonOutline from '../Tools/ButtonOutline';
@@ -13,8 +12,6 @@ import { IsAuthed } from '../../app/features/auth/authSlice';
 export default function Login() {
   const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
-  const toastRef = useRef(null);
-  const loginToastRef = useRef(null);
   const dispatch = useDispatch();
 
   const {
@@ -63,19 +60,12 @@ export default function Login() {
 
     const action = await dispatch(loginThunk({ email: data.email, password: data.password }));
     if (loginThunk.fulfilled.match(action)) {
-      reset();
-      if (toastRef.current) {
-        loginToastRef.current = new bootstrap.Toast(toastRef.current);
-        loginToastRef.current.show();
+      if (window.history.length > 1) {
+        navigate(-1);
+        return;
       }
-      setTimeout(() => {
-        loginToastRef.current?.hide();
-        if (window.history.length > 1) {
-          navigate(-1);
-          return;
-        }
-        navigate('/');
-      }, 1000);
+      navigate('/');
+      reset();
     } else {
       setError('email', { type: 'manual', message: '帳號輸入錯誤，請重新輸入' });
       setError('password', { type: 'manual', message: '密碼輸入錯誤，請重新輸入' });
@@ -109,28 +99,6 @@ export default function Login() {
               <img src={Google_Icon} className="me-8 icon-24" alt="Google-icon" />
               <h6 className="m-0">使用 Google 帳號快速登入</h6>
             </ButtonOutline>
-
-            <div className="w-100 position-relative">
-              <p className="caption">或</p>
-              <div
-                role="alert"
-                aria-live="assertive"
-                aria-atomic="true"
-                className="toast font-zh-tw round-12 overflow-hidden position-absolute z-2 w-100 top-0 start-50 translate-middle-x"
-                ref={toastRef}
-              >
-                <div className="toast-header bg-primary text-white">
-                  <strong className="me-auto">HaoGoo</strong>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="toast"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div className="toast-body bg-gray-100 py-24">登入成功</div>
-              </div>
-            </div>
 
             <div className="w-100">
               <h6 className="text-start mb-8">帳號</h6>

@@ -7,6 +7,8 @@ import { Search, Menu, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutThunk } from '../../app/features/auth/authThunks';
 import { IsAuthed } from '../../app/features/auth/authSlice';
+import SearchStock from '../Tools/SearchStock';
+import axios from 'axios';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,6 +17,8 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate(); // 用來導向搜尋結果
+  const StockUrl = import.meta.env.VITE_stocksUrl;
+  const [symbols, setSymbols] = useState([]);
 
   const isIndex = location.pathname === '/';
 
@@ -26,6 +30,12 @@ export default function Navbar() {
     : isIndex
       ? 'bg-gray-50 text-gray-200 placeholder-gray-200'
       : 'bg-gray-400 text-gray-800 placeholder-gray-800';
+  const navSearchBigScreen =
+    'placeHover-WH font-weight-light border-0 round-8 py-12 ps-24 pe-16 shadow-none';
+  const navSearchSmallScreen =
+    'placeHover-BK bg-gray-400 text-gray-800 font-weight-light placeholder-gray-800 border-0 round-8 py-12 ps-24 pe-16 shadow-none';
+  const navSearchBarBigScreen = 'text-white';
+  const navSearchBarSmallScreen = 'text-gray-900';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,7 +79,27 @@ export default function Navbar() {
       closeOffcanvas(); // 如果是小螢幕，關閉側邊欄
     }
   };
+  const getDatas = async () => {
+    try {
+      const response = await axios.get(StockUrl);
+      const rawData = Array.isArray(response?.data?.data) ? response.data.data : [];
+      const filteredData = rawData.filter(
+        (item) => Array.isArray(item?.prices) && item.prices.length > 0
+      );
+      const mapFilteredData = filteredData.map((item) => ({
+        symbol: item.id,
+        name: item.name,
+      }));
+      setSymbols(mapFilteredData);
+      // console.log('股票資料:', mapFilteredData);
+    } catch (error) {
+      console.error('獲取股票資料失敗:', error);
+    }
+  };
 
+  useEffect(() => {
+    getDatas();
+  }, []);
   return (
     <>
       <nav
@@ -84,6 +114,7 @@ export default function Navbar() {
             <Logo className={`nav-logo ${navLogoColor}`} />
           </NavLink>
 
+          {/* 註冊/使用者資料按鈕 */}
           <ButtonPrimary
             className="w-auto py-10 px-24 d-lg-none"
             onClick={isAuth ? undefined : openRegist}
@@ -92,13 +123,25 @@ export default function Navbar() {
           </ButtonPrimary>
 
           {/* 大螢幕搜尋框 */}
-          <form
+          <div className="w-100 d-none d-lg-block">
+            <SearchStock
+              symbols={symbols}
+              onSelect={(item) => {
+                // console.log('你選到的股票:', item);
+                navigate(`/stockInfo/${item.symbol}`);
+              }}
+              navSearchColor={navSearchColor}
+              navSearchScreen={navSearchBigScreen}
+              navSearchBarScreen={navSearchBarBigScreen}
+            />
+          </div>
+          {/* <form
             className="d-none position-relative d-lg-flex w-100"
             onSubmit={handleSearch} // form submit 導向
           >
             <input
               type="text"
-              className={`form-control ${navSearchColor} font-weight-light border-0 round-8 py-12 ps-24 pe-16 shadow-none`}
+              className={`form-control ${navSearchColor} placeHover-WH font-weight-light border-0 round-8 py-12 ps-24 pe-16 shadow-none`}
               placeholder="輸入台/美股代號，查看公司價值"
               value={searchId}
               onChange={(e) => setSearchId(e.target.value)}
@@ -109,8 +152,9 @@ export default function Navbar() {
             >
               <Search size={24} className={navLinkColor} />
             </button>
-          </form>
+          </form> */}
 
+          {/* 大螢幕導覽 */}
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
             <li className="nav-item d-flex flex-column justify-content-center align-items-center">
               <NavLink className={`nav-link py-10 px-16 ${navLinkColor}`} to="/mystocklist">
@@ -139,14 +183,12 @@ export default function Navbar() {
                 </button>
               )}
             </li>
-            <ButtonPrimary
-              className="w-auto py-10 px-32"
-              onClick={isAuth ? undefined : openRegist}
-            >
+            <ButtonPrimary className="w-auto py-10 px-32" onClick={isAuth ? undefined : openRegist}>
               {isAuth ? '使用者資料' : '免費註冊'}
             </ButtonPrimary>
           </ul>
 
+          {/* 漢堡按鈕 */}
           <button
             className="navbar-toggler border-0"
             type="button"
@@ -177,10 +219,22 @@ export default function Navbar() {
         </div>
 
         {/* 小螢幕搜尋框 */}
-        <form className="position-relative mb-40 px-12" onSubmit={handleSearch}>
+        <div className="mb-40 px-12">
+          <SearchStock
+            symbols={symbols}
+            onSelect={(item) => {
+              // console.log('你選到的股票:', item);
+              navigate(`/stockInfo/${item.symbol}`);
+            }}
+            navSearchColor={navSearchColor}
+            navSearchScreen={navSearchSmallScreen}
+            navSearchBarScreen={navSearchBarSmallScreen}
+          />
+        </div>
+        {/* <form className="position-relative mb-40 px-12" onSubmit={handleSearch}>
           <input
             type="text"
-            className="form-control bg-gray-400 text-gray-800 font-weight-light placeholder-gray-800 border-0 round-8 py-12 ps-24 pe-16 shadow-none"
+            className="form-control placeHover-BK bg-gray-400 text-gray-800 font-weight-light placeholder-gray-800 border-0 round-8 py-12 ps-24 pe-16 shadow-none"
             placeholder="輸入台/美股代號，查看公司價值"
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
@@ -191,7 +245,7 @@ export default function Navbar() {
           >
             <Search size={24} />
           </button>
-        </form>
+        </form> */}
 
         {/* 小螢幕選單 */}
         <ul className="navbar-nav font-zh-tw text-center gap-24 h6 px-12">
@@ -211,15 +265,6 @@ export default function Navbar() {
               onClick={closeOffcanvas}
             >
               熱門話題
-            </NavLink>
-          </li>
-          <li className="nav-item py-10 px-16">
-            <NavLink
-              to="/test"
-              className="text-decoration-none text-gray-900"
-              onClick={closeOffcanvas}
-            >
-              GuideLine
             </NavLink>
           </li>
         </ul>

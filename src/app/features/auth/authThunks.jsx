@@ -5,12 +5,15 @@ import { loadingStarted, loadingStopped } from '../loading/loadingSlice';
 import { pushMessage } from '../message/messageSlice';
 
 function authResponse(payload) {
-  // payload = { success, message, data: { accessToken, user } }
-  if (!payload?.success) {
+  // payload may be wrapped as { success, message, data: { accessToken, user } }
+  const data = payload?.data ?? payload ?? {};
+  const token = data?.accessToken || null;
+  const user = data?.user || null;
+
+  if (!token) {
     throw new Error(payload?.message || 'API failed');
   }
-  const token = payload?.data?.accessToken || null;
-  const user = payload?.data?.user || null;
+
   return { token, user };
 }
 
@@ -20,14 +23,24 @@ export const loginThunk = createAsyncThunk(
     dispatch(loadingStarted());
     try {
       const payload = await loginAPI(formData);
+      // console.log('[loginThunk] payload:', payload);
       const { token, user } = authResponse(payload);
+      // console.log('[loginThunk] token:', token);
 
       authStorage.setToken(token);
 
-      dispatch(pushMessage({ type: 'success', text: '登入成功' }));
+      dispatch(
+        pushMessage({
+          type: 'success',
+          title: '登入成功',
+          timer: 3000,
+          backdrop: `rgba(0,0,123,0.4) no-repeat`,
+        })
+      );
       return { token, user };
     } catch (err) {
-      dispatch(pushMessage({ type: 'error', text: '登入失敗' }));
+      console.error('[loginThunk] error:', err);
+      console.error('[loginThunk] err.response:', err?.response?.data);
       return rejectWithValue(err?.message || 'login failed');
     } finally {
       dispatch(loadingStopped());
@@ -42,17 +55,10 @@ export const registerThunk = createAsyncThunk(
     try {
       const payload = await registAPI(formData);
 
-      if (payload?.success && payload?.data?.accessToken) {
-        const { token, user } = authResponse(payload);
-        authStorage.setToken(token);
-        dispatch(pushMessage({ type: 'success', text: '註冊成功，已自動登入' }));
-        return { token, user };
-      }
-
-      dispatch(pushMessage({ type: 'success', text: '註冊成功' }));
+      dispatch(pushMessage({ type: 'success', title: '註冊成功，請登入' }));
       return { token: null, user: null };
     } catch (err) {
-      dispatch(pushMessage({ type: 'error', text: '註冊失敗' }));
+      dispatch(pushMessage({ type: 'error', title: '註冊失敗' }));
       return rejectWithValue(err?.message || 'register failed');
     } finally {
       dispatch(loadingStopped());
@@ -94,7 +100,7 @@ export const logoutThunk = createAsyncThunk('auth/logout', async (_, { dispatch 
   dispatch(loadingStarted());
   try {
     authStorage.clearToken();
-    dispatch(pushMessage({ type: 'info', text: '已登出' }));
+    dispatch(pushMessage({ type: 'info', title: '已登出' }));
     return true;
   } finally {
     dispatch(loadingStopped());

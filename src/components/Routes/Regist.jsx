@@ -1,7 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import * as bootstrap from 'bootstrap';
 import { useDispatch } from 'react-redux';
 import Logo from '../Tools/Logo';
 import ButtonPrimary from '../Tools/ButtonPrimary';
@@ -10,12 +9,11 @@ import { registerThunk } from '../../app/features/auth/authThunks';
 export default function Regist() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const toastRef = useRef(null);
-  const registToastRef = useRef(null);
 
   const {
     register,
     handleSubmit,
+    reset,
     setError,
     clearErrors,
     formState: { errors },
@@ -54,14 +52,8 @@ export default function Regist() {
 
     const action = await dispatch(registerThunk(submitData));
     if (registerThunk.fulfilled.match(action)) {
-      if (toastRef.current) {
-        registToastRef.current = new bootstrap.Toast(toastRef.current);
-        registToastRef.current.show();
-      }
-      setTimeout(() => {
-        registToastRef.current?.hide();
-        navigate('/login', { replace: true });
-      }, 1000);
+      navigate('/login', { replace: true });
+      reset();
       return;
     }
 
@@ -186,24 +178,6 @@ export default function Regist() {
                 我同意服務條款與隱私政策
               </label>
               {errors.terms && <div className="invalid-feedback">{errors.terms.message}</div>}
-              <div
-                role="alert"
-                aria-live="assertive"
-                aria-atomic="true"
-                className="toast font-zh-tw round-12 overflow-hidden position-absolute top-0 start-50 translate-middle-x"
-                ref={toastRef}
-              >
-                <div className="toast-header bg-primary text-white">
-                  <strong className="me-auto">HaoGoo</strong>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="toast"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div className="toast-body bg-gray-100">註冊成功，請直接登入</div>
-              </div>
             </div>
 
             <ButtonPrimary type="submit" className="py-12 px-40 round-8">

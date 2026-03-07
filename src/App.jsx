@@ -3,6 +3,7 @@ import Home from './components/Routes/Home';
 import { useLocation, useOutlet } from 'react-router-dom';
 import Navbar from './components/Routes/Navbar';
 import Footer from './components/Routes/Footer';
+import SweetAlert from './components/Tools/SweetAlert';
 
 function App() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function App() {
       {pageContent}
       <Footer />
       {isAuthState && outlet}
+      <SweetAlert />
     </>
   );
 }

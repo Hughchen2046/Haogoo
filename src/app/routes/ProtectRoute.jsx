@@ -9,10 +9,10 @@ export default function ProtectRoute() {
   const dispatch = useDispatch();
   const authStatus = useSelector(AuthStatus);
   const isAuthed = useSelector(IsAuthed);
-  console.log('authStatus:', authStatus, 'isAuthed:', isAuthed);
+  // console.log('authStatus:', authStatus, 'isAuthed:', isAuthed);
 
   useEffect(() => {
-    console.log('authStatus:', authStatus, 'isAuthed:', isAuthed);
+    // console.log('authStatus:', authStatus, 'isAuthed:', isAuthed);
     if (authStatus === 'idle') {
       dispatch(checkThunk());
     }

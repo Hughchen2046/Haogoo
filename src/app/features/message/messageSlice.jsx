@@ -11,13 +11,16 @@ const messageSlice = createSlice({
         state.items.push(action.payload);
       },
       prepare: ({
-        type = 'info',          // 'success' | 'error' | 'warning' | 'info' | 'question'
-        title = '',             // SweetAlert title
-        text = '',              // SweetAlert text
-        timer = 2000,           // ms，0/undefined 表示不自動關
-        icon = 'question',
-        position = 'center',   // 'top' | 'top-end' | ...
-        showConfirmButton = false,
+        type = 'info', // 'success' | 'error' | 'warning' | 'info' | 'question'
+        title = '',
+        text = '',
+        timer = 2000,
+        icon = '',
+        position = 'center', // 'top' | 'top-end' | ...
+        width = '',
+        color = '',
+        backdrop = '',
+        showConfirmButton = true,
         timerProgressBar = true,
         allowOutsideClick = true,
       } = {}) => ({
@@ -29,6 +32,9 @@ const messageSlice = createSlice({
           timer,
           icon,
           position,
+          width,
+          color,
+          backdrop,
           showConfirmButton,
           timerProgressBar,
           allowOutsideClick,
