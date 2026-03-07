@@ -84,7 +84,7 @@ export default function Navbar() {
       const response = await axios.get(StockUrl);
       const rawData = Array.isArray(response?.data?.data) ? response.data.data : [];
       const filteredData = rawData.filter(
-        (item) => Array.isArray(item?.prices) && item.prices.length > 0
+        (item) => Array.isArray(item?.prices) && item.prices.length > 3
       );
       const mapFilteredData = filteredData.map((item) => ({
         symbol: item.id,
