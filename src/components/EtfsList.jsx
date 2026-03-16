@@ -6,8 +6,7 @@ import Mixed from './Tools/Mixed';
 import { useNavigate } from 'react-router-dom';
 
 import { useDispatch } from 'react-redux';
-import { loadingStarted, loadingStopped, loadingReset } from '../app/features/loading/loadingSlice';
-
+import { loadingStarted, loadingStopped } from '../app/features/loading/loadingSlice';
 
 export default function EtfsList() {
   const containerRef = useRef(null);
@@ -15,7 +14,7 @@ export default function EtfsList() {
   const ETF_URL = import.meta.env.VITE_ETF_symbolsUrl;
   const [etfData, setEtfData] = useState([]);
   const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getEtfs = async () => {

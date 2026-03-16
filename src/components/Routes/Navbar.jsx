@@ -12,7 +12,6 @@ import axios from 'axios';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [searchId, setSearchId] = useState(''); // 新增搜尋狀態
   const isAuth = useSelector(IsAuthed);
   const dispatch = useDispatch();
   const location = useLocation();
@@ -70,15 +69,6 @@ export default function Navbar() {
     }
   };
 
-  // 新增：搜尋按鈕或 Enter 鍵事件
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchId.trim() !== '') {
-      navigate(`/stockInfo/${searchId.trim()}`);
-      setSearchId(''); // 清空輸入框
-      closeOffcanvas(); // 如果是小螢幕，關閉側邊欄
-    }
-  };
   const getDatas = async () => {
     try {
       const response = await axios.get(StockUrl);
@@ -135,24 +125,6 @@ export default function Navbar() {
               navSearchBarScreen={navSearchBarBigScreen}
             />
           </div>
-          {/* <form
-            className="d-none position-relative d-lg-flex w-100"
-            onSubmit={handleSearch} // form submit 導向
-          >
-            <input
-              type="text"
-              className={`form-control ${navSearchColor} placeHover-WH font-weight-light border-0 round-8 py-12 ps-24 pe-16 shadow-none`}
-              placeholder="輸入台/美股代號，查看公司價值"
-              value={searchId}
-              onChange={(e) => setSearchId(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="position-absolute end-0 top-50 translate-middle-y me-12 text-white bg-transparent border-0"
-            >
-              <Search size={24} className={navLinkColor} />
-            </button>
-          </form> */}
 
           {/* 大螢幕導覽 */}
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
@@ -231,21 +203,6 @@ export default function Navbar() {
             navSearchBarScreen={navSearchBarSmallScreen}
           />
         </div>
-        {/* <form className="position-relative mb-40 px-12" onSubmit={handleSearch}>
-          <input
-            type="text"
-            className="form-control placeHover-BK bg-gray-400 text-gray-800 font-weight-light placeholder-gray-800 border-0 round-8 py-12 ps-24 pe-16 shadow-none"
-            placeholder="輸入台/美股代號，查看公司價值"
-            value={searchId}
-            onChange={(e) => setSearchId(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="position-absolute end-0 top-50 translate-middle-y me-12 text-gray-800 bg-transparent border-0"
-          >
-            <Search size={24} />
-          </button>
-        </form> */}
 
         {/* 小螢幕選單 */}
         <ul className="navbar-nav font-zh-tw text-center gap-24 h6 px-12">

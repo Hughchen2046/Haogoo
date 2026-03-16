@@ -55,6 +55,9 @@ export const registerThunk = createAsyncThunk(
     try {
       const payload = await registAPI(formData);
 
+      // json-server-auth 回傳新使用者的 accessToken，由於現在自選股初始化已經移至 WishlistContext，此處不需要再處理。
+      // const newUserId = payload?.data?.user?.id ?? payload?.user?.id ?? null;
+
       dispatch(pushMessage({ type: 'success', title: '註冊成功，請登入' }));
       return { token: null, user: null };
     } catch (err) {

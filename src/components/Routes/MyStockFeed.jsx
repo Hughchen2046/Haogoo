@@ -2,11 +2,25 @@ import { useState } from 'react';
 import { useParams, NavLink, useLocation, Outlet } from 'react-router-dom';
 import { ChevronUp, ChevronDown, ChevronRight } from 'lucide-react';
 import { MyStockList } from '../../contexts/Topics';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { authUser } from '../../app/features/auth/authSlice';
+import { useWishlist } from '../../contexts/WishlistContext';
 
 export default function MyStockFeed() {
   const { mystockSlug } = useParams();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
+  const user = useSelector(authUser);
+  const { getWishlist } = useWishlist();
+
+  // 進入此路由區塊時，確保自選股資料已載入
+  useEffect(() => {
+    if (user?.id) {
+      getWishlist(user.id);
+    }
+  }, [user?.id, getWishlist]);
 
   const slug = mystockSlug || pathname.split('/').pop();
   const currentTopic =

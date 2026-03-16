@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'; // Components & Icons
-import TradingViewChart from '../components/Tools/TradingChart1';
-
-import Navbar from '../components/Routes/Navbar';
-import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectWatchedSet } from '../app/features/wishlist/wishlistSelectors';
+import { toggleStockThunk } from '../app/features/wishlist/wishlistThunks';
+import { authUser } from '../app/features/auth/authSlice';
+import { pushMessage } from '../app/features/message/messageSlice';
 
 // Swiper & Styles
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -17,8 +18,33 @@ export default function MystockList() {
   const tabs = ['我的好股', '精選與行情'];
   // 記錄藥丸按鈕目前選哪一個
   const [marketTab, setMarketTab] = useState('加權指數');
-  // 建立一個狀態來記錄愛心是否為實心
-  const [liked, setLiked] = useState(false);
+  const dispatch = useDispatch();
+  const watchedSet = useSelector(selectWatchedSet);
+  const user = useSelector(authUser);
+
+  // 收藏按鈕組件方便複用
+  const WishlistHeart = ({ symbol }) => {
+    const active = watchedSet.has(symbol);
+    const handleToggle = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!user) {
+        dispatch(pushMessage({ type: 'error', title: '請先登入後再收藏', timer: 3000 }));
+        return;
+      }
+      dispatch(toggleStockThunk(symbol));
+    };
+    return (
+      <Heart
+        size={20}
+        strokeWidth={active ? 0 : 2}
+        fill={active ? 'var(--bs-primary)' : 'none'}
+        className={`heart-icon ${active ? 'active' : ''}`}
+        style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+        onClick={handleToggle}
+      />
+    );
+  };
   // 對應 TradingView 的代號
   const symbolMap = {
     加權指數: 'TWSE:TAIEX',
@@ -329,11 +355,7 @@ export default function MystockList() {
                         <td>15,432</td>
                         {/* 收藏按鈕 */}
                         <td>
-                          <i
-                            className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                            onClick={() => setLiked(!liked)}
-                            style={{ cursor: 'pointer' }}
-                          ></i>
+                          <WishlistHeart symbol="2330" />
                         </td>
                       </tr>
                       <tr className="h6">
@@ -351,11 +373,7 @@ export default function MystockList() {
                         <td>3,458</td>
                         {/* 收藏按鈕 */}
                         <td>
-                          <i
-                            className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                            onClick={() => setLiked(!liked)}
-                            style={{ cursor: 'pointer' }}
-                          ></i>
+                          <WishlistHeart symbol="2338" />
                         </td>
                       </tr>
                       <tr className="h6">
@@ -373,11 +391,7 @@ export default function MystockList() {
                         <td>37,136</td>
                         {/* 收藏按鈕 */}
                         <td>
-                          <i
-                            className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                            onClick={() => setLiked(!liked)}
-                            style={{ cursor: 'pointer' }}
-                          ></i>
+                          <WishlistHeart symbol="2342" />
                         </td>
                       </tr>
                       <tr className="h6">
@@ -395,11 +409,7 @@ export default function MystockList() {
                         <td>287,387</td>
                         {/* 收藏按鈕 */}
                         <td>
-                          <i
-                            className={`bi ${liked ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-                            onClick={() => setLiked(!liked)}
-                            style={{ cursor: 'pointer' }}
-                          ></i>
+                          <WishlistHeart symbol="2408" />
                         </td>
                       </tr>
                     </tbody>

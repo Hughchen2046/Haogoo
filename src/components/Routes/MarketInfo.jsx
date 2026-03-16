@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import TaiwanIndexChart from '../Tools/TaiwanIndexChart';
-import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronDown, ChevronUp, Heart } from 'lucide-react';
 import axios from 'axios';
 import AllIndexChart from '../Tools/AllIndexChart';
 import StockTable from '../Tools/StockTable';
@@ -11,6 +11,9 @@ import dayjs from 'dayjs';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { loadingStarted, loadingStopped } from '../../app/features/loading/loadingSlice';
+import { authUser } from '../../app/features/auth/authSlice';
+import { useWishlist } from '../../contexts/WishlistContext';
+import WishlistHeart from '../Tools/WishlistHeart';
 
 const API_URL = import.meta.env.VITE_stocksUrl;
 const symbol_URL = import.meta.env.VITE_symbolsUrl;
@@ -50,9 +53,7 @@ export default function MarketInfo() {
     }
   }, [location]);
 
-  // 建立一個狀態來記錄愛心是否為實心
-  const [liked, setLiked] = useState(false);
-  // 記錄藥丸按鈕目前選哪一個
+  // 市場分析相關
   const [marketTab, setMarketTab] = useState('加權指數');
   const [industryTab, setIndustryTab] = useState('水泥工業');
   const [collectionTab, setCollectionTab] = useState('即時排行');
@@ -492,7 +493,6 @@ export default function MarketInfo() {
                   prices[prices.length - 1].id - prices.find((item) => item.date === lastyear).id;
                 // console.log('length', lengh);
                 const yearPrices = prices.slice(-Math.floor(Math.abs(lengh / 2))); // 約半年的交易日
-                const maxVolume = Math.max(...yearPrices.map((p) => p.volume));
 
                 return {
                   ...stock,

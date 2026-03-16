@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
 import { useSelector } from 'react-redux';
 import { IsAuthed } from '../app/features/auth/authSlice';
 
 import { useDispatch } from 'react-redux';
-import { loadingStarted, loadingStopped, loadingReset } from '../app/features/loading/loadingSlice';
+import { loadingStarted, loadingStopped } from '../app/features/loading/loadingSlice';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -20,8 +19,6 @@ import 'swiper/css/navigation';
 
 export default function IndustryList() {
   const [symbols, setSymbols] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [primaryColor, setPrimaryColor] = useState('#0d6efd');
   const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,14 +34,6 @@ export default function IndustryList() {
       .catch((err) => console.error(err))
       .finally(() => dispatch(loadingStopped({ status: 'home.global' })));
   }, [dispatch]);
-
-  // 取得 CSS 主色
-  useEffect(() => {
-    const color = getComputedStyle(document.documentElement)
-      .getPropertyValue('--bs-primary')
-      .trim();
-    if (color) setPrimaryColor(color);
-  }, []);
 
   // 每 2 筆 symbols 組成一張卡
   const groups = [];

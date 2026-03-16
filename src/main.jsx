@@ -7,7 +7,7 @@ import Test from './components/Routes/Test';
 import Nopages from './components/Routes/Nopages';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import StockInfo from './pages/StockInfo.jsx';
-import { Topics } from './contexts/Topics';
+import { WishlistProvider } from './contexts/WishlistContext';
 import TopicFeedPage from './components/Routes/TopicFeedPage';
 import TopicETF from './components/Routes/TopicETF.jsx';
 import TopicAll from './components/Routes/TopicAll.jsx';
@@ -101,6 +101,8 @@ const router = createHashRouter(routes);
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <RouterProvider router={router} />
+    <WishlistProvider>
+      <RouterProvider router={router} />
+    </WishlistProvider>
   </Provider>
 );
