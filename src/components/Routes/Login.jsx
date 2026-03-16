@@ -35,10 +35,6 @@ export default function Login() {
   }, []);
 
   const handleCancel = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
     navigate('/');
   };
 

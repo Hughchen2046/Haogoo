@@ -1,4 +1,5 @@
 import ButtonOutline from '../Tools/ButtonOutline';
+import { NavLink } from 'react-router-dom';
 
 export default function Header() {
   return (
@@ -15,9 +16,11 @@ export default function Header() {
               <h6 className="text-gray-200 h5-md mb-24 mb-md-32">
                 不再讓投資成為生活的另一個壓力來源
               </h6>
-              <ButtonOutline type="button" className="w-auto h6 py-10 py-md-12 px-16 px-md-40">
-                建立我的好股
-              </ButtonOutline>
+              <NavLink to="/mystocklist/mywishlist">
+                <ButtonOutline type="button" className="w-auto h6 py-10 py-md-12 px-16 px-md-40">
+                  建立我的好股
+                </ButtonOutline>
+              </NavLink>
             </div>
           </div>
         </div>
