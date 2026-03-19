@@ -5,28 +5,35 @@ import axios from 'axios';
 import Mixed from './Tools/Mixed';
 import { useNavigate } from 'react-router-dom';
 
+import { useDispatch } from 'react-redux';
+import { loadingStarted, loadingStopped } from '../app/features/loading/loadingSlice';
+
 export default function EtfsList() {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: false, amount: 0.5 });
   const ETF_URL = import.meta.env.VITE_ETF_symbolsUrl;
   const [etfData, setEtfData] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getEtfs = async () => {
+      dispatch(loadingStarted({ status: 'home.global' }));
       try {
         const response = await axios.get(`${ETF_URL}`);
         const data = response.data.data;
         // 過濾有足夠價格資料的 ETF
         const sortSymbol = data.filter((item) => item.prices.length > 3);
-        console.log('ETF 資料:', sortSymbol);
+        // console.log('ETF 資料:', sortSymbol);
         setEtfData(sortSymbol);
       } catch (error) {
         console.error(error);
+      } finally {
+        dispatch(loadingStopped({ status: 'home.global' }));
       }
     };
     getEtfs();
-  }, []);
+  }, [dispatch]);
 
   // 處理標籤點擊,導航到股票頁面
   const handleTagClick = (stockId) => {

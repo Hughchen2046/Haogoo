@@ -16,7 +16,11 @@
     "update-db": "node scripts/fetch-db.cjs sync"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@popperjs/core": "^2.11.8",
+    "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
@@ -39,9 +43,12 @@
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.71.1",
+    "react-redux": "^9.2.0",
     "react-router": "^7.11.0",
     "react-router-dom": "^7.12.0",
     "react-spinners": "^0.17.0",
+    "sweetalert2": "^11.26.21",
+    "sweetalert2-react-content": "^5.1.1",
     "swiper": "^12.0.3"
   },
   "devDependencies": {

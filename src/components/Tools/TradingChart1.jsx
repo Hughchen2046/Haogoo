@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
  *
  * 2. Pane - 圖表面板/窗格（用於分隔不同指標）
  *    - Props: stretchFactor (面板高度比例，數字越大佔比越高)
- *    - Children: CandlestickSeries, LineSeries, HistogramSeries, WatermarkText
+ *    - Children: CandlestickSeries, LineSeries, HistogramSeries
  *
  * 3. CandlestickSeries - K線/蠟燭圖系列
  *    - Props: data (OHLC資料陣列), options (樣式配置)
@@ -41,9 +41,6 @@ import dayjs from 'dayjs';
  *    - Props: deps (依賴陣列，類似 useEffect)
  *    - Children: 無
  *
- * 9. WatermarkText - 浮水印文字
- *    - Props: lines (文字配置陣列), horzAlign, vertAlign
- *    - Children: 無
  */
 import {
   CandlestickSeries,
@@ -52,7 +49,6 @@ import {
   TimeScale,
   TimeScaleFitContentTrigger,
   Pane,
-  WatermarkText,
 } from 'lightweight-charts-react-components';
 
 // ---- Colors ----
@@ -74,10 +70,10 @@ const colors = {
  */
 const generateOHLCData = (stockData) => {
   if (!stockData?.prices || stockData.prices.length === 0) {
-    console.log('generateOHLCData: 沒有股票資料');
+    // console.log('generateOHLCData: 沒有股票資料');
     return [];
   }
-  console.log('generateOHLCData: 產生 K線資料', '，共', stockData.prices.length, '筆');
+  // console.log('generateOHLCData: 產生 K線資料', '，共', stockData.prices.length, '筆');
 
   return stockData.prices.map((price) => {
     return {
@@ -90,30 +86,13 @@ const generateOHLCData = (stockData) => {
   });
 };
 
-// ---- Watermark ----
-function Watermark({ text }) {
-  return (
-    <WatermarkText
-      lines={[
-        {
-          text,
-          color: `${colors.blue}`,
-          fontSize: 12,
-        },
-      ]}
-      horzAlign="right"
-      vertAlign="bottom"
-    />
-  );
-}
-
 export default function TradingChart1({ stockData, stockSelect }) {
   /**
    * 使用 useMemo 只在組件初次渲染時生成資料
    * 避免每次 re-render 都重新計算
    */
-  console.log('由父層來的資料', stockData);
-  console.log('由父層來的資料', stockSelect);
+  // console.log('由父層來的資料', stockData);
+  // console.log('由父層來的資料', stockSelect);
 
   const { ohlcData, volumeData } = useMemo(() => {
     // 1. 生成 OHLC 資料從 stockData
@@ -134,7 +113,7 @@ export default function TradingChart1({ stockData, stockSelect }) {
       };
     });
 
-    console.log('生成成交量資料:', volume.length, '筆，範例:', volume[0]);
+    // console.log('生成成交量資料:', volume.length, '筆，範例:', volume[0]);
 
     return { ohlcData: ohlc, volumeData: volume };
   }, [stockData, stockSelect]);
@@ -219,7 +198,6 @@ export default function TradingChart1({ stockData, stockSelect }) {
             priceLineVisible: false, // 隱藏價格線
           }}
         />
-        <Watermark text="交易量" />
       </Pane>
     </Chart>
   );

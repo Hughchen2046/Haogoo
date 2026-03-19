@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import FBIcon from '../assets/FB Icon.png';
 import IGIcon from '../assets/IG Icon.png';
 import LineIcon from '../assets/LINE Icon.png';
@@ -16,13 +17,13 @@ const topics = [
     backgroundImgUrl: Rect6,
     title: 'All Topics',
     trend1: '台股盤勢',
-    trend1Link: '#',
+    trend1Link: '/topics/tw-market',
     trend2: '國際財經',
-    trend2Link: '#',
+    trend2Link: '/topics/global-finance',
     trend3: '新聞稿',
-    trend3Link: '#',
+    trend3Link: '/topics/news',
     trend4: 'ETF',
-    trend4Link: '#',
+    trend4Link: '/topics/etf',
   },
   {
     category: '即時熱門話題',
@@ -76,7 +77,7 @@ export default function SocialFeed() {
                 <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
                   <img src={IGIcon} alt="IG link" className="icon-40 icon-hover" />
                 </a>
-                <a href="https://www.line.com" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.line.me/tw/" target="_blank" rel="noopener noreferrer">
                   <img src={LineIcon} alt="Line link" className="icon-40 icon-hover" />
                 </a>
               </div>
@@ -109,30 +110,30 @@ export default function SocialFeed() {
                       <h3 className="mb-8">{topic.category}</h3>
                       <div className="display-2 display-1-md mb-32 mb-md-80">{topic.title}</div>
                       <div className="d-flex flex-wrap gap-12 mb-32 mb-md-80">
-                        <a
-                          href={topic.trend1Link}
+                        <Link
+                          to={topic.trend1Link}
                           className="h5 round-pill btn btn-light py-10 px-24 text-primary border-primary-200"
                         >
                           # {topic.trend1}
-                        </a>
-                        <a
-                          href={topic.trend2Link}
+                        </Link>
+                        <Link
+                          to={topic.trend2Link}
                           className="h5 round-pill btn btn-light py-10 px-24 text-primary border-primary-200"
                         >
                           # {topic.trend2}
-                        </a>
-                        <a
-                          href={topic.trend3Link}
+                        </Link>
+                        <Link
+                          to={topic.trend3Link}
                           className="h5 round-pill btn btn-light py-10 px-24 text-primary border-primary-200"
                         >
                           # {topic.trend3}
-                        </a>
-                        <a
-                          href={topic.trend4Link}
+                        </Link>
+                        <Link
+                          to={topic.trend4Link}
                           className="h5 round-pill btn btn-light py-10 px-24 text-primary border-primary-200"
                         >
                           # {topic.trend4}
-                        </a>
+                        </Link>
                       </div>
                     </SwiperSlide>
                   );
@@ -140,9 +141,12 @@ export default function SocialFeed() {
               </Swiper>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="social-pagination"></div>
-                <a href="#" className="text-white text-decoration-none h6 round-8 py-10 px-24">
+                <Link
+                  to="/topics"
+                  className="text-white text-decoration-none h6 round-8 py-10 px-24"
+                >
                   查看更多
-                </a>
+                </Link>
               </div>
             </div>
           </div>

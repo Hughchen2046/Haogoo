@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import TaiwanIndexChart from '../Tools/TaiwanIndexChart';
-import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronDown, ChevronUp, Heart } from 'lucide-react';
 import axios from 'axios';
 import AllIndexChart from '../Tools/AllIndexChart';
 import StockTable from '../Tools/StockTable';
 import { BeatLoader } from 'react-spinners';
 import ButtonTC from '../Tools/ButtonTC';
 import dayjs from 'dayjs';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { loadingStarted, loadingStopped } from '../../app/features/loading/loadingSlice';
+import { authUser } from '../../app/features/auth/authSlice';
+import { useWishlist } from '../../contexts/WishlistContext';
+import WishlistHeart from '../Tools/WishlistHeart';
 
 const API_URL = import.meta.env.VITE_stocksUrl;
 const symbol_URL = import.meta.env.VITE_symbolsUrl;
@@ -16,6 +22,16 @@ const API_BASE = import.meta.env.VITE_API_BASE;
 export default function MarketInfo() {
   const location = useLocation();
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
+  const dispatch = useDispatch();
+  const industryLoading = useSelector(
+    (state) => (state.loading.loadingState['marketInfo.industry'] || 0) > 0
+  );
+  const collectionLoading = useSelector(
+    (state) => (state.loading.loadingState['marketInfo.collection'] || 0) > 0
+  );
+  const collectionETFLoading = useSelector(
+    (state) => (state.loading.loadingState['marketInfo.collectionETF'] || 0) > 0
+  );
 
   // 各個 dropdown 的開關狀態
   const [isMarketOpen, setIsMarketOpen] = useState(false);
@@ -37,9 +53,7 @@ export default function MarketInfo() {
     }
   }, [location]);
 
-  // 建立一個狀態來記錄愛心是否為實心
-  const [liked, setLiked] = useState(false);
-  // 記錄藥丸按鈕目前選哪一個
+  // 市場分析相關
   const [marketTab, setMarketTab] = useState('加權指數');
   const [industryTab, setIndustryTab] = useState('水泥工業');
   const [collectionTab, setCollectionTab] = useState('即時排行');
@@ -101,7 +115,6 @@ export default function MarketInfo() {
     },
   ]);
   const [industryData, setIndustryData] = useState([]);
-  const [industryLoading, setIndustryLoading] = useState(false);
   const [industryError, setIndustryError] = useState(null);
   //精選選股 的設定
   const collectionStocks = [
@@ -137,7 +150,6 @@ export default function MarketInfo() {
     },
   ];
   const [collectionsData, setCollectionsData] = useState([]);
-  const [collectionLoading, setCollectionLoading] = useState(false);
   const [collectionError, setCollectionError] = useState(null);
   //熱門ETF 的設定
   const collectionETF = [
@@ -167,7 +179,6 @@ export default function MarketInfo() {
     },
   ];
   const [collectionsETFData, setCollectionsETFData] = useState([]);
-  const [collectionETFLoading, setCollectionETFLoading] = useState(false);
   const [collectionETFError, setCollectionETFError] = useState(null);
 
   //Loading的顏色設定
@@ -181,6 +192,7 @@ export default function MarketInfo() {
   //取得精選產業的資料
   useEffect(() => {
     const getIndustry = async () => {
+      dispatch(loadingStarted({ status: 'marketInfo.industry' }));
       try {
         const response = await axios.get(`${API_URL}`);
         // console.log(response.data.data);
@@ -221,6 +233,8 @@ export default function MarketInfo() {
         // console.log('產業數量:', uniqueIndustryArray.length);
       } catch (error) {
         console.error(error);
+      } finally {
+        dispatch(loadingStopped({ status: 'marketInfo.industry' }));
       }
     };
     getIndustry();
@@ -229,8 +243,8 @@ export default function MarketInfo() {
   //取得精選產業的股票資料給Stocktable
   useEffect(() => {
     const getIndustryStocks = async () => {
-      setIndustryLoading(true);
       setIndustryError(null);
+      dispatch(loadingStarted({ status: 'marketInfo.industry' }));
 
       try {
         const response = await axios.get(`${symbol_URL}?industryTW=${industryTab}&_embed=prices`);
@@ -245,7 +259,7 @@ export default function MarketInfo() {
         setIndustryError(error.message);
         setIndustryData([]); // 發生錯誤時清空資料
       } finally {
-        setIndustryLoading(false);
+        dispatch(loadingStopped({ status: 'marketInfo.industry' }));
       }
     };
 
@@ -255,9 +269,8 @@ export default function MarketInfo() {
   //取得精選選股的股票資料給Stocktable
   useEffect(() => {
     const getCollectionStocks = async () => {
-      setCollectionLoading(true);
       setCollectionError(null);
-
+      dispatch(loadingStarted({ status: 'marketInfo.collection' }));
       try {
         const response = await axios.get(`${symbol_URL}?securityType=01&_embed=prices`); //及時排行,技術面,好股推薦
         const resStock = await axios.get(`${API_BASE}/monthRevenue`); //基本面
@@ -480,7 +493,6 @@ export default function MarketInfo() {
                   prices[prices.length - 1].id - prices.find((item) => item.date === lastyear).id;
                 // console.log('length', lengh);
                 const yearPrices = prices.slice(-Math.floor(Math.abs(lengh / 2))); // 約半年的交易日
-                const maxVolume = Math.max(...yearPrices.map((p) => p.volume));
 
                 return {
                   ...stock,
@@ -533,7 +545,7 @@ export default function MarketInfo() {
         setCollectionError(error.message);
         setCollectionsData([]); // 發生錯誤時清空資料
       } finally {
-        setCollectionLoading(false);
+        dispatch(loadingStopped({ status: 'marketInfo.collection' }));
       }
     };
 
@@ -543,8 +555,8 @@ export default function MarketInfo() {
   //取得精選ETF的股票給Stocktable
   useEffect(() => {
     const getCollectionETFStocks = async () => {
-      setCollectionETFLoading(true);
       setCollectionETFError(null);
+      dispatch(loadingStarted({ status: 'marketInfo.collectionETF' }));
 
       try {
         const response = await axios.get(`${symbol_URL}?SECURITY_TW=ETF&_embed=prices`); //及時排行,獲利王,好股推薦
@@ -552,7 +564,7 @@ export default function MarketInfo() {
         // console.log('allData', response.data.data);
         // 取出有 prices 的資料
         const filterData = response.data.data.filter((item) => item.prices.length >= 2);
-        console.log('filterData', filterData);
+        // console.log('filterData', filterData);
 
         let sortData;
         switch (collectionETFTab) {
@@ -669,14 +681,14 @@ export default function MarketInfo() {
               });
             break;
         }
-        console.log('sortData', sortData);
+        // console.log('sortData', sortData);
         setCollectionsETFData(sortData);
       } catch (error) {
         console.error('抓取產業股票資料失敗:', error);
         setCollectionETFError(error.message);
         setCollectionsETFData([]); // 發生錯誤時清空資料
       } finally {
-        setCollectionETFLoading(false);
+        dispatch(loadingStopped({ status: 'marketInfo.collectionETF' }));
       }
     };
 
@@ -685,327 +697,346 @@ export default function MarketInfo() {
 
   // console.log('industrySelectTab', industryTab);
   return (
-    <div className="d-flex flex-column gap-32">
-      {/* 市場行情 */}
-      <section className="py-24 py-lg-40">
-        <h2 className="fs-bold mb-24 font-zh-tw h1-lg">市場行情</h2>
-        {/* 小螢幕用dropdown */}
-        <div className={`dropdown mb-32 font-zh-tw d-md-none ${isMarketOpen ? 'show' : ''}`}>
-          <button
-            className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
-            type="button"
-            onClick={() => setIsMarketOpen(!isMarketOpen)}
-            aria-expanded={isMarketOpen}
-          >
-            <span className="ps-16">{marketTab}</span>
-            <ChevronDown />
-          </button>
-          <ul
-            className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isMarketOpen ? 'show' : ''}`}
-            style={{
-              backgroundColor: '#F3F3F3',
-              display: isMarketOpen ? 'block' : 'none',
-            }}
-          >
-            <li className="d-flex justify-content-between align-items-start">
-              <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
-              <ChevronUp />
-            </li>
+    <>
+      <div className="d-flex flex-column gap-32 position-relative overflow-x-hidden">
+        {/* 市場行情 */}
+        <section className="py-24 py-lg-40">
+          <h2 className="fs-bold mb-24 font-zh-tw h1-lg">市場行情</h2>
+          {/* 小螢幕用dropdown */}
+          <div className={`dropdown mb-32 font-zh-tw d-md-none ${isMarketOpen ? 'show' : ''}`}>
+            <button
+              className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
+              type="button"
+              onClick={() => setIsMarketOpen(!isMarketOpen)}
+              aria-expanded={isMarketOpen}
+            >
+              <span className="ps-16">{marketTab}</span>
+              <ChevronDown />
+            </button>
+            <ul
+              className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isMarketOpen ? 'show' : ''}`}
+              style={{
+                backgroundColor: '#F3F3F3',
+                display: isMarketOpen ? 'block' : 'none',
+              }}
+            >
+              <li className="d-flex justify-content-between align-items-start">
+                <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
+                <ChevronUp />
+              </li>
+              {taiwanVariousIndicators.map((topic) => (
+                <li key={topic.indicator} className="dropdown-li-hover dropdown-btn-active">
+                  <button
+                    className={`dropdown-item font-weight-light py-8 mb-8 border-0 bg-transparent text-start w-100 ${
+                      marketTab === topic.label ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      setMarketTab(topic.label);
+                      setIsMarketOpen(false);
+                    }}
+                  >
+                    {topic.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {/* 大螢幕用nav-pill */}
+          <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
             {taiwanVariousIndicators.map((topic) => (
-              <li key={topic.indicator} className="dropdown-li-hover dropdown-btn-active">
-                <button
-                  className={`dropdown-item font-weight-light py-8 mb-8 border-0 bg-transparent text-start w-100 ${
-                    marketTab === topic.label ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setMarketTab(topic.label);
-                    setIsMarketOpen(false);
-                  }}
-                >
-                  {topic.label}
-                </button>
+              <li key={topic.indicator} className="nav-item" role="presentation">
+                <ButtonTC
+                  label={topic.label}
+                  className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${marketTab === topic.label ? 'active' : ''}`}
+                  type="button"
+                  id={`pills-${topic.indicator}-tab`}
+                  data-bs-toggle="pill"
+                  data-bs-target={`#pills-${topic.indicator}`}
+                  role="tab"
+                  aria-controls={`pills-${topic.indicator}`}
+                  aria-selected={marketTab === topic.label}
+                  onClick={() => setMarketTab(topic.label)}
+                />
               </li>
             ))}
           </ul>
-        </div>
-        {/* 大螢幕用nav-pill */}
-        <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
-          {taiwanVariousIndicators.map((topic) => (
-            <li key={topic.indicator} className="nav-item" role="presentation">
-              <ButtonTC
-                label={topic.label}
-                className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${marketTab === topic.label ? 'active' : ''}`}
-                type="button"
-                id={`pills-${topic.indicator}-tab`}
-                data-bs-toggle="pill"
-                data-bs-target={`#pills-${topic.indicator}`}
-                role="tab"
-                aria-controls={`pills-${topic.indicator}`}
-                aria-selected={marketTab === topic.label}
-                onClick={() => setMarketTab(topic.label)}
-              />
-            </li>
-          ))}
-        </ul>
 
-        {/* TradingViewChart */}
-        <div
-          className="round-8 mt-4 mb-40 shadow-sm"
-          style={{
-            borderRadius: '16px',
-            overflow: 'hidden',
-            border: '1px solid white',
-          }}
-        >
-          <div>
-            {marketTab === '加權指數' ? (
-              <TaiwanIndexChart />
-            ) : (
-              <AllIndexChart
-                indexId={
-                  taiwanVariousIndicators.find((item) => item.label === marketTab)?.indicator
-                }
-              />
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* 精選產業 */}
-      <section className="py-24 py-lg-40" id="popular-industry">
-        <h2 className="fs-bold mb-24 font-zh-tw h1-lg">精選產業</h2>
-        {/* 小螢幕用dropdown */}
-        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isIndustryOpen ? 'show' : ''}`}>
-          <button
-            className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
-            type="button"
-            onClick={() => setIsIndustryOpen(!isIndustryOpen)}
-            aria-expanded={isIndustryOpen}
-          >
-            <span className="ps-16">{industryTab}</span>
-            <ChevronDown />
-          </button>
-          <ul
-            className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isIndustryOpen ? 'show' : ''}`}
+          {/* TradingViewChart */}
+          <div
+            className="round-8 mt-4 mb-40 shadow-sm"
             style={{
-              backgroundColor: '#F3F3F3',
-              display: isIndustryOpen ? 'block' : 'none',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              border: '1px solid white',
             }}
           >
-            <li className="d-flex justify-content-between align-items-start">
-              <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
-              <ChevronUp />
-            </li>
+            <div>
+              {marketTab === '加權指數' ? (
+                <TaiwanIndexChart />
+              ) : (
+                <AllIndexChart
+                  indexId={
+                    taiwanVariousIndicators.find((item) => item.label === marketTab)?.indicator
+                  }
+                />
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* 精選產業 */}
+        <section className="py-24 py-lg-40" id="popular-industry">
+          <h2 className="fs-bold mb-24 font-zh-tw h1-lg">精選產業</h2>
+          {/* 小螢幕用dropdown */}
+          <div className={`dropdown mb-24 font-zh-tw d-md-none ${isIndustryOpen ? 'show' : ''}`}>
+            <button
+              className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
+              type="button"
+              onClick={() => setIsIndustryOpen(!isIndustryOpen)}
+              aria-expanded={isIndustryOpen}
+            >
+              <span className="ps-16">{industryTab}</span>
+              <ChevronDown />
+            </button>
+            <ul
+              className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isIndustryOpen ? 'show' : ''}`}
+              style={{
+                backgroundColor: '#F3F3F3',
+                display: isIndustryOpen ? 'block' : 'none',
+              }}
+            >
+              <li className="d-flex justify-content-between align-items-start">
+                <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
+                <ChevronUp />
+              </li>
+              {industrySelect.map((topic) => (
+                <li key={topic.indicator} className="dropdown-li-hover dropdown-btn-active">
+                  <button
+                    type="submit"
+                    className={`dropdown-item font-weight-light py-8 mb-8 border-0 bg-transparent text-start w-100 ${
+                      industryTab === topic.label ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      setIndustryTab(topic.label);
+                      setIsIndustryOpen(false);
+                    }}
+                  >
+                    {topic.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {/* 大螢幕用nav-pill */}
+          <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
             {industrySelect.map((topic) => (
-              <li key={topic.indicator} className="dropdown-li-hover dropdown-btn-active">
-                <button
-                  type="submit"
-                  className={`dropdown-item font-weight-light py-8 mb-8 border-0 bg-transparent text-start w-100 ${
-                    industryTab === topic.label ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setIndustryTab(topic.label);
-                    setIsIndustryOpen(false);
-                  }}
-                >
-                  {topic.label}
-                </button>
+              <li key={topic.indicator} className="nav-item " role="presentation">
+                <ButtonTC
+                  label={topic.label}
+                  className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${industryTab === topic.label ? 'active' : ''}`}
+                  type="button"
+                  onClick={() => setIndustryTab(topic.label)}
+                />
               </li>
             ))}
           </ul>
-        </div>
-        {/* 大螢幕用nav-pill */}
-        <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
-          {industrySelect.map((topic) => (
-            <li key={topic.indicator} className="nav-item " role="presentation">
-              <ButtonTC
-                label={topic.label}
-                className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${industryTab === topic.label ? 'active' : ''}`}
-                type="button"
-                onClick={() => setIndustryTab(topic.label)}
-              />
-            </li>
-          ))}
-        </ul>
-        {/* 股票列表 */}
-        {industryLoading ? (
-          <div
-            className="d-flex align-items-center justify-content-center"
-            style={{ height: '340px' }}
-          >
-            <BeatLoader color={primaryColor} size={20} />
-          </div>
-        ) : industryError ? (
-          <div className="alert alert-danger" role="alert">
-            載入失敗: {industryError}
-          </div>
-        ) : (
-          <StockTable
-            data={industryData}
-            category="industry"
-            filterKey={industryTab}
-            initialNumberCount={5}
-          />
-        )}
-      </section>
+          {/* 股票列表 */}
+          {industryLoading ? (
+            <div
+              className="d-flex align-items-center justify-content-center"
+              style={{ height: '340px' }}
+            >
+              <BeatLoader color={primaryColor} size={20} />
+            </div>
+          ) : industryError ? (
+            <div className="alert alert-danger" role="alert">
+              載入失敗: {industryError}
+            </div>
+          ) : (
+            <StockTable
+              data={industryData}
+              category="industry"
+              filterKey={industryTab}
+              initialNumberCount={5}
+            />
+          )}
+        </section>
 
-      {/* 精選選股 */}
-      <section className="py-24 py-lg-40">
-        <h2 className="fs-bold mb-24 font-zh-tw h1-lg">精選選股</h2>
-        {/* 小螢幕用dropdown */}
-        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isCollectionOpen ? 'show' : ''}`}>
-          <button
-            className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
-            type="button"
-            onClick={() => setIsCollectionOpen(!isCollectionOpen)}
-            aria-expanded={isCollectionOpen}
-          >
-            <span className="ps-16">{collectionTab}</span>
-            <ChevronDown />
-          </button>
-          <ul
-            className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isCollectionOpen ? 'show' : ''}`}
-            style={{
-              backgroundColor: '#F3F3F3',
-              display: isCollectionOpen ? 'block' : 'none',
-            }}
-          >
-            <li className="d-flex justify-content-between align-items-start">
-              <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
-              <ChevronUp />
-            </li>
+        {/* 精選選股 */}
+        <section className="py-24 py-lg-40">
+          <h2 className="fs-bold mb-24 font-zh-tw h1-lg">精選選股</h2>
+          {/* 小螢幕用dropdown */}
+          <div className={`dropdown mb-24 font-zh-tw d-md-none ${isCollectionOpen ? 'show' : ''}`}>
+            <button
+              className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
+              type="button"
+              onClick={() => setIsCollectionOpen(!isCollectionOpen)}
+              aria-expanded={isCollectionOpen}
+            >
+              <span className="ps-16">{collectionTab}</span>
+              <ChevronDown />
+            </button>
+            <ul
+              className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isCollectionOpen ? 'show' : ''}`}
+              style={{
+                backgroundColor: '#F3F3F3',
+                display: isCollectionOpen ? 'block' : 'none',
+              }}
+            >
+              <li className="d-flex justify-content-between align-items-start">
+                <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
+                <ChevronUp />
+              </li>
+              {collectionStocks.map((topic) => (
+                <li key={topic.indicator} className="dropdown-li-hover dropdown-btn-active">
+                  <button
+                    type="submit"
+                    className={`dropdown-item font-weight-light py-8 mb-8 border-0 bg-transparent text-start w-100 ${
+                      collectionTab === topic.label ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      setCollectionTab(topic.label);
+                      setIsCollectionOpen(false);
+                    }}
+                  >
+                    {topic.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {/* 大螢幕用nav-pill */}
+          <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
             {collectionStocks.map((topic) => (
-              <li key={topic.indicator} className="dropdown-li-hover dropdown-btn-active">
-                <button
-                  type="submit"
-                  className={`dropdown-item font-weight-light py-8 mb-8 border-0 bg-transparent text-start w-100 ${
-                    collectionTab === topic.label ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setCollectionTab(topic.label);
-                    setIsCollectionOpen(false);
-                  }}
-                >
-                  {topic.label}
-                </button>
+              <li key={topic.indicator} className="nav-item" role="presentation">
+                <ButtonTC
+                  label={topic.label}
+                  className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${collectionTab === topic.label ? 'active' : ''}`}
+                  type="button"
+                  onClick={() => setCollectionTab(topic.label)}
+                />
               </li>
             ))}
           </ul>
-        </div>
-        {/* 大螢幕用nav-pill */}
-        <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
-          {collectionStocks.map((topic) => (
-            <li key={topic.indicator} className="nav-item" role="presentation">
-              <ButtonTC
-                label={topic.label}
-                className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${collectionTab === topic.label ? 'active' : ''}`}
-                type="button"
-                onClick={() => setCollectionTab(topic.label)}
-              />
-            </li>
-          ))}
-        </ul>
 
-        {/* 股票列表 */}
-        {collectionLoading ? (
+          {/* 股票列表 */}
+          {collectionLoading ? (
+            <div
+              className="d-flex align-items-center justify-content-center"
+              style={{ height: '340px' }}
+            >
+              <BeatLoader color={primaryColor} size={20} />
+            </div>
+          ) : collectionError ? (
+            <div className="alert alert-danger" role="alert">
+              載入失敗: {collectionError}
+            </div>
+          ) : (
+            <StockTable
+              data={collectionsData}
+              category="collection"
+              filterKey={collectionTab}
+              initialNumberCount={5}
+            />
+          )}
+        </section>
+
+        {/* 熱門 ETF */}
+        <section className="py-24 py-lg-40" id="ETF">
+          <h2 className="fs-bold mb-24 font-zh-tw h1-lg">熱門 ETF</h2>
+          {/* 小螢幕用dropdown */}
+          <div className={`dropdown mb-24 font-zh-tw d-md-none ${isETFOpen ? 'show' : ''}`}>
+            <button
+              className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
+              type="button"
+              onClick={() => setIsETFOpen(!isETFOpen)}
+              aria-expanded={isETFOpen}
+            >
+              <span className="ps-16">{collectionETFTab}</span>
+              <ChevronDown />
+            </button>
+            <ul
+              className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isETFOpen ? 'show' : ''}`}
+              style={{
+                backgroundColor: '#F3F3F3',
+                display: isETFOpen ? 'block' : 'none',
+              }}
+            >
+              <li className="d-flex justify-content-between align-items-start">
+                <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
+                <ChevronUp />
+              </li>
+              {collectionETF.map((topic) => (
+                <li key={topic.indicator} className="dropdown-li-hover dropdown-btn-active">
+                  <button
+                    type="submit"
+                    className={`dropdown-item font-weight-light py-8 mb-8 border-0 bg-transparent text-start w-100 ${
+                      collectionETFTab === topic.label ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      setCollectionETFTab(topic.label);
+                      setIsETFOpen(false);
+                    }}
+                  >
+                    {topic.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {/* 大螢幕用nav-pill */}
+          <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
+            {collectionETF.map((topic) => (
+              <li key={topic.indicator} className="nav-item" role="presentation">
+                <ButtonTC
+                  label={topic.label}
+                  className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${collectionETFTab === topic.label ? 'active' : ''}`}
+                  type="button"
+                  onClick={() => setCollectionETFTab(topic.label)}
+                />
+              </li>
+            ))}
+          </ul>
+
+          {/* 股票列表 */}
+          {collectionETFLoading ? (
+            <div
+              className="d-flex align-items-center justify-content-center"
+              style={{ height: '340px' }}
+            >
+              <BeatLoader color={primaryColor} size={20} />
+            </div>
+          ) : collectionETFError ? (
+            <div className="alert alert-danger" role="alert">
+              載入失敗: {collectionETFError}
+            </div>
+          ) : (
+            <StockTable
+              data={collectionsETFData}
+              category="collectionETF"
+              filterKey={collectionETFTab}
+              initialNumberCount={5}
+            />
+          )}
+        </section>
+        {industryLoading && (
           <div
-            className="d-flex align-items-center justify-content-center"
-            style={{ height: '340px' }}
-          >
-            <BeatLoader color={primaryColor} size={20} />
-          </div>
-        ) : collectionError ? (
-          <div className="alert alert-danger" role="alert">
-            載入失敗: {collectionError}
-          </div>
-        ) : (
-          <StockTable
-            data={collectionsData}
-            category="collection"
-            filterKey={collectionTab}
-            initialNumberCount={5}
-          />
-        )}
-      </section>
-
-      {/* 熱門 ETF */}
-      <section className="py-24 py-lg-40" id="ETF">
-        <h2 className="fs-bold mb-24 font-zh-tw h1-lg">熱門 ETF</h2>
-        {/* 小螢幕用dropdown */}
-        <div className={`dropdown mb-24 font-zh-tw d-md-none ${isETFOpen ? 'show' : ''}`}>
-          <button
-            className="btn border-0 w-100 bg-gray-400 d-flex justify-content-between align-items-center py-16 px-24"
-            type="button"
-            onClick={() => setIsETFOpen(!isETFOpen)}
-            aria-expanded={isETFOpen}
-          >
-            <span className="ps-16">{collectionETFTab}</span>
-            <ChevronDown />
-          </button>
-          <ul
-            className={`mt-8 dropdown-menu w-100 py-16 px-24 border-0 ${isETFOpen ? 'show' : ''}`}
+            className="position-absolute d-flex align-items-center justify-content-center"
             style={{
-              backgroundColor: '#F3F3F3',
-              display: isETFOpen ? 'block' : 'none',
+              top: 0,
+              left: '-16px',
+              right: '-16px',
+              height: '100%',
+              backdropFilter: 'blur(4px)',
+              // boxShadow: '12px 12px 12px rgba(218, 218, 226, 0.45)',
+              backgroundColor: 'rgba(218, 218, 226, 0.1)',
+              zIndex: 5000,
             }}
           >
-            <li className="d-flex justify-content-between align-items-start">
-              <span className="dropdown-item-text pt-0 pb-8">請選擇分類</span>
-              <ChevronUp />
-            </li>
-            {collectionETF.map((topic) => (
-              <li key={topic.indicator} className="dropdown-li-hover dropdown-btn-active">
-                <button
-                  type="submit"
-                  className={`dropdown-item font-weight-light py-8 mb-8 border-0 bg-transparent text-start w-100 ${
-                    collectionETFTab === topic.label ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setCollectionETFTab(topic.label);
-                    setIsETFOpen(false);
-                  }}
-                >
-                  {topic.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-        {/* 大螢幕用nav-pill */}
-        <ul className="nav nav-pills mb-24 d-none d-md-flex gap-16" id="pills-tab" role="tablist">
-          {collectionETF.map((topic) => (
-            <li key={topic.indicator} className="nav-item" role="presentation">
-              <ButtonTC
-                label={topic.label}
-                className={`nav-link round-pill py-10 px-24 h5 fw-bold border border-primary ${collectionETFTab === topic.label ? 'active' : ''}`}
-                type="button"
-                onClick={() => setCollectionETFTab(topic.label)}
-              />
-            </li>
-          ))}
-        </ul>
-
-        {/* 股票列表 */}
-        {collectionETFLoading ? (
-          <div
-            className="d-flex align-items-center justify-content-center"
-            style={{ height: '340px' }}
-          >
             <BeatLoader color={primaryColor} size={20} />
           </div>
-        ) : collectionETFError ? (
-          <div className="alert alert-danger" role="alert">
-            載入失敗: {collectionETFError}
-          </div>
-        ) : (
-          <StockTable
-            data={collectionsETFData}
-            category="collectionETF"
-            filterKey={collectionETFTab}
-            initialNumberCount={5}
-          />
         )}
-      </section>
-    </div>
+      </div>
+    </>
   );
 }

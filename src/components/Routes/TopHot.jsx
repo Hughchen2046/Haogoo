@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { NavLink, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { MessageCircleMore } from 'lucide-react';
 import LazyImage from '../LazyImage';
@@ -7,6 +8,7 @@ export default function TopHot() {
   const topicUrl = import.meta.env.VITE_TopicUrl;
   const [hotData, setHotData] = useState([]);
   const [page, setPage] = useState(1);
+  const { currentTopic } = useOutletContext();
 
   useEffect(() => {
     // console.log('當前 Topic URL:', topicUrl);
@@ -43,9 +45,13 @@ export default function TopHot() {
               <LazyImage src={hotData.imgUrl} alt={hotData.title} />
             </div>
             <div className="w-100">
-              <a href={hotData.url} className="h3 mb-8 text-decoration-none">
+              <NavLink
+                to={`/news/${hotData.id}`}
+                state={{ postId: hotData.id, catagory: currentTopic.label }}
+                className="h3 mb-8 text-decoration-none"
+              >
                 {hotData.title}
-              </a>
+              </NavLink>
               <div className="d-flex gap-8 py-8 mb-8">
                 {hotData.hashtags.map((e) => (
                   <span className="bg-primary-200 font-weight-bold py-4 px-8 round-4" key={e}>

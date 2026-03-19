@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ArrowDown,
-  ArrowUp,
-  Minus,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { ArrowDown, ArrowUp, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Grid, Navigation } from 'swiper/modules';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+
+import { IsAuthed } from '../app/features/auth/authSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { loadingStarted, loadingStopped } from '../app/features/loading/loadingSlice';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -21,26 +18,23 @@ import 'swiper/css/navigation';
 
 export default function StockCard() {
   const [stocks, setStocks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
-  const { isAuth } = useAuth();
+  const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
+      dispatch(loadingStarted({ status: 'home.global' }));
       try {
         const baseURL = import.meta.env.VITE_API_BASE;
 
-        const res = await axios.get(
-          `${baseURL}/symbols?_embed=prices&_limit=1000`
-        );
+        const res = await axios.get(`${baseURL}/symbols?_embed=prices&_limit=1000`);
 
         const symbolsWithPrices = res.data.data
           .filter((s) => s.prices?.length)
           .map((s) => {
-            const sorted = [...s.prices].sort(
-              (a, b) => new Date(b.date) - new Date(a.date)
-            );
+            const sorted = [...s.prices].sort((a, b) => new Date(b.date) - new Date(a.date));
             return { ...s, latestPrice: sorted[0] };
           });
 
@@ -48,12 +42,11 @@ export default function StockCard() {
       } catch (e) {
         console.error('讀取資料失敗', e);
       } finally {
-        setLoading(false);
+        dispatch(loadingStopped({ status: 'home.global' }));
       }
     };
-
     fetchData();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const color = getComputedStyle(document.documentElement)
@@ -62,39 +55,18 @@ export default function StockCard() {
     if (color) setPrimaryColor(color);
   }, []);
 
-  if (loading) {
-    return (
-      <section className="bg-gray-400">
-        <div
-          className="container py-64 py-md-96"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '300px',
-          }}
-        >
-          <BeatLoader color={primaryColor} size={15} />
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="bg-gray-400">
       <div className="container py-64 py-md-96 font-zh-tw">
         <h3 className="h2-md mb-8">熱門個股</h3>
-        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">
-          Popular Stocks
-        </h2>
+        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">Popular Stocks</h2>
 
         <Swiper
           modules={[Pagination, Grid, Navigation]}
           pagination={{
             el: '.stock-pagination',
             clickable: true,
-            renderBullet: (index, className) =>
-              `<span class="${className}">${index + 1}</span>`,
+            renderBullet: (index, className) => `<span class="${className}">${index + 1}</span>`,
           }}
           navigation={{
             prevEl: '.stock-prev',
@@ -119,31 +91,19 @@ export default function StockCard() {
             const changePct = price?.dailyChangePct ?? 0;
             const totalPct = price?.totalChangePct ?? 0;
 
-            const trend =
-              changePct > 0 ? 'up' : changePct < 0 ? 'down' : 'flat';
+            const trend = changePct > 0 ? 'up' : changePct < 0 ? 'down' : 'flat';
 
             const trendColor =
-              trend === 'up'
-                ? 'text-danger'
-                : trend === 'down'
-                ? 'text-success'
-                : 'text-secondary';
+              trend === 'up' ? 'text-danger' : trend === 'down' ? 'text-success' : 'text-secondary';
 
             const trendBgColor =
-              trend === 'up'
-                ? 'bg-pink'
-                : trend === 'down'
-                ? 'bg-pinkgreen'
-                : 'border bg-light';
+              trend === 'up' ? 'bg-pink' : trend === 'down' ? 'bg-pinkgreen' : 'border bg-light';
 
             // 前4張可看，其餘未登入模糊
             const shouldBlur = !isAuth && index >= 4;
 
             return (
-              <SwiperSlide
-                key={stock.id}
-                className={shouldBlur ? 'position-relative' : ''}
-              >
+              <SwiperSlide key={stock.id} className={shouldBlur ? 'position-relative' : ''}>
                 <div
                   className="stockCard border round-24 p-16 d-md-flex justify-content-md-between py-md-48 px-md-24"
                   style={
@@ -163,15 +123,9 @@ export default function StockCard() {
                       <div
                         className={`d-flex justify-content-center align-items-center icon-48 round-8 ${trendBgColor}`}
                       >
-                        {trend === 'up' && (
-                          <ArrowUp className={`icon-24 ${trendColor}`} />
-                        )}
-                        {trend === 'down' && (
-                          <ArrowDown className={`icon-24 ${trendColor}`} />
-                        )}
-                        {trend === 'flat' && (
-                          <Minus className={`icon-24 ${trendColor}`} />
-                        )}
+                        {trend === 'up' && <ArrowUp className={`icon-24 ${trendColor}`} />}
+                        {trend === 'down' && <ArrowDown className={`icon-24 ${trendColor}`} />}
+                        {trend === 'flat' && <Minus className={`icon-24 ${trendColor}`} />}
                       </div>
                       <h3>{stock.name}</h3>
                     </div>
@@ -203,8 +157,7 @@ export default function StockCard() {
                   >
                     <ButtonPrimary
                       className="btn btn-outline-primary py-12 px-32 round-8"
-                      data-bs-toggle="modal"
-                      data-bs-target="#loginModal"
+                      onClick={() => navigate('/login')}
                     >
                       登入查看更多
                     </ButtonPrimary>

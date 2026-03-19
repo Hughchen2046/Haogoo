@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
+import { useSelector } from 'react-redux';
+import { IsAuthed } from '../app/features/auth/authSlice';
+
+import { useDispatch } from 'react-redux';
+import { loadingStarted, loadingStopped } from '../app/features/loading/loadingSlice';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -13,33 +17,23 @@ import 'swiper/css/pagination';
 import 'swiper/css/grid';
 import 'swiper/css/navigation';
 
-import { useAuth } from '../contexts/AuthContext';
-
 export default function IndustryList() {
   const [symbols, setSymbols] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [primaryColor, setPrimaryColor] = useState('#0d6efd');
-  const { isAuth } = useAuth();
+  const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // 取得產業與股票資料
   useEffect(() => {
     const baseURL = import.meta.env.VITE_API_BASE;
+    dispatch(loadingStarted({ status: 'home.global' }));
 
     fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`)
       .then((res) => res.json())
       .then((data) => setSymbols(data.data))
       .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
-
-  // 取得 CSS 主色
-  useEffect(() => {
-    const color = getComputedStyle(document.documentElement)
-      .getPropertyValue('--bs-primary')
-      .trim();
-    if (color) setPrimaryColor(color);
-  }, []);
+      .finally(() => dispatch(loadingStopped({ status: 'home.global' })));
+  }, [dispatch]);
 
   // 每 2 筆 symbols 組成一張卡
   const groups = [];
@@ -48,26 +42,11 @@ export default function IndustryList() {
     groups.push(safeSymbols.slice(i, i + 2));
   }
 
-  if (loading) {
-    return (
-      <section>
-        <div
-          className="container py-64 py-md-96 d-flex justify-content-center align-items-center"
-          style={{ minHeight: '300px' }}
-        >
-          <BeatLoader color={primaryColor} size={15} />
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section>
       <div className="container py-64 py-md-96 font-zh-tw">
         <h3 className="h2-md mb-8">精選產業</h3>
-        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">
-          Featured Industries
-        </h2>
+        <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">Featured Industries</h2>
 
         <Swiper
           modules={[Pagination, Grid, Navigation]}
@@ -96,7 +75,7 @@ export default function IndustryList() {
 
               if (!latest || !past) return null;
 
-              return ((latest - past) / past * 100).toFixed(2);
+              return (((latest - past) / past) * 100).toFixed(2);
             });
 
             const shouldBlur = !isAuth && index >= 1;
@@ -172,8 +151,7 @@ export default function IndustryList() {
                   >
                     <ButtonPrimary
                       className="py-12 px-32 round-8"
-                      data-bs-toggle="modal"
-                      data-bs-target="#loginModal"
+                      onClick={() => navigate('/login')}
                     >
                       登入查看更多
                     </ButtonPrimary>

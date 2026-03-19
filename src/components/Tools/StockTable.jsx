@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, TrendingDown, ChevronDown, ChevronUp, Heart } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
+import EmbeddedWishlistHeart from './WishlistHeart';
 
-const StockTable = ({ data, category, filterKey, initialNumberCount = 5 }) => {
-  //   const { industryTab } = props;
-  //   console.log('industryTab2', industryTab);
+const StockTable = ({ data, filterKey, initialNumberCount = 5 }) => {
   const [getMore, setGetMore] = useState(false);
-  const [likedItems, setLikedItems] = useState(new Set());
 
   const navigate = useNavigate();
 
@@ -17,19 +15,6 @@ const StockTable = ({ data, category, filterKey, initialNumberCount = 5 }) => {
   useEffect(() => {
     setGetMore(false);
   }, [filterKey]);
-
-  // 切換個別股票的收藏狀態
-  const toggleLike = (stockId) => {
-    setLikedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(stockId)) {
-        newSet.delete(stockId);
-      } else {
-        newSet.add(stockId);
-      }
-      return newSet;
-    });
-  };
 
   return (
     <div className="text-center">
@@ -132,12 +117,8 @@ const StockTable = ({ data, category, filterKey, initialNumberCount = 5 }) => {
                   <td>{item.prices[item.prices.length - 1].volume}</td>
                   {/* 收藏按鈕 */}
                   <td onClick={(e) => e.stopPropagation()}>
-                    <button type="button" className="border-0 btn btn-like">
-                      <Heart
-                        strokeWidth={likedItems.has(item.id) ? 0 : 2}
-                        fill={likedItems.has(item.id) ? 'var(--bs-primary)' : 'none'}
-                        onClick={() => toggleLike(item.id)}
-                      />
+                    <button type="button" className="border-0 btn btn-like p-0 bg-transparent">
+                      <EmbeddedWishlistHeart symbol={item.id} />
                     </button>
                   </td>
                 </tr>

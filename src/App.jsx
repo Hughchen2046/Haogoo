@@ -1,22 +1,35 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Home from './components/Routes/Home';
+import { useLocation, useOutlet } from 'react-router-dom';
 import Navbar from './components/Routes/Navbar';
 import Footer from './components/Routes/Footer';
-import Login from './components/Routes/Login';
-import Regist from './components/Routes/Regist';
-import ForgetPW from './components/Routes/ForgetPW';
-
-const { VITE_stocksUrl } = import.meta.env;
+import SweetAlert from './components/Tools/SweetAlert';
 
 function App() {
+  const location = useLocation();
+  const outlet = useOutlet();
+  const [backgroundOutlet, setBackgroundOutlet] = useState(null);
+
+  const isAuthState = location.pathname === '/login' || location.pathname === '/regist';
+
+  useEffect(() => {
+    if (!isAuthState) {
+      setBackgroundOutlet(outlet);
+      document.body.style.overflow = '';
+    }
+    // console.log('當前路徑：', location.pathname);
+  }, [isAuthState, outlet]);
+
+  // 如果是登入或註冊頁面，則顯示背景內容；否則顯示正常內容
+  const pageContent = isAuthState ? (backgroundOutlet ?? <Home />) : outlet;
+
   return (
     <>
       <Navbar />
-      <Outlet />
+      {pageContent}
       <Footer />
-      <Login />
-      <Regist />
-      <ForgetPW />
+      {isAuthState && outlet}
+      <SweetAlert />
     </>
   );
 }

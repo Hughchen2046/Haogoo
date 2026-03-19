@@ -4,14 +4,20 @@ import ButtonPrimary from '../Tools/ButtonPrimary';
 import ButtonOutline from '../Tools/ButtonOutline';
 import Logo from '../Tools/Logo';
 import { Search, Menu, X } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutThunk } from '../../app/features/auth/authThunks';
+import { IsAuthed } from '../../app/features/auth/authSlice';
+import SearchStock from '../Tools/SearchStock';
+import axios from 'axios';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [searchId, setSearchId] = useState(''); // 新增搜尋狀態
-  const { isAuth, logout } = useAuth();
+  const isAuth = useSelector(IsAuthed);
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate(); // 用來導向搜尋結果
+  const StockUrl = import.meta.env.VITE_stocksUrl;
+  const [symbols, setSymbols] = useState([]);
 
   const isIndex = location.pathname === '/';
 
@@ -23,6 +29,12 @@ export default function Navbar() {
     : isIndex
       ? 'bg-gray-50 text-gray-200 placeholder-gray-200'
       : 'bg-gray-400 text-gray-800 placeholder-gray-800';
+  const navSearchBigScreen =
+    'placeHover-WH font-weight-light border-0 round-8 py-12 ps-24 pe-16 shadow-none';
+  const navSearchSmallScreen =
+    'placeHover-BK bg-gray-400 text-gray-800 font-weight-light placeholder-gray-800 border-0 round-8 py-12 ps-24 pe-16 shadow-none';
+  const navSearchBarBigScreen = 'text-white';
+  const navSearchBarSmallScreen = 'text-gray-900';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +50,15 @@ export default function Navbar() {
   }, [isIndex]); // 加入 isIndex
 
   const handleLogout = () => {
-    logout();
+    dispatch(logoutThunk());
+  };
+
+  const openLogin = () => {
+    navigate('/login');
+  };
+
+  const openRegist = () => {
+    navigate('/regist');
   };
 
   const closeOffcanvas = () => {
@@ -49,23 +69,34 @@ export default function Navbar() {
     }
   };
 
-  // 新增：搜尋按鈕或 Enter 鍵事件
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchId.trim() !== '') {
-      navigate(`/stockInfo/${searchId.trim()}`);
-      setSearchId(''); // 清空輸入框
-      closeOffcanvas(); // 如果是小螢幕，關閉側邊欄
+  const getDatas = async () => {
+    try {
+      const response = await axios.get(StockUrl);
+      const rawData = Array.isArray(response?.data?.data) ? response.data.data : [];
+      const filteredData = rawData.filter(
+        (item) => Array.isArray(item?.prices) && item.prices.length > 3
+      );
+      const mapFilteredData = filteredData.map((item) => ({
+        symbol: item.id,
+        name: item.name,
+      }));
+      setSymbols(mapFilteredData);
+      // console.log('股票資料:', mapFilteredData);
+    } catch (error) {
+      console.error('獲取股票資料失敗:', error);
     }
   };
 
+  useEffect(() => {
+    getDatas();
+  }, []);
   return (
     <>
       <nav
         className={`navbar navbar-expand-lg position-fixed top-0 start-0 end-0 p-12 py-lg-16 font-zh-tw transition-all ${
           isScrolled ? 'navbar-scrolled' : ''
         }`}
-        style={{ zIndex: 9999 }}
+        style={{ zIndex: 500 }}
         data-bs-theme="dark"
       >
         <div className="container d-flex gap-md-48 justify-content-between px-0 ">
@@ -73,34 +104,29 @@ export default function Navbar() {
             <Logo className={`nav-logo ${navLogoColor}`} />
           </NavLink>
 
+          {/* 註冊/使用者資料按鈕 */}
           <ButtonPrimary
             className="w-auto py-10 px-24 d-lg-none"
-            data-bs-toggle={isAuth ? '' : 'modal'}
-            data-bs-target={isAuth ? '' : '#registModal'}
+            onClick={isAuth ? undefined : openRegist}
           >
             {isAuth ? '使用者資料' : '免費註冊'}
           </ButtonPrimary>
 
           {/* 大螢幕搜尋框 */}
-          <form
-            className="d-none position-relative d-lg-flex w-100"
-            onSubmit={handleSearch} // form submit 導向
-          >
-            <input
-              type="text"
-              className={`form-control ${navSearchColor} font-weight-light border-0 round-8 py-12 ps-24 pe-16 shadow-none`}
-              placeholder="輸入台/美股代號，查看公司價值"
-              value={searchId}
-              onChange={(e) => setSearchId(e.target.value)}
+          <div className="w-100 d-none d-lg-block">
+            <SearchStock
+              symbols={symbols}
+              onSelect={(item) => {
+                // console.log('你選到的股票:', item);
+                navigate(`/stockInfo/${item.symbol}`);
+              }}
+              navSearchColor={navSearchColor}
+              navSearchScreen={navSearchBigScreen}
+              navSearchBarScreen={navSearchBarBigScreen}
             />
-            <button
-              type="submit"
-              className="position-absolute end-0 top-50 translate-middle-y me-12 text-white bg-transparent border-0"
-            >
-              <Search size={24} className={navLinkColor} />
-            </button>
-          </form>
+          </div>
 
+          {/* 大螢幕導覽 */}
           <ul className="navbar-nav w-100 d-none d-lg-flex gap-md-8">
             <li className="nav-item d-flex flex-column justify-content-center align-items-center">
               <NavLink className={`nav-link py-10 px-16 ${navLinkColor}`} to="/mystocklist">
@@ -123,22 +149,18 @@ export default function Navbar() {
               ) : (
                 <button
                   className={`nav-link btn btn-link ${navLinkColor} py-10 px-16 border-0 shadow-none`}
-                  data-bs-toggle="modal"
-                  data-bs-target="#loginModal"
+                  onClick={openLogin}
                 >
                   登入
                 </button>
               )}
             </li>
-            <ButtonPrimary
-              className="w-auto py-10 px-32"
-              data-bs-toggle={isAuth ? '' : 'modal'}
-              data-bs-target={isAuth ? '' : '#registModal'}
-            >
+            <ButtonPrimary className="w-auto py-10 px-32" onClick={isAuth ? undefined : openRegist}>
               {isAuth ? '使用者資料' : '免費註冊'}
             </ButtonPrimary>
           </ul>
 
+          {/* 漢堡按鈕 */}
           <button
             className="navbar-toggler border-0"
             type="button"
@@ -169,21 +191,18 @@ export default function Navbar() {
         </div>
 
         {/* 小螢幕搜尋框 */}
-        <form className="position-relative mb-40 px-12" onSubmit={handleSearch}>
-          <input
-            type="text"
-            className="form-control bg-gray-400 text-gray-800 font-weight-light placeholder-gray-800 border-0 round-8 py-12 ps-24 pe-16 shadow-none"
-            placeholder="輸入台/美股代號，查看公司價值"
-            value={searchId}
-            onChange={(e) => setSearchId(e.target.value)}
+        <div className="mb-40 px-12">
+          <SearchStock
+            symbols={symbols}
+            onSelect={(item) => {
+              // console.log('你選到的股票:', item);
+              navigate(`/stockInfo/${item.symbol}`);
+            }}
+            navSearchColor={navSearchColor}
+            navSearchScreen={navSearchSmallScreen}
+            navSearchBarScreen={navSearchBarSmallScreen}
           />
-          <button
-            type="submit"
-            className="position-absolute end-0 top-50 translate-middle-y me-12 text-gray-800 bg-transparent border-0"
-          >
-            <Search size={24} />
-          </button>
-        </form>
+        </div>
 
         {/* 小螢幕選單 */}
         <ul className="navbar-nav font-zh-tw text-center gap-24 h6 px-12">
@@ -205,15 +224,6 @@ export default function Navbar() {
               熱門話題
             </NavLink>
           </li>
-          <li className="nav-item py-10 px-16">
-            <NavLink
-              to="/test"
-              className="text-decoration-none text-gray-900"
-              onClick={closeOffcanvas}
-            >
-              GuideLine
-            </NavLink>
-          </li>
         </ul>
 
         <div className="mt-auto d-flex gap-12 flex-column font-zh-tw px-12">
@@ -230,18 +240,20 @@ export default function Navbar() {
           ) : (
             <ButtonOutline
               className="py-10 px-32"
-              data-bs-toggle="modal"
-              data-bs-target="#loginModal"
-              onClick={closeOffcanvas}
+              onClick={() => {
+                closeOffcanvas();
+                openLogin();
+              }}
             >
               登入
             </ButtonOutline>
           )}
           <ButtonPrimary
             className="py-10 px-32 mb-24"
-            data-bs-toggle="modal"
-            data-bs-target="#registModal"
-            onClick={closeOffcanvas}
+            onClick={() => {
+              closeOffcanvas();
+              openRegist();
+            }}
           >
             免費註冊
           </ButtonPrimary>

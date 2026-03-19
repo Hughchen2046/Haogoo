@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { BeatLoader } from 'react-spinners';
 import Header from './Header';
 import StockCard from '../StockCard';
@@ -7,17 +8,9 @@ import IndustryList from '../IndustryList';
 import SocialFeed from '../SocialFeed';
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const globalLoading = useSelector((state) => state.loading.loadingState['home.global'] || 0);
+  const isGlobalLoading = globalLoading > 0;
   const [primaryColor, setPrimaryColor] = useState('#0d6efd');
-
-  useEffect(() => {
-    // 模擬初始載入時間，確保頁面資源已載入
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     const color = getComputedStyle(document.documentElement)
@@ -26,24 +19,6 @@ export default function Home() {
     if (color) setPrimaryColor(color);
   }, []);
 
-  if (isLoading) {
-    return (
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#0a0a14',
-          zIndex: 9999,
-        }}
-      >
-        <BeatLoader color={primaryColor} size={20} />
-      </div>
-    );
-  }
-
   return (
     <>
       <Header />
@@ -51,6 +26,21 @@ export default function Home() {
       <EtfsList />
       <IndustryList />
       <SocialFeed />
+      {isGlobalLoading && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#0a0a14',
+            zIndex: 5000,
+          }}
+        >
+          <BeatLoader color={primaryColor} size={20} />
+        </div>
+      )}
     </>
   );
 }
