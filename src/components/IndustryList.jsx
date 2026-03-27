@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import ButtonPrimary from './Tools/ButtonPrimary';
 import { useSelector } from 'react-redux';
-import { IsAuthed } from '../app/features/auth/authSlice';
+import { IsAuthed } from '../app/features/auth/authSelectors';
 
 import { useDispatch } from 'react-redux';
 import { loadingStarted, loadingStopped } from '../app/features/loading/loadingSlice';
@@ -44,7 +44,7 @@ export default function IndustryList() {
 
   return (
     <section>
-      <div className="container py-64 py-md-96 font-zh-tw">
+      <div className="container py-64 py-md-96 font-zh-tw overflow-x-hidden">
         <h3 className="h2-md mb-8">精選產業</h3>
         <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">Featured Industries</h2>
 
@@ -175,3 +175,4 @@ export default function IndustryList() {
     </section>
   );
 }
+

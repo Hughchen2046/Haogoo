@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
@@ -35,8 +35,9 @@ export default function SearchStock({
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const inputId = useId();
   const wrapRef = useRef(null);
-  const safeSymbols = Array.isArray(symbols) ? symbols : [];
+  const safeSymbols = useMemo(() => (Array.isArray(symbols) ? symbols : []), [symbols]);
   const iconColorClass = navSearchBarScreen || 'text-gray-900';
 
   // 預設清單：先簡單取前幾筆
@@ -58,7 +59,7 @@ export default function SearchStock({
 
       const allText = `${symbol} ${name}`;
 
-      // 優先：代碼開頭 / 名稱開頭
+      // 代碼 / 名稱
       if (symbol.startsWith(q) || name.startsWith(q)) {
         starts.push(item);
       } else if (allText.includes(q)) {
@@ -89,10 +90,6 @@ export default function SearchStock({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    setActiveIndex(-1);
-  }, [query]);
 
   const handleSelect = (item) => {
     setQuery(item.symbol);
@@ -125,13 +122,17 @@ export default function SearchStock({
     <div className="position-relative" ref={wrapRef}>
       <div className="input-group">
         <input
+          id={inputId}
+          name="stock_search"
           type="text"
+          autoComplete="off"
           className={`form-control ${navSearchColor} ${navSearchScreen}`}
           placeholder="輸入台/美股代號，查看公司價值"
           value={query}
           onFocus={() => setOpen(true)}
           onChange={(e) => {
             setQuery(e.target.value);
+            setActiveIndex(-1);
             setOpen(true);
           }}
           onKeyDown={handleKeyDown}

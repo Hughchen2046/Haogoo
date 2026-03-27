@@ -96,6 +96,7 @@ export default function Regist() {
                   type="email"
                   className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                   id="registEmailInput"
+                  autoComplete="email"
                   placeholder="請輸入信箱"
                   {...register('email', {
                     required: '請輸入正確 Email',
@@ -120,6 +121,7 @@ export default function Regist() {
                   type="text"
                   className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                   id="registNicknameInput"
+                  autoComplete="name"
                   placeholder="請輸入暱稱"
                   {...register('name', {
                     required: '請輸入暱稱',
@@ -144,6 +146,7 @@ export default function Regist() {
                   type="password"
                   className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                   id="registPasswordInput"
+                  autoComplete="new-password"
                   placeholder="請輸入密碼"
                   {...register('password', {
                     required: '請輸入正確密碼',

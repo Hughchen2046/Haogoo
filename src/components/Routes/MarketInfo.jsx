@@ -11,9 +11,9 @@ import dayjs from 'dayjs';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { loadingStarted, loadingStopped } from '../../app/features/loading/loadingSlice';
-import { authUser } from '../../app/features/auth/authSlice';
-import { useWishlist } from '../../contexts/WishlistContext';
-import WishlistHeart from '../Tools/WishlistHeart';
+// import { authUser } from '../../app/features/auth/authSlice';
+// import { useWishlist } from '../../contexts/useWishlist';
+// import WishlistHeart from '../Tools/WishlistHeart';
 
 const API_URL = import.meta.env.VITE_stocksUrl;
 const symbol_URL = import.meta.env.VITE_symbolsUrl;
@@ -238,7 +238,7 @@ export default function MarketInfo() {
       }
     };
     getIndustry();
-  }, []);
+  }, [dispatch]);
 
   //取得精選產業的股票資料給Stocktable
   useEffect(() => {
@@ -264,7 +264,7 @@ export default function MarketInfo() {
     };
 
     getIndustryStocks();
-  }, [industryTab]);
+  }, [industryTab, dispatch]);
 
   //取得精選選股的股票資料給Stocktable
   useEffect(() => {
@@ -479,24 +479,6 @@ export default function MarketInfo() {
                   latestVolume > prevVolume &&
                   prevVolume > prevVolume2
                 );
-              })
-              .map((stock) => {
-                const prices = stock.prices;
-                //計算去年同一時間到今年的length差
-                const thisyear = prices[prices.length - 1].date;
-                const lastyear = dayjs(`${thisyear}`, 'YYYY-MM-DD')
-                  .subtract(1, 'year')
-                  .format('YYYY-MM-DD');
-                // console.log('lastyear', lastyear);
-                //得出與去年同一日期的長度
-                const lengh =
-                  prices[prices.length - 1].id - prices.find((item) => item.date === lastyear).id;
-                // console.log('length', lengh);
-                const yearPrices = prices.slice(-Math.floor(Math.abs(lengh / 2))); // 約半年的交易日
-
-                return {
-                  ...stock,
-                };
               });
             break;
           case '好股推薦':
@@ -550,7 +532,7 @@ export default function MarketInfo() {
     };
 
     getCollectionStocks();
-  }, [collectionTab]);
+  }, [collectionTab, dispatch]);
 
   //取得精選ETF的股票給Stocktable
   useEffect(() => {
@@ -615,7 +597,7 @@ export default function MarketInfo() {
               .sort((a, b) => b.profitData.profitRate - a.profitData.profitRate); // 按獲利率排序
             break;
           // 依據 股票的現金股利/目前股價來看殖利率的排序
-          case '高殖利率':
+          case '高殖利率': {
             const benifitData = resStock.data.data;
             sortData = [...filterData]
               .map((stock) => {
@@ -641,6 +623,7 @@ export default function MarketInfo() {
               .sort((a, b) => b.yieldData.yieldRate - a.yieldData.yieldRate);
             // console.log('sortData', sortData);
             break;
+          }
           case '好股推薦':
             sortData = [...filterData]
               .filter((item) => {
@@ -693,7 +676,7 @@ export default function MarketInfo() {
     };
 
     getCollectionETFStocks();
-  }, [collectionETFTab]);
+  }, [collectionETFTab, dispatch]);
 
   // console.log('industrySelectTab', industryTab);
   return (

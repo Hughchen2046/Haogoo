@@ -16,7 +16,6 @@ const api_Url = import.meta.env.VITE_API_BASE;
 
 export default function DividendPolicy({ stockId }) {
   const [benifitData, setBenifitData] = useState([]);
-  const [priceData, setPriceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -40,17 +39,6 @@ export default function DividendPolicy({ stockId }) {
 
         setBenifitData(Array.isArray(dividendRaw) ? dividendRaw : []);
 
-        // 股價資料
-        const priceRes = await axios.get(`${api_Url}/prices?symbolId=${stockId}`);
-
-        let priceArray = [];
-        if (Array.isArray(priceRes.data)) {
-          priceArray = priceRes.data;
-        } else if (Array.isArray(priceRes.data?.data)) {
-          priceArray = priceRes.data.data;
-        }
-
-        setPriceData(priceArray);
       } catch (err) {
         console.error(err);
         setError('資料載入失敗');
@@ -61,14 +49,6 @@ export default function DividendPolicy({ stockId }) {
 
     fetchData();
   }, [stockId]);
-
-  // ==============================
-  // 排序股價
-  // ==============================
-  const sortedPriceData = useMemo(() => {
-    if (!Array.isArray(priceData)) return [];
-    return [...priceData].sort((a, b) => new Date(a.date) - new Date(b.date));
-  }, [priceData]);
 
   // ==============================
   // 計算填息與股利
@@ -88,31 +68,31 @@ export default function DividendPolicy({ stockId }) {
     // 證交所在除息日前一日,按該公司當天收盤價減除息值,做為除息日之除息參考價,並據以產生開盤競價基準及計算漲跌停板價格
     let successCount = 0;
     let totalDays = 0;
-    const fillValid = validDividend.forEach((div) => {
-      const exDate = div.CashExDividendTradingDate;
+    // const fillValid = validDividend.forEach((div) => {
+    //   const exDate = div.CashExDividendTradingDate;
 
-      const previousDay = [...sortedPriceData]
-        .reverse()
-        .find((p) => new Date(p.date) < new Date(exDate));
-      // console.log('除息日前一交易日', previousDay);
+    //   const previousDay = [...sortedPriceData]
+    //     .reverse()
+    //     .find((p) => new Date(p.date) < new Date(exDate));
+    //   // console.log('除息日前一交易日', previousDay);
 
-      if (!previousDay) return;
+    //   if (!previousDay) return;
 
-      const targetPrice = previousDay.close - div.CashEarningsDistribution;
-      // console.log('除息參考價', targetPrice);
+    //   const targetPrice = previousDay.close - div.CashEarningsDistribution;
+    //   // console.log('除息參考價', targetPrice);
 
-      const fillDay = sortedPriceData.find(
-        (p) => new Date(p.date) >= new Date(exDate) && Number(p.close) >= Number(targetPrice)
-      );
-      // console.log('填息日', fillDay);
+    //   const fillDay = sortedPriceData.find(
+    //     (p) => new Date(p.date) >= new Date(exDate) && Number(p.close) >= Number(targetPrice)
+    //   );
+    //   // console.log('填息日', fillDay);
 
-      if (fillDay) {
-        successCount++;
-        const days = (new Date(fillDay.date) - new Date(exDate)) / (1000 * 60 * 60 * 24);
-        // console.log('成功填息', { exDate, fillDate: fillDay.date, days });
-        totalDays += days;
-      }
-    });
+    //   if (fillDay) {
+    //     successCount++;
+    //     const days = (new Date(fillDay.date) - new Date(exDate)) / (1000 * 60 * 60 * 24);
+    //     // console.log('成功填息', { exDate, fillDate: fillDay.date, days });
+    //     totalDays += days;
+    //   }
+    // });
     // console.log('填息計算', { successCount, totalDays, fillValid });
 
     const fillRate =
@@ -149,7 +129,7 @@ export default function DividendPolicy({ stockId }) {
       totalDividend,
       yearlyData: yearlyArr,
     };
-  }, [benifitData, sortedPriceData]);
+  }, [benifitData]);
 
   // ==============================
   // Chart Data

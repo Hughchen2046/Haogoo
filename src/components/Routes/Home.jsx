@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { BeatLoader } from 'react-spinners';
 import Header from './Header';
@@ -10,14 +9,6 @@ import SocialFeed from '../SocialFeed';
 export default function Home() {
   const globalLoading = useSelector((state) => state.loading.loadingState['home.global'] || 0);
   const isGlobalLoading = globalLoading > 0;
-  const [primaryColor, setPrimaryColor] = useState('#0d6efd');
-
-  useEffect(() => {
-    const color = getComputedStyle(document.documentElement)
-      .getPropertyValue('--bs-primary')
-      .trim();
-    if (color) setPrimaryColor(color);
-  }, []);
 
   return (
     <>
@@ -38,7 +29,7 @@ export default function Home() {
             zIndex: 5000,
           }}
         >
-          <BeatLoader color={primaryColor} size={20} />
+          <BeatLoader color="var(--bs-primary, #0d6efd)" size={20} />
         </div>
       )}
     </>

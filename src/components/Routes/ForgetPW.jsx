@@ -116,6 +116,8 @@ export default function ForgetPW() {
                       type="email"
                       className="form-control"
                       id="forgetAccountInput"
+                      name="email"
+                      autoComplete="email"
                       placeholder="請輸入信箱"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}

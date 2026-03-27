@@ -4,7 +4,7 @@ import { IdCard, Phone, Mail, Map } from 'lucide-react';
 export default function Footer() {
   return (
     <div className="bg-dark">
-      <div className="container py-48 px-12">
+      <div className="container py-48 px-12 overflow-x-hidden">
         <Logo className="text-white mb-32 mb-md-40 footer-logo" />
         <ul className="d-flex flex-column flex-md-row gap-md-40 align-items-md-center mb-32 mb-md-40 text-white list-unstyled pb-32 pb-md-40 border-bottom border-gray-50">
           <li className="mb-24  mb-md-0">

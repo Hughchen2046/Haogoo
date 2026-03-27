@@ -1,6 +1,6 @@
 // TradingChart1.jsx
 import React, { useMemo } from 'react';
-import dayjs from 'dayjs';
+// import dayjs from 'dayjs';
 
 /**
  * lightweight-charts-react-components 元件說明：
@@ -86,7 +86,7 @@ const generateOHLCData = (stockData) => {
   });
 };
 
-export default function TradingChart1({ stockData, stockSelect }) {
+export default function TradingChart1({ stockData }) {
   /**
    * 使用 useMemo 只在組件初次渲染時生成資料
    * 避免每次 re-render 都重新計算
@@ -116,7 +116,7 @@ export default function TradingChart1({ stockData, stockSelect }) {
     // console.log('生成成交量資料:', volume.length, '筆，範例:', volume[0]);
 
     return { ohlcData: ohlc, volumeData: volume };
-  }, [stockData, stockSelect]);
+  }, [stockData]);
 
   // 早期返回：如果沒有資料，顯示提示訊息
   if (!stockData || !stockData.prices || stockData.prices.length === 0) {

@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowUp, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
-import { BeatLoader } from 'react-spinners';
 import ButtonPrimary from './Tools/ButtonPrimary';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Grid, Navigation } from 'swiper/modules';
 import { useNavigate } from 'react-router-dom';
 
-import { IsAuthed } from '../app/features/auth/authSlice';
+import { IsAuthed } from '../app/features/auth/authSelectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadingStarted, loadingStopped } from '../app/features/loading/loadingSlice';
 
@@ -18,7 +17,6 @@ import 'swiper/css/navigation';
 
 export default function StockCard() {
   const [stocks, setStocks] = useState([]);
-  const [primaryColor, setPrimaryColor] = useState('#0d6efd');
   const isAuth = useSelector(IsAuthed);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -48,16 +46,9 @@ export default function StockCard() {
     fetchData();
   }, [dispatch]);
 
-  useEffect(() => {
-    const color = getComputedStyle(document.documentElement)
-      .getPropertyValue('--bs-primary')
-      .trim();
-    if (color) setPrimaryColor(color);
-  }, []);
-
   return (
     <section className="bg-gray-400">
-      <div className="container py-64 py-md-96 font-zh-tw">
+      <div className="container py-64 py-md-96 font-zh-tw overflow-x-hidden">
         <h3 className="h2-md mb-8">熱門個股</h3>
         <h2 className="text-primary display-2 display-1-md mb-32 mb-md-40">Popular Stocks</h2>
 
@@ -182,3 +173,4 @@ export default function StockCard() {
     </section>
   );
 }
+

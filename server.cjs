@@ -186,22 +186,22 @@ router.render = (req, res) => {
 
     // --- 針對不同 API 路徑進行自定義 (客製化邏輯區) ---
 
-    // 範例：針對 /users 的 API 回傳額外 meta 資訊
+    // 針對 /users 的 API 回傳額外 meta 資訊
     if (path.startsWith('/users')) {
         response.apiType = 'USER_MANAGEMENT';
     }
 
-    // 範例：針對 /prices 的 API (僅供讀取)
+    // 針對 /prices 的 API (僅供讀取)
     if (path.startsWith('/prices') && req.method === 'GET') {
         response.timestamp = Date.now();
     }
 
-    // 範例：針對 Auth (登入/註冊) 可能有的特殊結構
+    // 針對 Auth (登入/註冊) 可能有的特殊結構
     if (path.includes('login') || path.includes('register')) {
         response.authStatus = isError ? 'failed' : 'success';
     }
 
-    // --- 統一錯誤處理補充 ---
+    // 錯誤處理補充 
     if (isError) {
         // 如果是 404
         if (statusCode === 404 && (!data || Object.keys(data).length === 0)) {
@@ -211,7 +211,7 @@ router.render = (req, res) => {
         if (statusCode === 401) response.message = '尚未登入或 Token 過期';
         if (statusCode === 403) response.message = '權限不足，拒絕存取';
 
-        // 錯誤時 data 通常是錯誤訊息字串或物件，我們統一格式
+        // 錯誤時 data 
         response.data = null;
         response.errors = data; // 將原始錯誤資訊放進 errors 欄位
     }
@@ -244,7 +244,7 @@ app.get('/api/finmind/taiwan-index', async (req, res) => {
             apiUrl += `&end_date=${end_date}`;
         }
 
-        console.log(`📊 Fetching Taiwan Index from FinMind: ${apiUrl}`);
+        console.log(`Fetching Taiwan Index from FinMind: ${apiUrl}`);
 
         const response = await axios.get(apiUrl);
 
@@ -255,7 +255,7 @@ app.get('/api/finmind/taiwan-index', async (req, res) => {
             data: response.data.data || []
         });
     } catch (error) {
-        console.error('❌ FinMind API Error:', error.message);
+        console.error('FinMind API Error:', error.message);
         res.status(500).json({
             success: false,
             code: 500,
@@ -278,7 +278,7 @@ app.get('/api/finmind/:dataset', async (req, res) => {
                 apiUrl += `&${key}=${queryParams[key]}`;
             }
         });
-        console.log(`📊 Fetching ${dataset} from FinMind: ${apiUrl}`);
+        console.log(`Fetching ${dataset} from FinMind: ${apiUrl}`);
         const response = await axios.get(apiUrl);
         res.json({
             success: true,
@@ -287,7 +287,7 @@ app.get('/api/finmind/:dataset', async (req, res) => {
             data: response.data.data || []
         });
     } catch (error) {
-        console.error('❌ FinMind API Error:', error.message);
+        console.error('FinMind API Error:', error.message);
         res.status(500).json({
             success: false,
             code: 500,
@@ -317,7 +317,7 @@ app.post('/api/save-json', async (req, res) => {
         // 將資料寫入檔案
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
 
-        console.log(`✅ 已儲存檔案: ${filename}`);
+        console.log(`已儲存檔案: ${filename}`);
 
         res.json({
             success: true,
@@ -326,7 +326,7 @@ app.post('/api/save-json', async (req, res) => {
             data: { filename, path: filePath }
         });
     } catch (error) {
-        console.error('❌ 儲存檔案錯誤:', error.message);
+        console.error('儲存檔案錯誤:', error.message);
         res.status(500).json({
             success: false,
             code: 500,
@@ -349,11 +349,11 @@ let stockbenifitData = { stockbenifit: [], monthRevenue: [] };
 try {
     const rawData = fs.readFileSync(stockbenifitPath, 'utf8');
     stockbenifitData = JSON.parse(rawData);
-    console.log(`✅ 已載入 stockbenifit.json:`);
+    console.log(`已載入 stockbenifit.json:`);
     console.log(`   - 股利資料: ${stockbenifitData.stockbenifit?.length || 0} 筆`);
     console.log(`   - 月營收資料: ${stockbenifitData.monthRevenue?.length || 0} 筆`);
 } catch (error) {
-    console.warn(`⚠️  無法載入 stockbenifit.json: ${error.message}`);
+    console.warn(`無法載入 stockbenifit.json: ${error.message}`);
 }
 
 // 股利資料路由

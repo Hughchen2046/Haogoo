@@ -23,7 +23,7 @@ export default function TopicAll() {
       }
     };
     fetchTopicData();
-  }, [page]);
+  }, [page, topicUrl]);
 
   const topicLoadingMore = (e) => {
     e.preventDefault();

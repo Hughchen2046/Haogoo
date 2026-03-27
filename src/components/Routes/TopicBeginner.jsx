@@ -24,7 +24,7 @@ export default function TopicBeginner() {
       }
     };
     fetchTopicData();
-  }, [page]);
+  }, [page, topicUrl]);
   const topicLoadingMore = (e) => {
     e.preventDefault();
     setPage((prev) => prev + 1);

@@ -83,8 +83,6 @@ export default function StockInfo() {
   if (error || !stockData) {
     return (
       <div style={{ padding: '50px', textAlign: 'center', color: '#666' }}>
-        找不到股票 ID: {stockID}
-        <br />
         <button onClick={() => navigate('/')} className="btn btn-primary mt-3">
           回首頁
         </button>
@@ -93,7 +91,7 @@ export default function StockInfo() {
   }
 
   return (
-    <div className="stock-info-page pt-5">
+    <div className="stock-info-page pt-5  overflow-x-hidden">
       {/* 麵包屑 */}
       <div className="custom-container mt-5 text-muted mb-3 d-flex align-items-center gap-1 px-3">
         <NavLink to="/" className="text-muted text-decoration-none">

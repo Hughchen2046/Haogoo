@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { authStorage } from './authStorage';
-import { loginAPI, registAPI, checkAPI } from './authAPI';
+import { api, loginAPI, registAPI, checkAPI } from './authAPI';
 import { loadingStarted, loadingStopped } from '../loading/loadingSlice';
 import { pushMessage } from '../message/messageSlice';
 
@@ -54,14 +54,41 @@ export const registerThunk = createAsyncThunk(
     dispatch(loadingStarted());
     try {
       const payload = await registAPI(formData);
+      const data = payload?.data ?? payload ?? {};
+      const registerToken = data?.accessToken ?? null;
+      const newUserId = Number(data?.user?.id ?? 0);
 
-      // json-server-auth 回傳新使用者的 accessToken，由於現在自選股初始化已經移至 WishlistContext，此處不需要再處理。
-      // const newUserId = payload?.data?.user?.id ?? payload?.user?.id ?? null;
+      if (registerToken && newUserId) {
+        const defaultGroupId = Math.random().toString(36).slice(2, 10);
+        const newDoc = {
+          userId: newUserId,
+          stocks: ['2330', '0050'],
+          stockOrder: ['2330', '0050'],
+          defaultGroupId,
+          groups: [
+            {
+              id: defaultGroupId,
+              name: '預設清單',
+              stockIds: ['2330', '0050'],
+              order: 0,
+            },
+          ],
+        };
+
+        try {
+          await api.post('/watchlists', newDoc, {
+            headers: { Authorization: `Bearer ${registerToken}` },
+          });
+        } catch (err) {
+          console.warn('[registerThunk] create default watchlist failed:', err?.message);
+        }
+      }
 
       dispatch(pushMessage({ type: 'success', title: '註冊成功，請登入' }));
       return { token: null, user: null };
     } catch (err) {
       dispatch(pushMessage({ type: 'error', title: '註冊失敗' }));
+      console.log('[registerThunk] error:', err);
       return rejectWithValue(err?.message || 'register failed');
     } finally {
       dispatch(loadingStopped());
@@ -81,7 +108,8 @@ export const checkThunk = createAsyncThunk(
 
       if (payload?.success === false) throw new Error(payload?.message || 'check failed');
 
-      const user = payload?.data?.user ?? payload?.user ?? null;
+      // /users/:id 可能直接回傳 data = userObject（不是 data.user）
+      const user = payload?.data?.user ?? payload?.data ?? payload?.user ?? null;
       return { token, user };
     } catch (err) {
       const status = err?.response?.status;

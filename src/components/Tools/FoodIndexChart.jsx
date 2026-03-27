@@ -1,13 +1,13 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { createChart, LineSeries } from 'lightweight-charts';
+import { useEffect } from 'react';
+// import { createChart, LineSeries } from 'lightweight-charts';
 import dayjs from 'dayjs';
 
 const FoodIndexChart = () => {
-  const [foodIndexData, setFoodIndexData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [chartMode, setChartMode] = useState('realtime'); // 'realtime' 跟 'static'
+  // const [foodIndexData, setFoodIndexData] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
+  // const [chartMode, setChartMode] = useState('realtime'); // 'realtime' 跟 'static'
 
   useEffect(() => {
     const testGetFromStock = async () => {
