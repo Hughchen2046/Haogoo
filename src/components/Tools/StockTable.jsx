@@ -1,20 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import EmbeddedWishlistHeart from './WishlistHeart';
 
 const StockTable = ({ data, filterKey, initialNumberCount = 5 }) => {
-  const [getMore, setGetMore] = useState(false);
+  const [expandedFilterKey, setExpandedFilterKey] = useState(null);
+  const getMore = expandedFilterKey === filterKey;
 
   const navigate = useNavigate();
 
   const displayData = getMore
     ? data.slice(0, initialNumberCount + 10)
     : data.slice(0, initialNumberCount);
-  //filterKey改變時,重置getMore
-  useEffect(() => {
-    setGetMore(false);
-  }, [filterKey]);
 
   return (
     <div className="text-center">
@@ -131,7 +128,7 @@ const StockTable = ({ data, filterKey, initialNumberCount = 5 }) => {
         type="button"
         disabled={getMore}
         className={getMore ? 'btn bg-gray-600 border-gray-600' : 'btn btn-outline-primary'}
-        onClick={() => setGetMore(true)}
+        onClick={() => setExpandedFilterKey(filterKey)}
       >
         查看更多
       </button>

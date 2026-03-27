@@ -6,20 +6,24 @@ import Logo from '../Tools/Logo';
 import { Search, Menu, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutThunk } from '../../app/features/auth/authThunks';
-import { IsAuthed } from '../../app/features/auth/authSlice';
+import { IsAuthed } from '../../app/features/auth/authSelectors';
 import SearchStock from '../Tools/SearchStock';
 import axios from 'axios';
 
+function getScrolled(isIndex) {
+  const y = window.scrollY || window.pageYOffset;
+  return isIndex ? y > 200 : y > 15;
+}
+
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const isIndex = location.pathname === '/';
+  const [isScrolled, setIsScrolled] = useState(() => getScrolled(isIndex));
   const isAuth = useSelector(IsAuthed);
   const dispatch = useDispatch();
-  const location = useLocation();
   const navigate = useNavigate(); // 用來導向搜尋結果
   const StockUrl = import.meta.env.VITE_stocksUrl;
   const [symbols, setSymbols] = useState([]);
-
-  const isIndex = location.pathname === '/';
 
   // 當 isScrolled 時，不論 isIndex 都使用相同的色系（白色）
   const navLogoColor = isScrolled ? 'text-white' : isIndex ? 'text-white' : 'text-primary';
@@ -37,17 +41,14 @@ export default function Navbar() {
   const navSearchBarSmallScreen = 'text-gray-900';
 
   useEffect(() => {
-    const handleScroll = () => {
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY || window.pageYOffset;
-        isIndex ? setIsScrolled(scrollY > 200) : setIsScrolled(scrollY > 15);
-      });
+    const onScroll = () => {
+      const next = getScrolled(isIndex);
+      setIsScrolled((prev) => (prev === next ? prev : next));
     };
-    handleScroll();
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isIndex]); // 加入 isIndex
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isIndex]);
 
   const handleLogout = () => {
     dispatch(logoutThunk());
@@ -69,27 +70,34 @@ export default function Navbar() {
     }
   };
 
-  const getDatas = async () => {
-    try {
-      const response = await axios.get(StockUrl);
-      const rawData = Array.isArray(response?.data?.data) ? response.data.data : [];
-      const filteredData = rawData.filter(
-        (item) => Array.isArray(item?.prices) && item.prices.length > 3
-      );
-      const mapFilteredData = filteredData.map((item) => ({
-        symbol: item.id,
-        name: item.name,
-      }));
-      setSymbols(mapFilteredData);
-      // console.log('股票資料:', mapFilteredData);
-    } catch (error) {
-      console.error('獲取股票資料失敗:', error);
-    }
-  };
-
   useEffect(() => {
-    getDatas();
-  }, []);
+    let alive = true;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(StockUrl);
+        const rawData = Array.isArray(response?.data?.data) ? response.data.data : [];
+        const filteredData = rawData.filter(
+          (item) => Array.isArray(item?.prices) && item.prices.length > 3
+        );
+        const mapFilteredData = filteredData.map((item) => ({
+          symbol: item.id,
+          name: item.name,
+        }));
+
+        if (alive) {
+          setSymbols(mapFilteredData);
+        }
+      } catch (error) {
+        console.error('獲取股票資料失敗:', error);
+      }
+    };
+
+    fetchData();
+    return () => {
+      alive = false;
+    };
+  }, [StockUrl]);
   return (
     <>
       <nav
@@ -262,3 +270,4 @@ export default function Navbar() {
     </>
   );
 }
+

@@ -1,53 +1,66 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { api } from '../app/features/auth/authAPI';
 import { useDispatch, useSelector } from 'react-redux';
-import { authUser } from '../app/features/auth/authSlice';
+import { authUser } from '../app/features/auth/authSelectors';
 import { pushMessage } from '../app/features/message/messageSlice';
-
-const WishlistContext = createContext(null);
+import WishlistContext from './wishlistContextRef';
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const user = useSelector(authUser);
   const dispatch = useDispatch();
 
   // 1. 取得清單
-  const getWishlist = useCallback(async (userId) => {
-    if (!userId) return;
-    setLoading(true);
-    try {
-      const res = await api.get(`/watchlists?userId=${userId}`);
-      const data = res.data?.data?.[0];
+  const getWishlist = useCallback(
+    async (userId) => {
+      if (!userId) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const ownerId = Number(userId);
+        const res = await api.get('/watchlists', { params: { userId: ownerId } });
+        const data = res.data?.data?.[0];
 
-      if (!data) {
-        // 首次登入，建立預設資料
-        const defaultGroupId = Math.random().toString(36).slice(2, 10);
-        const newDoc = {
-          userId,
-          stocks: ['2330', '0050'],
-          stockOrder: ['2330', '0050'],
-          defaultGroupId,
-          groups: [
-            {
-              id: defaultGroupId,
-              name: '預設清單',
-              stockIds: ['2330', '0050'],
-              order: 0,
-            },
-          ],
-        };
-        const createRes = await api.post('/watchlists', newDoc);
-        setWishlist(createRes.data?.data || createRes.data);
-      } else {
-        setWishlist(data);
+        if (!data) {
+          // 首次登入，建立預設資料
+          const defaultGroupId = Math.random().toString(36).slice(2, 10);
+          const newDoc = {
+            userId: ownerId,
+            stocks: ['2330', '0050'],
+            stockOrder: ['2330', '0050'],
+            defaultGroupId,
+            groups: [
+              {
+                id: defaultGroupId,
+                name: '預設清單',
+                stockIds: ['2330', '0050'],
+                order: 0,
+              },
+            ],
+          };
+          const createRes = await api.post('/watchlists', newDoc);
+          setWishlist(createRes.data?.data || createRes.data);
+        } else {
+          setWishlist(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch wishlist', err);
+        const status = err?.response?.status;
+        if (status === 401 || status === 403) {
+          setError('目前登入狀態已失效，請重新登入後再試。');
+        } else {
+          setError('讀取自選股失敗，請稍後重試。');
+        }
+        setWishlist(null);
+        dispatch(pushMessage({ type: 'error', title: '讀取自選股失敗', timer: 2500 }));
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Failed to fetch wishlist', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [dispatch]
+  );
 
   // 2. 切換收藏 (Axios PATCH -> GET)
   const toggleStock = async (symbol, targetGroupId = null) => {
@@ -71,7 +84,7 @@ export const WishlistProvider = ({ children }) => {
       // 2. 決定加入哪個群組
       let selectedGroupId = targetGroupId;
       if (!selectedGroupId) {
-        // 如果沒指定，預設存入第一個（通常是「預設清單」）
+        // 如果沒指定，預設存入「預設清單」
         selectedGroupId = wishlist.defaultGroupId || groups[0]?.id;
       }
 
@@ -98,7 +111,7 @@ export const WishlistProvider = ({ children }) => {
       });
       // 直接重新獲取最新資料，確保穩定
       await getWishlist(user.id);
-    } catch (err) {
+    } catch {
       dispatch(pushMessage({ type: 'error', title: '操作失敗', timer: 3000 }));
     }
   };
@@ -185,7 +198,7 @@ export const WishlistProvider = ({ children }) => {
     try {
       await api.patch(`/watchlists/${wishlist.id}`, updates);
       await getWishlist(user.id);
-    } catch (err) {
+    } catch {
       dispatch(pushMessage({ type: 'error', title: '更新失敗', timer: 3000 }));
     }
   };
@@ -193,6 +206,7 @@ export const WishlistProvider = ({ children }) => {
   const value = {
     wishlist,
     loading,
+    error,
     groupCount: wishlist?.groups?.length || 0,
     groups: wishlist?.groups || [],
     getWishlist,
@@ -211,8 +225,3 @@ export const WishlistProvider = ({ children }) => {
   return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;
 };
 
-export const useWishlist = () => {
-  const context = useContext(WishlistContext);
-  if (!context) throw new Error('useWishlist must be used within WishlistProvider');
-  return context;
-};

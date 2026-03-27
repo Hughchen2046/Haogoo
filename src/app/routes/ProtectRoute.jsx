@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import { checkThunk } from '../features/auth/authThunks';
-import { IsAuthed, AuthStatus } from '../features/auth/authSlice';
+import { IsAuthed, AuthStatus } from '../features/auth/authSelectors';
 import LazyImage from '../../components/LazyImage';
 
 export default function ProtectRoute() {
@@ -32,3 +32,4 @@ export default function ProtectRoute() {
 
   return <Outlet />;
 }
+

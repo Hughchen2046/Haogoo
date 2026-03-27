@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { useParams, NavLink, useLocation, Outlet } from 'react-router-dom';
 import { ChevronUp, ChevronDown, ChevronRight } from 'lucide-react';
 import { MyStockList } from '../../contexts/Topics';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { authUser } from '../../app/features/auth/authSlice';
-import { useWishlist } from '../../contexts/WishlistContext';
+import { authUser } from '../../app/features/auth/authSelectors';
+import { useWishlist } from '../../contexts/useWishlist';
 
 export default function MyStockFeed() {
   const { mystockSlug } = useParams();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const user = useSelector(authUser);
   const { getWishlist } = useWishlist();
 
@@ -29,7 +29,7 @@ export default function MyStockFeed() {
   return (
     <>
       <div className=" pt-80">
-        <div className="container">
+        <div className="container overflow-x-hidden">
           <nav className="font-zh-tw py-12 caption">
             <ul className="d-flex gap-8 align-items-center list-unstyled m-0">
               <li className="font-weight-light">
@@ -117,3 +117,4 @@ export default function MyStockFeed() {
     </>
   );
 }
+

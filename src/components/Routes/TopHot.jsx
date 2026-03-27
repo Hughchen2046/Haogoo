@@ -25,7 +25,7 @@ export default function TopHot() {
       }
     };
     fetchTopicData();
-  }, [page]);
+  }, [page, topicUrl]);
 
   const topicLoadingMore = (e) => {
     e.preventDefault();

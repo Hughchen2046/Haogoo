@@ -7,7 +7,7 @@ import ButtonOutline from '../Tools/ButtonOutline';
 import ButtonPrimary from '../Tools/ButtonPrimary';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginThunk, logoutThunk } from '../../app/features/auth/authThunks';
-import { IsAuthed } from '../../app/features/auth/authSlice';
+import { IsAuthed } from '../../app/features/auth/authSelectors';
 
 export default function Login() {
   const isAuth = useSelector(IsAuthed);
@@ -103,6 +103,7 @@ export default function Login() {
                   type="email"
                   className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                   id="accountInput"
+                  autoComplete="username"
                   placeholder="請輸入信箱"
                   {...register('email', {
                     required: '請輸入 Email',
@@ -126,6 +127,7 @@ export default function Login() {
                   type="password"
                   className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                   id="passwordInput"
+                  autoComplete="current-password"
                   placeholder="請輸入密碼"
                   {...register('password', {
                     required: '請輸入密碼',
@@ -157,3 +159,4 @@ export default function Login() {
     </div>
   );
 }
+

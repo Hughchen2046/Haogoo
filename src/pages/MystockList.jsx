@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectWatchedSet } from '../app/features/wishlist/wishlistSelectors';
 import { toggleStockThunk } from '../app/features/wishlist/wishlistThunks';
-import { authUser } from '../app/features/auth/authSlice';
+import { authUser } from '../app/features/auth/authSelectors';
 import { pushMessage } from '../app/features/message/messageSlice';
 
 // Swiper & Styles
@@ -13,37 +14,36 @@ import 'swiper/css/pagination';
 import 'swiper/css/grid';
 import 'swiper/css/navigation';
 
+function WishlistHeartButton({ active, onToggle }) {
+  return (
+    <Heart
+      size={20}
+      strokeWidth={active ? 0 : 2}
+      fill={active ? 'var(--bs-primary)' : 'none'}
+      className={`heart-icon ${active ? 'active' : ''}`}
+      style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+      onClick={onToggle}
+    />
+  );
+}
+
 export default function MystockList() {
   const [activeTab, setActiveTab] = useState('我的好股');
   const tabs = ['我的好股', '精選與行情'];
   // 記錄藥丸按鈕目前選哪一個
-  const [marketTab, setMarketTab] = useState('加權指數');
+  const [marketTab] = useState('加權指數');
   const dispatch = useDispatch();
   const watchedSet = useSelector(selectWatchedSet);
   const user = useSelector(authUser);
 
-  // 收藏按鈕組件方便複用
-  const WishlistHeart = ({ symbol }) => {
-    const active = watchedSet.has(symbol);
-    const handleToggle = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!user) {
-        dispatch(pushMessage({ type: 'error', title: '請先登入後再收藏', timer: 3000 }));
-        return;
-      }
-      dispatch(toggleStockThunk(symbol));
-    };
-    return (
-      <Heart
-        size={20}
-        strokeWidth={active ? 0 : 2}
-        fill={active ? 'var(--bs-primary)' : 'none'}
-        className={`heart-icon ${active ? 'active' : ''}`}
-        style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-        onClick={handleToggle}
-      />
-    );
+  const handleToggleWishlist = (symbol, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      dispatch(pushMessage({ type: 'error', title: '請先登入後再收藏', timer: 3000 }));
+      return;
+    }
+    dispatch(toggleStockThunk(symbol));
   };
   // 對應 TradingView 的代號
   const symbolMap = {
@@ -355,7 +355,10 @@ export default function MystockList() {
                         <td>15,432</td>
                         {/* 收藏按鈕 */}
                         <td>
-                          <WishlistHeart symbol="2330" />
+                          <WishlistHeartButton
+                            active={watchedSet.has('2330')}
+                            onToggle={(e) => handleToggleWishlist('2330', e)}
+                          />
                         </td>
                       </tr>
                       <tr className="h6">
@@ -373,7 +376,10 @@ export default function MystockList() {
                         <td>3,458</td>
                         {/* 收藏按鈕 */}
                         <td>
-                          <WishlistHeart symbol="2338" />
+                          <WishlistHeartButton
+                            active={watchedSet.has('2338')}
+                            onToggle={(e) => handleToggleWishlist('2338', e)}
+                          />
                         </td>
                       </tr>
                       <tr className="h6">
@@ -391,7 +397,10 @@ export default function MystockList() {
                         <td>37,136</td>
                         {/* 收藏按鈕 */}
                         <td>
-                          <WishlistHeart symbol="2342" />
+                          <WishlistHeartButton
+                            active={watchedSet.has('2342')}
+                            onToggle={(e) => handleToggleWishlist('2342', e)}
+                          />
                         </td>
                       </tr>
                       <tr className="h6">
@@ -409,7 +418,10 @@ export default function MystockList() {
                         <td>287,387</td>
                         {/* 收藏按鈕 */}
                         <td>
-                          <WishlistHeart symbol="2408" />
+                          <WishlistHeartButton
+                            active={watchedSet.has('2408')}
+                            onToggle={(e) => handleToggleWishlist('2408', e)}
+                          />
                         </td>
                       </tr>
                     </tbody>
@@ -438,6 +450,5 @@ const navLinkStyle = (isActive) => ({
   ...(isActive && {
     borderBottom: 'none',
   }),
-  // 使用偽元素或直接在 active 時加一個裝飾線
-  // 這裡為了演示方便，如果 isActive 就給他一個自定義屬性，或者建議寫在 CSS 檔
 });
+

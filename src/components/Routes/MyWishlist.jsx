@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { authUser } from '../../app/features/auth/authSlice';
-import { useWishlist } from '../../contexts/WishlistContext';
+import { authUser } from '../../app/features/auth/authSelectors';
+import { useWishlist } from '../../contexts/useWishlist';
 
 // dnd-kit
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
@@ -17,9 +17,10 @@ import { CSS } from '@dnd-kit/utilities';
 import { BeatLoader } from 'react-spinners';
 import { Heart, Plus, Pencil, Trash2, Check, X, BookmarkCheck, GripVertical } from 'lucide-react';
 
-// ══════════════════════════════════════════════════════════════════
+const EMPTY_GROUPS = [];
+
 // 可拖曳股票行
-// ══════════════════════════════════════════════════════════════════
+
 function SortableStockRow({ symbol, groups, activeGroupId, onRemoveFromGroup, onToggle }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: symbol,
@@ -90,9 +91,7 @@ function SortableStockRow({ symbol, groups, activeGroupId, onRemoveFromGroup, on
   );
 }
 
-// ══════════════════════════════════════════════════════════════════
 // 可拖曳群組 Tab
-// ══════════════════════════════════════════════════════════════════
 function SortableGroupTab({
   group,
   isActive,
@@ -138,6 +137,8 @@ function SortableGroupTab({
           <input
             className="form-control form-control-sm"
             style={{ width: 120 }}
+            name="group_name_edit"
+            autoComplete="off"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && confirmEdit()}
@@ -193,14 +194,14 @@ function SortableGroupTab({
   );
 }
 
-// ══════════════════════════════════════════════════════════════════
 // 主元件
-// ══════════════════════════════════════════════════════════════════
 export default function MyWishlist() {
   const user = useSelector(authUser);
   const {
     wishlist,
     loading,
+    error,
+    getWishlist,
     toggleStock,
     addGroup,
     renameGroup,
@@ -212,16 +213,16 @@ export default function MyWishlist() {
     reorderGroups,
   } = useWishlist();
 
-  const [activeGroupId, setActiveGroupId] = useState(null);
+  const [activeGroupId, setActiveGroupId] = useState(undefined);
   const [addSymbol, setAddSymbol] = useState('');
   const [showNewGroupInput, setShowNewGroupInput] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
 
   // 整理過的資料
+  const wishlistGroups = wishlist?.groups ?? EMPTY_GROUPS;
   const groups = useMemo(() => {
-    if (!wishlist?.groups) return [];
-    return [...wishlist.groups].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  }, [wishlist?.groups]);
+    return [...wishlistGroups].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  }, [wishlistGroups]);
 
   const defaultGroup = useMemo(() => {
     if (!wishlist) return null;
@@ -234,15 +235,13 @@ export default function MyWishlist() {
     return wishlist.stockOrder.filter((s) => set.has(s));
   }, [wishlist]);
 
+  const resolvedActiveGroupId =
+    activeGroupId === undefined ? (defaultGroup?.id ?? null) : activeGroupId;
+
   // dnd-kit sensor：需拖曳 8px 才觸發，避免誤觸點擊
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
-  // 初始選中預設群組
-  useEffect(() => {
-    if (defaultGroup && activeGroupId === null) setActiveGroupId(defaultGroup.id);
-  }, [defaultGroup?.id]);
-
-  // ── 未登入 ──
+  //  未登入
   if (!user) {
     return (
       <div className="d-flex flex-column align-items-center justify-content-center py-80 gap-16">
@@ -252,8 +251,19 @@ export default function MyWishlist() {
     );
   }
 
-  // ── 載入中 ──
+  // 載入中
   if (loading || !wishlist) {
+    if (!loading && error) {
+      return (
+        <div className="d-flex flex-column align-items-center justify-content-center py-80 gap-16">
+          <p className="h6 text-danger m-0">{error}</p>
+          <button className="btn btn-outline-primary btn-sm" onClick={() => getWishlist(user.id)}>
+            重新載入
+          </button>
+        </div>
+      );
+    }
+
     return (
       <div className="d-flex justify-content-center py-80">
         <BeatLoader color="var(--bs-primary)" />
@@ -262,9 +272,9 @@ export default function MyWishlist() {
   }
 
   // ── 顯示的股票 ──
-  const displayStocks = activeGroupId
+  const displayStocks = resolvedActiveGroupId
     ? allStocks.filter((s) =>
-        groups.find((g) => g.id === activeGroupId)?.stockIds.includes(String(s))
+        groups.find((g) => g.id === resolvedActiveGroupId)?.stockIds.includes(String(s))
       )
     : allStocks;
 
@@ -327,7 +337,7 @@ export default function MyWishlist() {
           <div className="d-flex flex-wrap align-items-center gap-8 mb-16">
             {/* 全部 tab（不可拖曳） */}
             <button
-              className={`btn btn-sm rounded-pill ${!activeGroupId ? 'btn-primary' : 'btn-outline-secondary'}`}
+              className={`btn btn-sm rounded-pill ${!resolvedActiveGroupId ? 'btn-primary' : 'btn-outline-secondary'}`}
               onClick={() => setActiveGroupId(null)}
             >
               全部
@@ -337,13 +347,13 @@ export default function MyWishlist() {
               <SortableGroupTab
                 key={g.id}
                 group={g}
-                isActive={activeGroupId === g.id}
+                isActive={resolvedActiveGroupId === g.id}
                 isDefault={g.id === defaultGroup?.id}
                 onSelect={setActiveGroupId}
                 onRename={renameGroup}
                 onDelete={(id) => {
                   deleteGroup(id);
-                  if (activeGroupId === id) setActiveGroupId(null);
+                  if (resolvedActiveGroupId === id) setActiveGroupId(null);
                 }}
                 onSetDefault={setDefaultGroup}
               />
@@ -355,6 +365,8 @@ export default function MyWishlist() {
                 <input
                   className="form-control form-control-sm"
                   style={{ width: 120 }}
+                  name="new_group_name"
+                  autoComplete="off"
                   placeholder="群組名稱"
                   value={newGroupName}
                   onChange={(e) => setNewGroupName(e.target.value)}
@@ -388,6 +400,8 @@ export default function MyWishlist() {
         <input
           className="form-control form-control-sm"
           style={{ maxWidth: 160 }}
+          name="stock_symbol"
+          autoComplete="off"
           placeholder="輸入代碼，如 2330"
           value={addSymbol}
           onChange={(e) => setAddSymbol(e.target.value)}
@@ -403,7 +417,7 @@ export default function MyWishlist() {
           <Heart size={36} className="mb-16 text-primary" />
           <p>還沒有收藏任何股票</p>
         </div>
-      ) : displayStocks.length === 0 && activeGroupId ? (
+      ) : displayStocks.length === 0 && resolvedActiveGroupId ? (
         <div className="text-center text-muted py-48 font-zh-tw">
           <p>此群組尚無股票</p>
         </div>
@@ -420,7 +434,7 @@ export default function MyWishlist() {
                   key={symbol}
                   symbol={symbol}
                   groups={groups}
-                  activeGroupId={activeGroupId}
+                  activeGroupId={resolvedActiveGroupId}
                   onRemoveFromGroup={handleRemoveFromGroup}
                   onToggle={toggleStock}
                 />

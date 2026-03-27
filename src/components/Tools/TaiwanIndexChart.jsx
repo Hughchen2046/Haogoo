@@ -5,8 +5,8 @@ import dayjs from 'dayjs';
 
 const TaiwanIndexChart = () => {
   const [taiwanIndexData, setTaiwanIndexData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
   const [chartMode, setChartMode] = useState('realtime'); // 'realtime' 跟 'static'
 
   useEffect(() => {

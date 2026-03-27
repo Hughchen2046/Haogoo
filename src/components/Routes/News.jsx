@@ -1,39 +1,29 @@
 import * as bootstrap from 'bootstrap';
-import CommentCard from './CommentCard';
-import React, { useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import {
-  User,
-  ThumbsUp,
-  MessageCircle,
-  Share2,
-  ChevronRight,
-  MessageSquareText,
-} from 'lucide-react';
+// import CommentCard from './CommentCard';
+import { useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
+import { ThumbsUp, MessageCircle, Share2, ChevronRight, MessageSquareText } from 'lucide-react';
 
-const usersRaw = {
-  /* 24 位用戶 JSON */
-};
-const commentsRaw = {
-  /* 評論 JSON */
-};
+// const _usersRaw = {
+//   /* 24 位用戶 JSON */
+// };
+// const _commentsRaw = {
+//   /* 評論 JSON */
+// };
 export default function News() {
   // 目前main.jsx已經設定導航到news/:postId => 到時候網頁上要輸入 http://localhost:5173/#/news/1 才會看到news的內容.
   // postId的資料會由上層Topics導航中的動態路由參數帶入 state={{ postId: allData.id, catagory: currentTopic.label }}
-  const location = useLocation();
-  const { postId, catagory } = location.state || {};
-  console.log('從路由參數獲取的 postId:', postId);
-  console.log('從路由參數獲取的 catagory:', catagory);
+  // const location = useLocation();
+  // const { postId, catagory } = location.state || {};
+  // console.log('從路由參數獲取的 postId:', postId);
+  // console.log('從路由參數獲取的 catagory:', catagory);
 
   // 1. 確保資料來源存在，使用 Optional Chaining (?.) 避免讀取不到 data 噴錯
-  const userLookup =
-    usersRaw?.data?.reduce((acc, user) => {
-      acc[user.id] = user;
-      return acc;
-    }, {}) || {}; // 如果沒有資料，就給一個空物件
-
-  // 2. 渲染評論列表時，也要確保 commentsRaw.data 存在
-  const commentList = commentsRaw?.data || [];
+  // const userLookup =
+  //   usersRaw?.data?.reduce((acc, user) => {
+  //     acc[user.id] = user;
+  //     return acc;
+  //   }, {}) || {}; // 如果沒有資料，就給一個空物件
 
   useEffect(() => {
     // 取得頁面上所有帶有 data-bs-toggle="popover" 的元素
@@ -55,7 +45,7 @@ export default function News() {
 
   return (
     <>
-      <div className="container mt-80 py-16">
+      <div className="container mt-80 py-16  overflow-x-hidden">
         {/* 麵包屑 */}
         <nav className="font-zh-tw py-12 caption">
           <ul className="d-flex gap-8 align-items-center list-unstyled m-0">
@@ -105,7 +95,7 @@ export default function News() {
         </div>
 
         <h1 className="text-primary-200 fw-bold mb-20">
-          大立光擬買回2670張庫藏股　總金額上限1796億創新高
+          大立光擬買回2670張庫藏股 總金額上限1796億創新高
         </h1>
         <h6 className="text-primary-500">2025/12/19 16:28</h6>
 
@@ -118,7 +108,7 @@ export default function News() {
           />
           <div className="card-body rounded-0 px-0">
             <p className="card-text text-gray-800">
-              大立光擬買回2670張庫藏股　總金額上限1796億創新高 2025/12/19 16:28（12/19 16:43 更新）
+              大立光擬買回2670張庫藏股 總金額上限1796億創新高 2025/12/19 16:28（12/19 16:43 更新）
               圖為光學鏡頭廠大立光舉行股東常會，由董事長林恩平（右）主持，左為總經理黃有執。
               （中央社檔案照片）
             </p>
@@ -268,7 +258,8 @@ export default function News() {
 
                     <div className="post-content mb-3">
                       <p className="mb-0 text-dark h5" style={{ lineHeight: '1.4' }}>
-                        講​得​好​像​很​簡單，​但​大部分​人​一​萬​放哪​都​會心痛，​心理​層面​才​是​難點​
+                        講 得 好 像 很 簡單， 但 大部分 人 一 萬 放哪 都 會心痛， 心理 層面 才 是
+                        難點
                       </p>
                     </div>
                   </div>
@@ -327,8 +318,8 @@ export default function News() {
 
                     <div className="post-content mb-3">
                       <p className="mb-0 text-dark h5" style={{ lineHeight: '1.4' }}>
-                        重點​不​是​一​萬，​而​是​持續​投入​的​習慣​吧 ​!
-                        ​一​次性​投入​很​難​看到​變化​ ...
+                        重點 不 是 一 萬， 而 是 持續 投入 的 習慣 吧 ! 一 次性 投入 很 難 看到 變化
+                        ...
                       </p>
                     </div>
                   </div>

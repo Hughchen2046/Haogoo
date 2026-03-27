@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 
 const AllIndexChart = ({ indexId = 't24' }) => {
   const [indexData, setIndexData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [chartMode, setChartMode] = useState('realtime'); // 'realtime' 跟 'static'
   const indexList = [
     { id: 't02', name: '食品類指數' },
@@ -35,7 +35,7 @@ const AllIndexChart = ({ indexId = 't24' }) => {
         ];
         // console.log('由原始資料轉錄', indexData[0]);
         setIndexData(indexData[0]);
-        setLoading(false);
+        // setLoading(false);
       } catch (error) {
         console.error(error);
       }

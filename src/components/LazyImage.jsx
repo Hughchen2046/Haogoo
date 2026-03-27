@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BeatLoader } from 'react-spinners';
 
 /**
@@ -21,14 +21,6 @@ const LazyImage = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [primaryColor, setPrimaryColor] = useState('#2fa58d');
-
-  useEffect(() => {
-    const color = getComputedStyle(document.documentElement)
-      .getPropertyValue('--bs-primary')
-      .trim();
-    if (color) setPrimaryColor(color);
-  }, []);
 
   return (
     <div
@@ -45,7 +37,7 @@ const LazyImage = ({
       {/* 載入中動畫 */}
       {!isLoaded && !hasError && (
         <div style={{ position: 'absolute', zIndex: 1 }}>
-          <BeatLoader color={primaryColor} size={loaderSize} />
+          <BeatLoader color="var(--bs-primary, #2fa58d)" size={loaderSize} />
         </div>
       )}
 

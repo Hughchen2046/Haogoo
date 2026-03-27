@@ -33,7 +33,7 @@ export default function EtfsList() {
       }
     };
     getEtfs();
-  }, [dispatch]);
+  }, [dispatch, ETF_URL]);
 
   // 處理標籤點擊,導航到股票頁面
   const handleTagClick = (stockId) => {
@@ -43,7 +43,7 @@ export default function EtfsList() {
 
   return (
     <section className="bg-gray-400">
-      <div className="container py-64 py-md-96">
+      <div className="container py-64 py-md-96 overflow-x-hidden">
         <div className="etfsbox bg-primary-700 font-zh-tw round-48 round-md-96 p-32 mb-24 py-md-72 px-md-96">
           <div className="row">
             <div

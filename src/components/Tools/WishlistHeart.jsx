@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
-import { useWishlist } from '../../contexts/WishlistContext';
+import { useWishlist } from '../../contexts/useWishlist';
 
 /**
  * 通用的收藏愛心組件

@@ -14,7 +14,7 @@ export default function TopicFeedPage() {
   return (
     <>
       <div className=" pt-80">
-        <div className="container">
+        <div className="container overflow-x-hidden">
           <nav className="font-zh-tw py-12 caption">
             <ul className="d-flex gap-8 align-items-center list-unstyled m-0">
               <li className="font-weight-light">
