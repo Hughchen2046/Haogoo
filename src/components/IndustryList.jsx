@@ -25,14 +25,22 @@ export default function IndustryList() {
 
   // 取得產業與股票資料
   useEffect(() => {
-    const baseURL = import.meta.env.VITE_API_BASE;
-    dispatch(loadingStarted({ status: 'home.global' }));
+    const fetchData = async () => {
+      const baseURL = import.meta.env.VITE_API_BASE;
+      dispatch(loadingStarted({ status: 'home.global' }));
 
-    fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`)
-      .then((res) => res.json())
-      .then((data) => setSymbols(data.data))
-      .catch((err) => console.error(err))
-      .finally(() => dispatch(loadingStopped({ status: 'home.global' })));
+      try {
+        const res = await fetch(`${baseURL}/symbols?industryTW_ne=綜合&_embed=prices&_limit=18`);
+        const data = await res.json();
+        setSymbols(data.data);
+      } catch (err) {
+        // console.error(err);
+      } finally {
+        dispatch(loadingStopped({ status: 'home.global' }));
+      }
+    };
+
+    fetchData();
   }, [dispatch]);
 
   // 每 2 筆 symbols 組成一張卡
@@ -175,4 +183,3 @@ export default function IndustryList() {
     </section>
   );
 }
-

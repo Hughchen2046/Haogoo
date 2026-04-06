@@ -11,11 +11,11 @@ export default function TopicETF() {
   const { currentTopic } = useOutletContext();
 
   useEffect(() => {
-    // console.log('當前 Topic URL:', topicUrl);
+    // //console.log('當前 Topic URL:', topicUrl);
     const fetchTopicData = async () => {
       try {
         const res = await axios.get(`${topicUrl}?_expand=user&category=ETF&_page=${page}&_limit=5`);
-        // console.log('取得資料成功:', res.data);
+        // //console.log('取得資料成功:', res.data);
         setEtfData((prev) => (page === 1 ? res.data.data : [...prev, ...res.data.data]));
       } catch (err) {
         console.error('API 錯誤:', err);
@@ -26,7 +26,7 @@ export default function TopicETF() {
   const topicLoadingMore = (e) => {
     e.preventDefault();
     setPage((prev) => prev + 1);
-    // console.log('page', page);
+    // //console.log('page', page);
   };
   return (
     <div>

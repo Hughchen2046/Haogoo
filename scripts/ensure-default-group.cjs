@@ -39,7 +39,7 @@ for (const userId of ALL_USER_IDS) {
             defaultGroupId: g.id,
             groups: [g],
         });
-        console.log(`➕ userId=${userId} 新增 watchlist`);
+        // //console.log(`➕ userId=${userId} 新增 watchlist`);
     } else {
         // ── 已有 watchlist，確保含「預設清單」群組 ──
         const idx = wlMap.get(userId);
@@ -55,12 +55,12 @@ for (const userId of ALL_USER_IDS) {
                 if (!wl.stockOrder.includes(s)) wl.stockOrder.unshift(s);
             }
             wl.defaultGroupId = wl.defaultGroupId ?? g.id;
-            console.log(`🔧 userId=${userId} 補入預設清單`);
+            // //console.log(`🔧 userId=${userId} 補入預設清單`);
         } else {
-            console.log(`✅ userId=${userId} 已有預設清單，略過`);
+            //console.log(`✅ userId=${userId} 已有預設清單，略過`);
         }
     }
 }
 
 fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
-console.log('\n完成！watchlists 總數：', db.watchlists.length);
+//console.log('\n完成！watchlists 總數：', db.watchlists.length);

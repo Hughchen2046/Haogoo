@@ -7,7 +7,7 @@ export default function TopicFeedPage() {
   const { topicSlug } = useParams();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  // console.log(Topics);
+  // //console.log(Topics);
   const slug = topicSlug || pathname.split('/').pop();
   const currentTopic = Object.values(Topics).find((topic) => topic.slug === slug) ?? Topics.all;
 

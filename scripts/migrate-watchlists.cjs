@@ -78,5 +78,5 @@ if (!hasAdmin) {
 
 db.watchlists = newWatchlists;
 fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
-console.log('✅ Migration complete. New watchlists count:', newWatchlists.length);
-console.log(JSON.stringify(newWatchlists, null, 2));
+//console.log('✅ Migration complete. New watchlists count:', newWatchlists.length);
+//console.log(JSON.stringify(newWatchlists, null, 2));

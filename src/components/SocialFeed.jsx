@@ -61,7 +61,7 @@ export default function SocialFeed() {
       <div className="bg-primary round-top-48 round-top-md-80 p-12 p-md-96 font-zh-tw">
         <div className="container bg-gray-300 round-36 round-md-96 overflow-hidden">
           <div className="row">
-            <div className="py-48 px-24 p-md-72 col-12 col-md-5">
+            <div className="py-48 px-24 p-md-72 col-md-5">
               <h3 className="h2-md mb-8">社群互動</h3>
               <div className="d-flex flex-md-column gap-12 gap-md-0 mb-32 mb-md-40">
                 <div className="display-2 display-1-md text-primary font-en">Social</div>
@@ -83,7 +83,7 @@ export default function SocialFeed() {
               </div>
             </div>
             <div
-              className="py-48 px-24 p-md-72 col-12 col-md-7 text-white"
+              className="py-48 px-24 p-md-72 col-md-7 text-white"
               style={{
                 backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.5)), url("${topics[activeIndex].backgroundImgUrl}")`,
                 backgroundSize: 'cover',

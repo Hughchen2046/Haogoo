@@ -70,10 +70,10 @@ const colors = {
  */
 const generateOHLCData = (stockData) => {
   if (!stockData?.prices || stockData.prices.length === 0) {
-    // console.log('generateOHLCData: 沒有股票資料');
+    // //console.log('generateOHLCData: 沒有股票資料');
     return [];
   }
-  // console.log('generateOHLCData: 產生 K線資料', '，共', stockData.prices.length, '筆');
+  // //console.log('generateOHLCData: 產生 K線資料', '，共', stockData.prices.length, '筆');
 
   return stockData.prices.map((price) => {
     return {
@@ -91,8 +91,8 @@ export default function TradingChart1({ stockData }) {
    * 使用 useMemo 只在組件初次渲染時生成資料
    * 避免每次 re-render 都重新計算
    */
-  // console.log('由父層來的資料', stockData);
-  // console.log('由父層來的資料', stockSelect);
+  // //console.log('由父層來的資料', stockData);
+  // //console.log('由父層來的資料', stockSelect);
 
   const { ohlcData, volumeData } = useMemo(() => {
     // 1. 生成 OHLC 資料從 stockData
@@ -113,7 +113,7 @@ export default function TradingChart1({ stockData }) {
       };
     });
 
-    // console.log('生成成交量資料:', volume.length, '筆，範例:', volume[0]);
+    // //console.log('生成成交量資料:', volume.length, '筆，範例:', volume[0]);
 
     return { ohlcData: ohlc, volumeData: volume };
   }, [stockData]);

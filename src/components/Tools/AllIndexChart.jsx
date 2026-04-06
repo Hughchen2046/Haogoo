@@ -23,7 +23,7 @@ const AllIndexChart = ({ indexId = 't24' }) => {
         const response = await axios.get(
           `https://backend.taiwanindex.com.tw/api/indexes/${indexId}/records?start=2020-01-01&end=${now.format('YYYY-MM-DD')}`
         );
-        // console.log(response.data);
+        // //console.log(response.data);
         const indexData = [
           {
             last_date: response.data.last_date,
@@ -33,7 +33,7 @@ const AllIndexChart = ({ indexId = 't24' }) => {
             date: response.data.data.labels,
           },
         ];
-        // console.log('由原始資料轉錄', indexData[0]);
+        // //console.log('由原始資料轉錄', indexData[0]);
         setIndexData(indexData[0]);
         // setLoading(false);
       } catch (error) {
@@ -42,7 +42,7 @@ const AllIndexChart = ({ indexId = 't24' }) => {
     };
     getIndexData();
   }, [indexId]);
-  // console.log('indexData', indexData, typeof indexData);
+  // //console.log('indexData', indexData, typeof indexData);
 
   // tradingViewChart
   useEffect(() => {
@@ -65,8 +65,8 @@ const AllIndexChart = ({ indexId = 't24' }) => {
         return !isNaN(p.value) && p.time;
       });
 
-    // console.log('有效資料數:', formattedPoints.length);
-    // console.log('圖表模式:', chartMode);
+    // //console.log('有效資料數:', formattedPoints.length);
+    // //console.log('圖表模式:', chartMode);
 
     if (formattedPoints.length === 0) return;
 

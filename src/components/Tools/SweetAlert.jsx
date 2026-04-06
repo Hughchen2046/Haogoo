@@ -19,7 +19,7 @@ function SweetAlert() {
 
   useEffect(() => {
     const msg = messages[0];
-    // console.log('[SweetAlert] messages:', messages.length, 'showing:', showingRef.current, 'msg:', msg?.title);
+    // //console.log('[SweetAlert] messages:', messages.length, 'showing:', showingRef.current, 'msg:', msg?.title);
     if (showingRef.current) return;
     if (!msg) return;
 
@@ -28,21 +28,24 @@ function SweetAlert() {
     const icon = msg.icon || typeIcon[msg.type] || 'info';
     const timer = typeof msg.timer === 'number' && msg.timer > 0 ? msg.timer : undefined;
 
-    mySwal
-      .fire({
-        title: msg.title || '',
-        text: msg.text || '',
-        icon,
-        position: msg.position || 'center',
-        showConfirmButton: msg.showConfirmButton ?? true,
-        timer,
-        timerProgressBar: msg.timerProgressBar ?? true,
-        allowOutsideClick: msg.allowOutsideClick ?? true,
-      })
-      .finally(() => {
+    const showAlert = async () => {
+      try {
+        await mySwal.fire({
+          title: msg.title || '',
+          text: msg.text || '',
+          icon,
+          position: msg.position || 'center',
+          showConfirmButton: msg.showConfirmButton ?? true,
+          timer,
+          timerProgressBar: msg.timerProgressBar ?? true,
+          allowOutsideClick: msg.allowOutsideClick ?? true,
+        });
+      } finally {
         dispatch(removeMessage(msg.id));
         showingRef.current = false;
-      });
+      }
+    };
+    showAlert();
   }, [messages, dispatch]);
 
   return null;

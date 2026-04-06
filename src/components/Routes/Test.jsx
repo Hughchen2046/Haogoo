@@ -20,7 +20,7 @@ export default function Test() {
   //       name: item.name,
   //     }));
   //     setSymbols(mapFilteredData);
-  //     // console.log('股票資料:', mapFilteredData);
+  //     // //console.log('股票資料:', mapFilteredData);
   //   } catch (error) {
   //     console.error('獲取股票資料失敗:', error);
   //   }
@@ -37,7 +37,7 @@ export default function Test() {
         {/* <SearchStock
           symbols={symbols}
           onSelect={(item) => {
-            console.log('你選到的股票:', item);
+            //console.log('你選到的股票:', item);
             navigate(`/stockInfo/${item.symbol}`);
           }}
         /> */}

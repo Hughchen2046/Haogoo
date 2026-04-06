@@ -24,7 +24,7 @@ export default function EtfsList() {
         const data = response.data.data;
         // 過濾有足夠價格資料的 ETF
         const sortSymbol = data.filter((item) => item.prices.length > 3);
-        // console.log('ETF 資料:', sortSymbol);
+        // //console.log('ETF 資料:', sortSymbol);
         setEtfData(sortSymbol);
       } catch (error) {
         console.error(error);
@@ -37,7 +37,7 @@ export default function EtfsList() {
 
   // 處理標籤點擊,導航到股票頁面
   const handleTagClick = (stockId) => {
-    console.log('stockId', stockId);
+    //console.log('stockId', stockId);
     navigate(`/stockInfo/${stockId}`);
   };
 
@@ -46,10 +46,7 @@ export default function EtfsList() {
       <div className="container py-64 py-md-96 overflow-x-hidden">
         <div className="etfsbox bg-primary-700 font-zh-tw round-48 round-md-96 p-32 mb-24 py-md-72 px-md-96">
           <div className="row">
-            <div
-              className="col-12 col-md-6 text-center text-white text-md-start"
-              ref={containerRef}
-            >
+            <div className=" col-md-6 text-center text-white text-md-start" ref={containerRef}>
               <h3 className=" h3 h2-md mb-8">熱門ETF</h3>
               <h2 className="display-2 display-1-md mb-32 mb-md-64">Popular ETFs</h2>
               <ButtonOutline
@@ -60,7 +57,7 @@ export default function EtfsList() {
               </ButtonOutline>
             </div>
 
-            <div className="col-12 col-md-6 etfsTagWrapper position-relative overflow-hidden">
+            <div className="col-md-6 etfsTagWrapper position-relative overflow-hidden">
               <Mixed etfData={etfData} start={isInView} onClick={handleTagClick} />
             </div>
           </div>

@@ -13,13 +13,13 @@ export default function CommentCard({ comment, userData }) {
     userData?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment?.userId}`;
 
   return (
-    <div className="card border-0 border-bottom rounded-0 py-4 mb-2" style={{ maxWidth: '800px' }}>
+    <div className="card border-0 border-bottom rounded-0 py-16 mb-8">
       <div className="card-body p-0">
         <div className="d-flex">
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 px-8">
             <div
               className="rounded-circle border overflow-hidden"
-              style={{ width: '128px', height: '128px' }}
+              style={{ width: '48px', height: '48px' }}
             >
               <img
                 src={userAvatar}
@@ -29,17 +29,17 @@ export default function CommentCard({ comment, userData }) {
               />
             </div>
           </div>
-          <div className="flex-grow-1 ms-4">
-            <div className="mb-2">
+          <div className="flex-grow-1 ms-12">
+            <div className="mb-8">
               <h5 className="mb-0 fw-bold">{userName}</h5>
               <small className="text-muted">{publishDate} 發布</small>
             </div>
-            <p className="mb-3 text-dark fs-5" style={{ lineHeight: '1.6' }}>
+            <p className="mb-12 text-dark fs-5" style={{ lineHeight: '1.6' }}>
               {comment?.content}
             </p>
-            <div className="d-flex gap-4">
+            <div className="d-flex gap-8">
               <button className="btn btn-link p-0 text-dark text-decoration-none d-flex align-items-center">
-                <ThumbsUp size={20} className="me-2" /> {comment?.reactions?.like || 0}
+                <ThumbsUp size={20} className="me-8" /> {comment?.reactions?.like || 0}
               </button>
               <button className="btn btn-link p-0 text-dark text-decoration-none">
                 <MessageCircle size={20} />

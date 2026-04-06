@@ -131,12 +131,9 @@ $design-colors: (
 .hd-title {
   font-weight: 700;
   line-height: 1.2;
+  font-size: 3.5rem;
 
-  @media (min-width: 992px) {
-    font-size: 3.5rem;
-  }
-
-  @media (max-width: 991px) {
+  @include media-breakpoint-down(md) {
     font-size: 2.5rem;
   }
 }
@@ -464,24 +461,26 @@ $utilities: map-merge(
 }
 
 .header-logo {
-  width: 153px;
-  height: 40px;
-  color: #000000;
+  width: 247px;
+  height: 64px;
+  color: #17312c;
   display: block;
-  @media (min-width: 768px) {
-    width: 247px;
-    height: 64px;
-    color: #17312c;
+
+  @include media-breakpoint-down(sm) {
+    width: 153px;
+    height: 40px;
+    color: #000000;
   }
 }
 
 .footer-logo {
-  width: 302px;
-  height: 80px;
+  width: 455px;
+  height: 120px;
   display: block;
-  @media (min-width: 768px) {
-    width: 455px;
-    height: 120px;
+
+  @include media-breakpoint-down(sm) {
+    width: 302px;
+    height: 80px;
   }
 }
 
@@ -517,13 +516,21 @@ $utilities: map-merge(
     }
   }
 
-  @media (min-width: 992px) {
+  .topic-img-frame {
+    width: 168px;
+  }
+  border-bottom: 1px solid #12121214;
+  img {
+    height: 126px;
+  }
+
+  @include media-breakpoint-down(md) {
     .topic-img-frame {
-      width: 168px;
+      width: 100%;
     }
-    border-bottom: 1px solid #12121214;
+    border-bottom: none;
     img {
-      height: 126px;
+      height: auto;
     }
   }
 }
@@ -646,7 +653,7 @@ $utilities: map-merge(
   padding: 24px;
 }
 
-@media (max-width: 576px) {
+@include media-breakpoint-down(sm) {
   .route-overlay {
     padding: 0;
   }
