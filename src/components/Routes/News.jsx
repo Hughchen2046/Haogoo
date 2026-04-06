@@ -15,8 +15,8 @@ export default function News() {
   // postId的資料會由上層Topics導航中的動態路由參數帶入 state={{ postId: allData.id, catagory: currentTopic.label }}
   // const location = useLocation();
   // const { postId, catagory } = location.state || {};
-  // console.log('從路由參數獲取的 postId:', postId);
-  // console.log('從路由參數獲取的 catagory:', catagory);
+  // //console.log('從路由參數獲取的 postId:', postId);
+  // //console.log('從路由參數獲取的 catagory:', catagory);
 
   // 1. 確保資料來源存在，使用 Optional Chaining (?.) 避免讀取不到 data 噴錯
   // const userLookup =
@@ -104,7 +104,7 @@ export default function News() {
           <img
             src="https://imgcdn.cna.com.tw/www/WebPhotos/1024/20251219/1200x900_wmky_400546680822_202506060007000000.jpg"
             className="card-img-top rounded-0"
-            alt="..."
+            alt="中央社檔案照片"
           />
           <div className="card-body rounded-0 px-0">
             <p className="card-text text-gray-800">

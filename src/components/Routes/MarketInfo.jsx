@@ -195,7 +195,7 @@ export default function MarketInfo() {
       dispatch(loadingStarted({ status: 'marketInfo.industry' }));
       try {
         const response = await axios.get(`${API_URL}`);
-        // console.log(response.data.data);
+        // //console.log(response.data.data);
         const data = response.data.data;
         const industry = data
           .filter((item) => item.prices.length > 3 && item.industryTW !== '綜合')
@@ -208,7 +208,7 @@ export default function MarketInfo() {
               prices: item.prices,
             };
           });
-        // console.log(industry);
+        // //console.log(industry);
 
         // 使用 Map 來獲取不重複的產業，以 industryTW 為 key
         const uniqueIndustries = new Map();
@@ -229,8 +229,8 @@ export default function MarketInfo() {
         // 更新 state
         setIndustrySelect(uniqueIndustryArray);
 
-        // console.log('不重複的產業:', uniqueIndustryArray);
-        // console.log('產業數量:', uniqueIndustryArray.length);
+        // //console.log('不重複的產業:', uniqueIndustryArray);
+        // //console.log('產業數量:', uniqueIndustryArray.length);
       } catch (error) {
         console.error(error);
       } finally {
@@ -251,7 +251,7 @@ export default function MarketInfo() {
 
         // 取出有 prices 的資料
         const filterData = response.data.data.filter((item) => item.prices.length >= 2);
-        // console.log('filterData', filterData);
+        // //console.log('filterData', filterData);
 
         setIndustryData(filterData);
       } catch (error) {
@@ -277,19 +277,19 @@ export default function MarketInfo() {
 
         // 取出有 prices 的資料
         const filterData = response.data.data.filter((item) => item.prices.length >= 2);
-        // console.log('filterData', filterData);
-        // console.log('collectionTab', collectionTab);
-        // console.log('test', filterData[0].prices[filterData[0].prices.length - 1].dailyChangePct);
+        // //console.log('filterData', filterData);
+        // //console.log('collectionTab', collectionTab);
+        // //console.log('test', filterData[0].prices[filterData[0].prices.length - 1].dailyChangePct);
 
         //月營收資料
-        // console.log('resStock', resStock.data.data);
+        // //console.log('resStock', resStock.data.data);
         const monthRevenueData = resStock.data.data
           .map((item) => ({
             id: item.id,
             data: item.data,
           }))
           .filter((item) => item.data.length > 0);
-        // console.log('monthRevenueData', monthRevenueData);
+        // //console.log('monthRevenueData', monthRevenueData);
 
         let sortData;
         switch (collectionTab) {
@@ -301,7 +301,7 @@ export default function MarketInfo() {
                 a.prices[a.prices.length - 1].dailyChangePct
               );
             });
-            // console.log('sortData', sortData);
+            // //console.log('sortData', sortData);
             break;
           // 依據日線 ma5 > 周線 ma10 > 月線 ma20 的條件來做搜尋; 並且依據 ma5 - ma10的差距來做強弱判定
           case '技術面':
@@ -334,7 +334,7 @@ export default function MarketInfo() {
 
                 // 檢查程式
                 // if (isGoldenCross) {
-                //   console.log(`${item.name} (${item.id}):`, {
+                //   //console.log(`${item.name} (${item.id}):`, {
                 //     ma5: ma5.toFixed(2),
                 //     ma10: ma10.toFixed(2),
                 //     ma20: ma20.toFixed(2),
@@ -453,33 +453,30 @@ export default function MarketInfo() {
             break;
           // 依據 成交量來進行判斷, 單日成交量超過半年內成交量, 且連續3日成交量皆成長
           case '籌碼面':
-            sortData = [...filterData]
-              .filter((stock) => {
-                const prices = stock.prices;
-                if (!prices || prices.length < 3) return false;
+            sortData = [...filterData].filter((stock) => {
+              const prices = stock.prices;
+              if (!prices || prices.length < 3) return false;
 
-                //計算股票成交量
-                //計算去年同一時間到今年的length差
-                const thisyear = prices[prices.length - 1].date;
-                const lastyear = dayjs(`${thisyear}`, 'YYYY-MM-DD')
-                  .subtract(1, 'year')
-                  .format('YYYY-MM-DD');
-                // console.log('lastyear', lastyear);
-                //得出與去年同一日期的長度
-                const lengh =
-                  prices[prices.length - 1].id - prices.find((item) => item.date === lastyear).id;
-                const yearPrices = prices.slice(-Math.floor(Math.abs(lengh / 2))); // 約半年的交易日
-                // console.log('yearPrices', yearPrices);
-                const maxVolume = Math.max(...yearPrices.map((p) => p.volume));
-                const latestVolume = prices[prices.length - 1].volume;
-                const prevVolume = prices[prices.length - 2].volume;
-                const prevVolume2 = prices[prices.length - 3].volume;
-                return (
-                  latestVolume === maxVolume &&
-                  latestVolume > prevVolume &&
-                  prevVolume > prevVolume2
-                );
-              });
+              //計算股票成交量
+              //計算去年同一時間到今年的length差
+              const thisyear = prices[prices.length - 1].date;
+              const lastyear = dayjs(`${thisyear}`, 'YYYY-MM-DD')
+                .subtract(1, 'year')
+                .format('YYYY-MM-DD');
+              // //console.log('lastyear', lastyear);
+              //得出與去年同一日期的長度
+              const lengh =
+                prices[prices.length - 1].id - prices.find((item) => item.date === lastyear).id;
+              const yearPrices = prices.slice(-Math.floor(Math.abs(lengh / 2))); // 約半年的交易日
+              // //console.log('yearPrices', yearPrices);
+              const maxVolume = Math.max(...yearPrices.map((p) => p.volume));
+              const latestVolume = prices[prices.length - 1].volume;
+              const prevVolume = prices[prices.length - 2].volume;
+              const prevVolume2 = prices[prices.length - 3].volume;
+              return (
+                latestVolume === maxVolume && latestVolume > prevVolume && prevVolume > prevVolume2
+              );
+            });
             break;
           case '好股推薦':
             sortData = [...filterData]
@@ -543,10 +540,10 @@ export default function MarketInfo() {
       try {
         const response = await axios.get(`${symbol_URL}?SECURITY_TW=ETF&_embed=prices`); //及時排行,獲利王,好股推薦
         const resStock = await axios.get(`${API_BASE}/stockbenifit`); //高殖利率
-        // console.log('allData', response.data.data);
+        // //console.log('allData', response.data.data);
         // 取出有 prices 的資料
         const filterData = response.data.data.filter((item) => item.prices.length >= 2);
-        // console.log('filterData', filterData);
+        // //console.log('filterData', filterData);
 
         let sortData;
         switch (collectionETFTab) {
@@ -558,7 +555,7 @@ export default function MarketInfo() {
                 a.prices[a.prices.length - 1].dailyChangePct
               );
             });
-            // console.log('sortData', sortData);
+            // //console.log('sortData', sortData);
             break;
           // 依據去年同一時間投入價格與現在價格的差距來做強弱判定
           case '獲利王':
@@ -601,7 +598,7 @@ export default function MarketInfo() {
             const benifitData = resStock.data.data;
             sortData = [...filterData]
               .map((stock) => {
-                // console.log('benifit', benifitData);
+                // //console.log('benifit', benifitData);
                 const stockbenifitData = benifitData.find((item) => item.id === stock.id);
                 if (!stockbenifitData) return null;
                 const totalBenifit = stockbenifitData.data
@@ -621,7 +618,7 @@ export default function MarketInfo() {
               })
               .filter((item) => item !== null)
               .sort((a, b) => b.yieldData.yieldRate - a.yieldData.yieldRate);
-            // console.log('sortData', sortData);
+            // //console.log('sortData', sortData);
             break;
           }
           case '好股推薦':
@@ -664,7 +661,7 @@ export default function MarketInfo() {
               });
             break;
         }
-        // console.log('sortData', sortData);
+        // //console.log('sortData', sortData);
         setCollectionsETFData(sortData);
       } catch (error) {
         console.error('抓取產業股票資料失敗:', error);
@@ -678,7 +675,7 @@ export default function MarketInfo() {
     getCollectionETFStocks();
   }, [collectionETFTab, dispatch]);
 
-  // console.log('industrySelectTab', industryTab);
+  // //console.log('industrySelectTab', industryTab);
   return (
     <>
       <div className="d-flex flex-column gap-32 position-relative overflow-x-hidden">

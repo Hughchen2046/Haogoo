@@ -15,7 +15,7 @@ const TaiwanIndexChart = () => {
         const response = await axios.get(
           'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json&_=1770530872584'
         );
-        // console.log(response.data);
+        // //console.log(response.data);
         const taiex = [
           {
             title: response.data.title,
@@ -30,7 +30,7 @@ const TaiwanIndexChart = () => {
           },
         ];
         setTaiwanIndexData(taiex);
-        // console.log(taiex);
+        // //console.log(taiex);
       } catch (error) {
         console.error(error);
       }
@@ -49,8 +49,8 @@ const TaiwanIndexChart = () => {
     const openingTime = dataObj.tabledata[0].time; //  "09:00:00"
     const closingTime = dataObj.tabledata[dataObj.tabledata.length - 1].time; // 收盤時間
 
-    // console.log('開盤時間:', openingTime);
-    // console.log('收盤時間:', closingTime);
+    // //console.log('開盤時間:', openingTime);
+    // //console.log('收盤時間:', closingTime);
 
     // 處理資料
     const formattedPoints = dataObj.tabledata
@@ -72,8 +72,8 @@ const TaiwanIndexChart = () => {
         );
       });
 
-    // console.log('有效資料數:', formattedPoints.length);
-    // console.log('圖表模式:', chartMode);
+    // //console.log('有效資料數:', formattedPoints.length);
+    // //console.log('圖表模式:', chartMode);
 
     if (formattedPoints.length === 0) return;
 
@@ -150,7 +150,7 @@ const TaiwanIndexChart = () => {
         return point.rawTime.endsWith(':00');
       });
 
-      //   console.log('靜態模式資料點數（每1分鐘）:', oneMinuteData.length);
+      //   //console.log('靜態模式資料點數（每1分鐘）:', oneMinuteData.length);
 
       lineSeries.setData(oneMinuteData);
       chart.timeScale().setVisibleRange({

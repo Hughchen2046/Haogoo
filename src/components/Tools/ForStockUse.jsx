@@ -85,7 +85,7 @@ const StockUse = () => {
         const filterData = res.data.data
           .filter((item) => item.prices.length >= 2)
           .map((item) => item.id);
-        console.log(filterData);
+        //console.log(filterData);
         setStocklist(filterData);
       } catch (error) {
         console.error('獲取股票清單失敗:', error);
@@ -94,7 +94,7 @@ const StockUse = () => {
     getSymbols();
   }, []);
 
-  console.log('股票清單:', stocklist);
+  //console.log('股票清單:', stocklist);
 
   // 批次讀取所有股票的產業鏈資料
   const fetchAllStockIndustryChain = async () => {
@@ -110,7 +110,7 @@ const StockUse = () => {
         const stockId = stocklist[i];
 
         try {
-          console.log(`📡 正在讀取 ${stockId} 的產業鏈資料... (${i + 1}/${stocklist.length})`);
+          //console.log(`📡 正在讀取 ${stockId} 的產業鏈資料... (${i + 1}/${stocklist.length})`);
 
           const res = await axios.get(`${API_BASE}/api/finmind/TaiwanStockIndustryChain`, {
             params: {
@@ -136,7 +136,7 @@ const StockUse = () => {
         }
       }
 
-      console.log('✅ 所有產業鏈資料讀取完成!');
+      //console.log('✅ 所有產業鏈資料讀取完成!');
 
       const finalData = {
         stockIndustryChain: allData,
@@ -168,7 +168,7 @@ const StockUse = () => {
         const stockId = stocklist[i];
 
         try {
-          console.log(`📡 正在讀取 ${stockId} 的月營收資料... (${i + 1}/${stocklist.length})`);
+          //console.log(`📡 正在讀取 ${stockId} 的月營收資料... (${i + 1}/${stocklist.length})`);
 
           const res = await axios.get(`${API_BASE}/api/finmind/TaiwanStockMonthRevenue`, {
             params: {
@@ -194,7 +194,7 @@ const StockUse = () => {
         }
       }
 
-      console.log('✅ 所有月營收資料讀取完成!');
+      //console.log('✅ 所有月營收資料讀取完成!');
 
       const finalData = {
         monthRevenue: allData,
@@ -215,7 +215,7 @@ const StockUse = () => {
   // 儲存 JSON 檔案到後端
   const downloadJSON = async (data, filename) => {
     try {
-      console.log(`📤 正在儲存檔案到後端: ${filename}`);
+      //console.log(`📤 正在儲存檔案到後端: ${filename}`);
 
       const response = await axios.post(`${API_BASE}/api/save-json`, {
         filename,
@@ -223,7 +223,7 @@ const StockUse = () => {
       });
 
       if (response.data.success) {
-        console.log(`✅ ${response.data.message}`);
+        //console.log(`✅ ${response.data.message}`);
         alert(`✅ 檔案已成功儲存到專案根目錄: ${filename}`);
       } else {
         console.error('❌ 儲存失敗:', response.data.message);

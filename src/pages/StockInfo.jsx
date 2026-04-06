@@ -17,7 +17,7 @@ export default function StockInfo() {
   const [stockData, setStockData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  // console.log('id', id);
+  // //console.log('id', id);
 
   const stockUrl = import.meta.env.VITE_symbolsUrl;
   const tabs = ['股價走勢', '股利政策', '股價 K 線'];
@@ -39,7 +39,7 @@ export default function StockInfo() {
 
         const res = await axios.get(`${stockUrl}?id=${id}&_embed=prices`);
         const dataArray = res.data.data || res.data;
-        // console.log('dataArray', dataArray);
+        // //console.log('dataArray', dataArray);
 
         if (Array.isArray(dataArray) && dataArray.length > 0) {
           const data = dataArray[0];

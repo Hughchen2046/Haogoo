@@ -125,7 +125,7 @@ export default function Navbar() {
             <SearchStock
               symbols={symbols}
               onSelect={(item) => {
-                // console.log('你選到的股票:', item);
+                // //console.log('你選到的股票:', item);
                 navigate(`/stockInfo/${item.symbol}`);
               }}
               navSearchColor={navSearchColor}
@@ -203,7 +203,7 @@ export default function Navbar() {
           <SearchStock
             symbols={symbols}
             onSelect={(item) => {
-              // console.log('你選到的股票:', item);
+              // //console.log('你選到的股票:', item);
               navigate(`/stockInfo/${item.symbol}`);
             }}
             navSearchColor={navSearchColor}
@@ -270,4 +270,3 @@ export default function Navbar() {
     </>
   );
 }
-

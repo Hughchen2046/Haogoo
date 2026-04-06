@@ -8,7 +8,7 @@ export default function Header() {
       <div className="indexBackImg d-flex align-items-end align-items-md-center pb-48 pb-md-0">
         <div className="container font-zh-tw">
           <div className="row">
-            <div className="col-12 d-flex flex-column align-items-center align-items-md-end">
+            <div className=" d-flex flex-column align-items-center align-items-md-end">
               <div className="display-2 display-1-md text-white">一天一好股</div>
               <div className="display-2 display-1-md text-white mb-24 mb-md-32">
                 Life is so good

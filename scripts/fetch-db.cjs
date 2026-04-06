@@ -54,14 +54,14 @@ async function run() {
 
     try {
         if (mode === 'sync') {
-            console.log('正在從 Zeabur 同步更新 db.json...');
+            //console.log('正在從 Zeabur 同步更新 db.json...');
             await downloadDB(LOCAL_DB);
-            console.log('✅ 同步成功！本地 db.json 已更新。');
+            //console.log('✅ 同步成功！本地 db.json 已更新。');
         } else {
             const backupName = getNextBackupName();
-            console.log(`正在從 Zeabur 下載備份並建立為 ${backupName}...`);
+            //console.log(`正在從 Zeabur 下載備份並建立為 ${backupName}...`);
             await downloadDB(backupName);
-            console.log(`✅ 備份成功！已建立檔案: ${backupName}`);
+            //console.log(`✅ 備份成功！已建立檔案: ${backupName}`);
         }
     } catch (error) {
         console.error('❌ 執行失敗:', error.message);

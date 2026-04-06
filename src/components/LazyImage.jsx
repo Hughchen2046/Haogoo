@@ -44,7 +44,7 @@ const LazyImage = ({
       {/* 圖片 */}
       <img
         src={hasError ? '/placeholder.svg' : src}
-        alt={alt}
+        alt={alt || '讀取中'}
         onLoad={() => setIsLoaded(true)}
         onError={() => {
           setHasError(true);

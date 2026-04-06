@@ -23,9 +23,9 @@ export const loginThunk = createAsyncThunk(
     dispatch(loadingStarted());
     try {
       const payload = await loginAPI(formData);
-      // console.log('[loginThunk] payload:', payload);
+      // //console.log('[loginThunk] payload:', payload);
       const { token, user } = authResponse(payload);
-      // console.log('[loginThunk] token:', token);
+      // //console.log('[loginThunk] token:', token);
 
       authStorage.setToken(token);
 
@@ -88,7 +88,7 @@ export const registerThunk = createAsyncThunk(
       return { token: null, user: null };
     } catch (err) {
       dispatch(pushMessage({ type: 'error', title: '註冊失敗' }));
-      console.log('[registerThunk] error:', err);
+      //console.log('[registerThunk] error:', err);
       return rejectWithValue(err?.message || 'register failed');
     } finally {
       dispatch(loadingStopped());
