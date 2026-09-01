@@ -8,6 +8,7 @@ import ButtonPrimary from '../Tools/ButtonPrimary';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginThunk, logoutThunk } from '../../app/features/auth/authThunks';
 import { IsAuthed } from '../../app/features/auth/authSelectors';
+import { pushMessage } from '../../app/features/message/messageSlice';
 
 export default function Login() {
   const isAuth = useSelector(IsAuthed);
@@ -40,6 +41,22 @@ export default function Login() {
 
   const toRegist = () => {
     navigate('/regist', { replace: true });
+  };
+
+  const handleQuickLogin = async () => {
+    if (isAuth) return;
+
+    const action = await dispatch(loginThunk({ email: 'dds@g12.com', password: 'test1234' }));
+    if (loginThunk.fulfilled.match(action)) {
+      if (window.history.length > 1) {
+        navigate(-1);
+        return;
+      }
+      navigate('/');
+      reset();
+    } else {
+      dispatch(pushMessage({ type: 'error', title: '快速登入失敗', timer: 3000 }));
+    }
   };
 
   const handleLogin = async (data) => {
@@ -91,6 +108,7 @@ export default function Login() {
             <ButtonOutline
               type="button"
               className="d-flex justify-content-center align-items-center py-8 px-16"
+              onClick={handleQuickLogin}
             >
               <img src={Google_Icon} className="me-8 icon-24" alt="Google-icon" />
               <h6 className="m-0">使用 Google 帳號快速登入</h6>
@@ -159,4 +177,3 @@ export default function Login() {
     </div>
   );
 }
-
