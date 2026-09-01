@@ -8,6 +8,7 @@ import ButtonPrimary from '../Tools/ButtonPrimary';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginThunk, logoutThunk } from '../../app/features/auth/authThunks';
 import { IsAuthed } from '../../app/features/auth/authSelectors';
+import { pushMessage } from '../../app/features/message/messageSlice';
 
 export default function Login() {
   const isAuth = useSelector(IsAuthed);
@@ -45,9 +46,7 @@ export default function Login() {
   const handleQuickLogin = async () => {
     if (isAuth) return;
 
-    const action = await dispatch(
-      loginThunk({ email: 'haogoo@gmail.com', password: '123456' })
-    );
+    const action = await dispatch(loginThunk({ email: 'dds@g12.com', password: 'test1234' }));
     if (loginThunk.fulfilled.match(action)) {
       if (window.history.length > 1) {
         navigate(-1);
@@ -55,6 +54,8 @@ export default function Login() {
       }
       navigate('/');
       reset();
+    } else {
+      dispatch(pushMessage({ type: 'error', title: '快速登入失敗', timer: 3000 }));
     }
   };
 
@@ -176,4 +177,3 @@ export default function Login() {
     </div>
   );
 }
-
