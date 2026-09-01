@@ -25,8 +25,10 @@ db.json => 統合版用來測試的整體檔案存放
 dbjson_schema.md => 檔案裡面是db.json內針對資料的說明
 
 ## JSON Server - 部署用
-已經將json server部署到zeabur上,連結為,後面請參考原本http://localhost:3000/後面的路徑
-https://haogoo-data.zeabur.app/
+已經將json server部署到Render上,連結為,後面請參考原本http://localhost:3000/後面的路徑
+https://haogoo.onrender.com/
+
+注意:Render免費方案15分鐘無流量會休眠,下一次請求會有冷啟動延遲;且容器檔案系統非持久化,執行期間的寫入(註冊/發文/留言/收藏等)在重新部署後會重置回db.json的git版本。
 
 ## SCSS
 Bootstrap客製化項目請到src/scss/_variables.scss && _custom_utils.scss進行修改
@@ -42,14 +44,3 @@ https://lucide.dev/guide/packages/lucide-react
 ## 測試用程式
 test.js => 測試機- 自動註冊帳號,新增收藏清單,驗證讀取,存取別人資料
 test_fin01.js => 測試機- 讀取產業,計算每一檔的60日平均收盤價,再計算平均
-
-## 作業練習規範
-請大家先以 dev版本進行複製,自行命名分支名稱,可以用dev_你的名字(版本版次)或是dev_你的主題...等等方式.
-請先使用npm run dev進行測試,若有需要再deploy上去gh-pages測試~~~
-
-## 首頁分支
-命名為dev-index-你的名字
-
-# 感謝
-非常感謝組員們的熱情支持~~~
-

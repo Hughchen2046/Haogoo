@@ -2,7 +2,7 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
-const DB_URL = 'https://haogoo-data.zeabur.app/db';
+const DB_URL = 'https://haogoo.onrender.com/db';
 const LOCAL_DB = 'db.json';
 const BACKUP_PREFIX = 'db-';
 
