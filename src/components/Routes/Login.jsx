@@ -42,6 +42,22 @@ export default function Login() {
     navigate('/regist', { replace: true });
   };
 
+  const handleQuickLogin = async () => {
+    if (isAuth) return;
+
+    const action = await dispatch(
+      loginThunk({ email: 'haogoo@gmail.com', password: '123456' })
+    );
+    if (loginThunk.fulfilled.match(action)) {
+      if (window.history.length > 1) {
+        navigate(-1);
+        return;
+      }
+      navigate('/');
+      reset();
+    }
+  };
+
   const handleLogin = async (data) => {
     if (isAuth) {
       await dispatch(logoutThunk());
@@ -91,6 +107,7 @@ export default function Login() {
             <ButtonOutline
               type="button"
               className="d-flex justify-content-center align-items-center py-8 px-16"
+              onClick={handleQuickLogin}
             >
               <img src={Google_Icon} className="me-8 icon-24" alt="Google-icon" />
               <h6 className="m-0">使用 Google 帳號快速登入</h6>
